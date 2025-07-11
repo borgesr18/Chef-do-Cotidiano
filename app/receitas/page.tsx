@@ -6,19 +6,19 @@ import { supabase } from '@/lib/supabaseClient';
 interface Receita {
   id: string;
   titulo: string;
-  tempo: string;
-  imagem: string;
+  tempo_preparo: string;
+  imagem_url: string;
 }
 
 export default function Receitas() {
   const [receitas, setReceitas] = useState<Receita[]>([]);
 
   useEffect(() => {
-    // Substituir por fetch real do Supabase depois
-    setReceitas([
-      { id: '1', titulo: 'Hambúrguer Artesanal', tempo: '30min', imagem: '/imagens/hamburguer.jpg' },
-      { id: '2', titulo: 'Estrogonofe de Frango', tempo: '25min', imagem: '/imagens/estrogonofe.jpg' }
-    ]);
+    const fetchReceitas = async () => {
+      const { data, error } = await supabase.from('receitas').select('*');
+      if (data) setReceitas(data);
+    };
+    fetchReceitas();
   }, []);
 
   const handleSalvar = async (id: string) => {
@@ -40,9 +40,9 @@ export default function Receitas() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {receitas.map((receita) => (
           <div key={receita.id} className="bg-white rounded shadow p-4">
-            <img src={receita.imagem} alt={receita.titulo} className="w-full h-40 object-cover rounded" />
+            <img src={receita.imagem_url} alt={receita.titulo} className="w-full h-40 object-cover rounded" />
             <h3 className="mt-2 font-bold">{receita.titulo}</h3>
-            <p className="text-sm text-gray-600">Tempo: {receita.tempo}</p>
+            <p className="text-sm text-gray-600">Tempo: {receita.tempo_preparo}</p>
             <button
               onClick={() => handleSalvar(receita.id)}
               className="mt-2 bg-black text-white px-4 py-2 rounded"
@@ -55,3 +55,4 @@ export default function Receitas() {
     </div>
   );
 }
+
