@@ -55,6 +55,7 @@ export default function GerenciarPerfis() {
                   >
                     Tornar Admin
                   </button>
+                  {/* Botão de remover perfil será adicionado depois */}
                 </td>
               </tr>
             ))}
