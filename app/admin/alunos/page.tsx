@@ -24,12 +24,28 @@ export default function GerenciarAlunos() {
 
       if (perfil?.tipo !== 'admin') return router.push('/');
 
-      const { data } = await supabase
+      const { data: usuarios } = await supabase
         .from('usuarios')
         .select('id, nome, email, tipo')
         .order('nome');
 
-      setAlunos(data || []);
+      const alunosComProgresso = await Promise.all(
+        (usuarios || []).map(async (aluno) => {
+          const [{ count: inscritos }, { count: concluidas }, { count: certificados }] = await Promise.all([
+            supabase.from('inscricoes').select('*', { count: 'exact', head: true }).eq('userId', aluno.id),
+            supabase.from('conclusaoaula').select('*', { count: 'exact', head: true }).eq('usuarioId', aluno.id),
+            supabase.from('certificado').select('*', { count: 'exact', head: true }).eq('usuarioId', aluno.id),
+          ]);
+          return {
+            ...aluno,
+            cursos: inscritos || 0,
+            aulas: concluidas || 0,
+            certificados: certificados || 0,
+          };
+        })
+      );
+
+      setAlunos(alunosComProgresso);
       setCarregando(false);
     };
 
@@ -38,20 +54,25 @@ export default function GerenciarAlunos() {
 
   const promoverAdmin = async (id: string) => {
     await supabase.from('usuarios').update({ tipo: 'ADMIN' }).eq('id', id);
-    setAlunos((prev) => prev.map((a) => (a.id === id ? { ...a, tipo: 'ADMIN' } : a)));
+    setAlunos((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, tipo: 'ADMIN' } : a))
+    );
   };
 
   if (carregando) return <p className="p-8">Carregando alunos...</p>;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">👨‍🎓 Alunos Cadastrados</h1>
-      <table className="w-full border">
+      <table className="w-full border text-sm">
         <thead className="bg-gray-100">
           <tr>
             <th className="p-2 border">Nome</th>
             <th className="p-2 border">Email</th>
             <th className="p-2 border">Perfil</th>
+            <th className="p-2 border">Cursos</th>
+            <th className="p-2 border">Aulas</th>
+            <th className="p-2 border">Certificados</th>
             <th className="p-2 border">Ações</th>
           </tr>
         </thead>
@@ -61,6 +82,9 @@ export default function GerenciarAlunos() {
               <td className="p-2 border">{aluno.nome}</td>
               <td className="p-2 border">{aluno.email}</td>
               <td className="p-2 border">{aluno.tipo}</td>
+              <td className="p-2 border text-center">{aluno.cursos}</td>
+              <td className="p-2 border text-center">{aluno.aulas}</td>
+              <td className="p-2 border text-center">{aluno.certificados}</td>
               <td className="p-2 border">
                 {aluno.tipo !== 'ADMIN' && (
                   <button
@@ -78,3 +102,4 @@ export default function GerenciarAlunos() {
     </div>
   );
 }
+
