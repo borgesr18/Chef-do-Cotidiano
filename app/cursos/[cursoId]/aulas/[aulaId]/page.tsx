@@ -1,6 +1,5 @@
 //app/cursos/[cursoId]/aulas/[aulaId]/page.tsx — Página de Aula com botão de conclusão
 'use client';
-'use client';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
@@ -13,6 +12,9 @@ export default function AulaPage() {
   const [comentarios, setComentarios] = useState<any[]>([]);
   const [novoComentario, setNovoComentario] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [editandoComentarioId, setEditandoComentarioId] = useState<string | null>(null);
+  const [textoEditado, setTextoEditado] = useState<string>('');
   const router = useRouter();
 
   useEffect(() => {
@@ -22,6 +24,7 @@ export default function AulaPage() {
       } = await supabase.auth.getUser();
       if (!user) return router.push('/login');
       setUserId(user.id);
+      setUserEmail(user.email);
 
       const { data } = await supabase
         .from('aulas')
@@ -48,22 +51,29 @@ export default function AulaPage() {
 
       setAulasCurso(todasAulas || []);
 
-      const { data: comentariosData } = await supabase
-        .from('comentarios')
-        .select('id, conteudo, created_at, user:usuarioId(email)')
-        .eq('aulaId', aulaId)
-        .order('created_at', { ascending: true });
-
-      setComentarios(comentariosData || []);
+      await carregarComentarios();
     };
 
     carregarAula();
   }, [aulaId, cursoId, router]);
 
+  const carregarComentarios = async () => {
+    const { data: comentariosData } = await supabase
+      .from('comentarios')
+      .select('id, conteudo, created_at, usuarioId, user:usuarioId(email)')
+      .eq('aulaId', aulaId)
+      .order('created_at', { ascending: true });
+    setComentarios(comentariosData || []);
+  };
+
   const marcarComoConcluida = async () => {
     if (!userId || !aulaId) return;
     await supabase.from('progresso').upsert({ userId, aulaId, concluida: true });
     setConcluida(true);
+    await fetch('/api/notificar-conclusao', {
+      method: 'POST',
+      body: JSON.stringify({ aulaId, userEmail }),
+    });
   };
 
   const irParaProxima = () => {
@@ -77,12 +87,19 @@ export default function AulaPage() {
     if (!novoComentario.trim()) return;
     await supabase.from('comentarios').insert({ aulaId, usuarioId: userId, conteudo: novoComentario });
     setNovoComentario('');
-    const { data: atualizados } = await supabase
-      .from('comentarios')
-      .select('id, conteudo, created_at, user:usuarioId(email)')
-      .eq('aulaId', aulaId)
-      .order('created_at', { ascending: true });
-    setComentarios(atualizados || []);
+    await carregarComentarios();
+  };
+
+  const excluirComentario = async (id: string) => {
+    await supabase.from('comentarios').delete().eq('id', id);
+    await carregarComentarios();
+  };
+
+  const salvarEdicao = async (id: string) => {
+    await supabase.from('comentarios').update({ conteudo: textoEditado }).eq('id', id);
+    setEditandoComentarioId(null);
+    setTextoEditado('');
+    await carregarComentarios();
   };
 
   if (!aula) return <p className="p-8">Carregando aula...</p>;
@@ -165,7 +182,44 @@ export default function AulaPage() {
             {comentarios.map((c) => (
               <div key={c.id} className="border rounded p-3">
                 <p className="text-sm text-gray-700 mb-1">{c.user.email} • {new Date(c.created_at).toLocaleString()}</p>
-                <p>{c.conteudo}</p>
+
+                {editandoComentarioId === c.id ? (
+                  <>
+                    <textarea
+                      value={textoEditado}
+                      onChange={(e) => setTextoEditado(e.target.value)}
+                      className="w-full border rounded p-2 mb-2"
+                      rows={3}
+                    ></textarea>
+                    <button
+                      onClick={() => salvarEdicao(c.id)}
+                      className="bg-green-600 text-white px-3 py-1 rounded mr-2"
+                    >Salvar</button>
+                    <button
+                      onClick={() => setEditandoComentarioId(null)}
+                      className="text-sm text-gray-600"
+                    >Cancelar</button>
+                  </>
+                ) : (
+                  <>
+                    <p className="mb-1">{c.conteudo}</p>
+                    {c.usuarioId === userId && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditandoComentarioId(c.id);
+                            setTextoEditado(c.conteudo);
+                          }}
+                          className="text-blue-600 text-sm"
+                        >Editar</button>
+                        <button
+                          onClick={() => excluirComentario(c.id)}
+                          className="text-red-600 text-sm"
+                        >Excluir</button>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -174,4 +228,3 @@ export default function AulaPage() {
     </div>
   );
 }
-
