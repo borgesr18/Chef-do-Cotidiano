@@ -1,5 +1,6 @@
 //app/cursos/[cursoId]/aulas/[aulaId]/page.tsx — Página de Aula com botão de conclusão
 'use client';
+'use client';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
@@ -9,6 +10,8 @@ export default function AulaPage() {
   const [aula, setAula] = useState<any>(null);
   const [aulasCurso, setAulasCurso] = useState<any[]>([]);
   const [concluida, setConcluida] = useState(false);
+  const [comentarios, setComentarios] = useState<any[]>([]);
+  const [novoComentario, setNovoComentario] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
 
@@ -20,7 +23,7 @@ export default function AulaPage() {
       if (!user) return router.push('/login');
       setUserId(user.id);
 
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('aulas')
         .select('id, titulo, video_url, descricao, ordem')
         .eq('id', aulaId)
@@ -44,6 +47,14 @@ export default function AulaPage() {
         .order('ordem', { ascending: true });
 
       setAulasCurso(todasAulas || []);
+
+      const { data: comentariosData } = await supabase
+        .from('comentarios')
+        .select('id, conteudo, created_at, user:usuarioId(email)')
+        .eq('aulaId', aulaId)
+        .order('created_at', { ascending: true });
+
+      setComentarios(comentariosData || []);
     };
 
     carregarAula();
@@ -62,47 +73,104 @@ export default function AulaPage() {
     if (proxima) router.push(`/cursos/${cursoId}/aulas/${proxima.id}`);
   };
 
+  const enviarComentario = async () => {
+    if (!novoComentario.trim()) return;
+    await supabase.from('comentarios').insert({ aulaId, usuarioId: userId, conteudo: novoComentario });
+    setNovoComentario('');
+    const { data: atualizados } = await supabase
+      .from('comentarios')
+      .select('id, conteudo, created_at, user:usuarioId(email)')
+      .eq('aulaId', aulaId)
+      .order('created_at', { ascending: true });
+    setComentarios(atualizados || []);
+  };
+
   if (!aula) return <p className="p-8">Carregando aula...</p>;
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">{aula.titulo}</h1>
+    <div className="flex">
+      <aside className="w-64 p-4 border-r h-screen overflow-y-auto hidden md:block">
+        <h2 className="text-lg font-bold mb-3">Aulas do Curso</h2>
+        <ul className="space-y-2">
+          {aulasCurso.map((a) => (
+            <li
+              key={a.id}
+              onClick={() => router.push(`/cursos/${cursoId}/aulas/${a.id}`)}
+              className={`cursor-pointer px-3 py-2 rounded hover:bg-gray-100 ${
+                a.id === aula.id ? 'bg-blue-100 font-semibold' : ''
+              }`}
+            >
+              {a.titulo}
+            </li>
+          ))}
+        </ul>
+      </aside>
 
-      <div className="mb-4">
-        <iframe
-          src={aula.video_url}
-          className="w-full h-64 rounded border"
-          allowFullScreen
-          onLoad={() => {
-            // autoplay ou scroll
-            window.scrollTo(0, 0);
-          }}
-        ></iframe>
-      </div>
+      <main className="flex-1 p-6 max-w-3xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">{aula.titulo}</h1>
 
-      <p className="mb-6 text-gray-700 whitespace-pre-line">{aula.descricao}</p>
+        <div className="mb-4">
+          <iframe
+            src={aula.video_url}
+            className="w-full h-64 rounded border"
+            allowFullScreen
+            onLoad={() => window.scrollTo(0, 0)}
+          ></iframe>
+        </div>
 
-      <div className="mt-6 flex flex-col gap-3">
-        {concluida ? (
-          <p className="text-green-600 font-semibold">✅ Aula concluída</p>
-        ) : (
-          <button
-            onClick={marcarComoConcluida}
-            className="bg-green-600 text-white px-4 py-2 rounded"
-          >
-            ✅ Marcar como concluída
-          </button>
-        )}
+        <p className="mb-6 text-gray-700 whitespace-pre-line">{aula.descricao}</p>
 
-        {aulasCurso.length > 1 && (
-          <button
-            onClick={irParaProxima}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            ➡️ Próxima aula
-          </button>
-        )}
-      </div>
+        <div className="mt-6 flex flex-col gap-3">
+          {concluida ? (
+            <p className="text-green-600 font-semibold">✅ Aula concluída</p>
+          ) : (
+            <button
+              onClick={marcarComoConcluida}
+              className="bg-green-600 text-white px-4 py-2 rounded"
+            >
+              ✅ Marcar como concluída
+            </button>
+          )}
+
+          {aulasCurso.length > 1 && (
+            <button
+              onClick={irParaProxima}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              ➡️ Próxima aula
+            </button>
+          )}
+        </div>
+
+        <section className="mt-10">
+          <h2 className="text-xl font-semibold mb-4">💬 Comentários</h2>
+
+          <div className="mb-4">
+            <textarea
+              value={novoComentario}
+              onChange={(e) => setNovoComentario(e.target.value)}
+              placeholder="Digite seu comentário..."
+              className="w-full border rounded p-2 mb-2"
+              rows={3}
+            ></textarea>
+            <button
+              onClick={enviarComentario}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Enviar comentário
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {comentarios.map((c) => (
+              <div key={c.id} className="border rounded p-3">
+                <p className="text-sm text-gray-700 mb-1">{c.user.email} • {new Date(c.created_at).toLocaleString()}</p>
+                <p>{c.conteudo}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
