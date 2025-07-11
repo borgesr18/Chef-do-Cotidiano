@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabaseClient';
 export default function GerenciarAlunos() {
   const [alunos, setAlunos] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [filtro, setFiltro] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -59,11 +60,26 @@ export default function GerenciarAlunos() {
     );
   };
 
+  const alunosFiltrados = alunos.filter(
+    (a) =>
+      a.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+      a.email.toLowerCase().includes(filtro.toLowerCase())
+  );
+
   if (carregando) return <p className="p-8">Carregando alunos...</p>;
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">👨‍🎓 Alunos Cadastrados</h1>
+
+      <input
+        type="text"
+        placeholder="🔎 Buscar por nome ou email"
+        value={filtro}
+        onChange={(e) => setFiltro(e.target.value)}
+        className="border p-2 mb-4 w-full max-w-md rounded"
+      />
+
       <table className="w-full border text-sm">
         <thead className="bg-gray-100">
           <tr>
@@ -77,7 +93,7 @@ export default function GerenciarAlunos() {
           </tr>
         </thead>
         <tbody>
-          {alunos.map((aluno) => (
+          {alunosFiltrados.map((aluno) => (
             <tr key={aluno.id}>
               <td className="p-2 border">{aluno.nome}</td>
               <td className="p-2 border">{aluno.email}</td>
