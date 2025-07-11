@@ -1,101 +1,106 @@
-generator client {
-  provider = "prisma-client-js"
+model Usuario {
+  id              String   @id @default(uuid())
+  nome            String
+  email           String   @unique
+  tipo            Perfil   @default(ALUNO)
+  favoritos       Favorito[]
+  inscricoes      Inscricao[]
+  comentarios     Comentario[]
+  conclusoes      ConclusaoAula[]
+  certificados    Certificado[]
+  acessos         AcessoCertificado[]
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id         String      @id @default(uuid())
-  email      String      @unique
-  createdAt  DateTime    @default(now())
-  perfil     Perfil?
-  receitas   Receita[]   @relation("AutorReceitas")
-  favoritos  Favorito[]
-  inscricoes Inscricao[]
-  progresso  Progresso[]
-}
-
-model Perfil {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
-  tipo      String   // 'admin' ou 'aluno'
-  createdAt DateTime @default(now())
-}
-
-model Receita {
-  id            String     @id @default(uuid())
-  titulo        String
-  descricao     String?
-  imagem_url    String?
-  tempo_preparo String?
-  dificuldade   String?
-  modo_preparo  String?
-  ingredientes  String?
-  autorId       String
-  autor         User       @relation("AutorReceitas", fields: [autorId], references: [id])
-  favoritos     Favorito[]
-  createdAt     DateTime   @default(now())
-}
-
-model Favorito {
-  id         String   @id @default(uuid())
-  userId     String
-  receitaId  String
-  user       User     @relation(fields: [userId], references: [id])
-  receita    Receita  @relation(fields: [receitaId], references: [id])
-  createdAt  DateTime @default(now())
-
-  @@unique([userId, receitaId])
+enum Perfil {
+  ADMIN
+  ALUNO
 }
 
 model Curso {
-  id          String      @id @default(uuid())
-  titulo      String
-  descricao   String?
-  imagem_url  String?
-  slug        String      @unique
-  gratuito    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  aulas       Aula[]
-  inscricoes  Inscricao[]
+  id            String   @id @default(uuid())
+  titulo        String
+  descricao     String
+  imagem_url    String
+  autor         String
+  criado_em     DateTime @default(now())
+  aulas         Aula[]
+  inscricoes    Inscricao[]
+  certificados  Certificado[]
 }
 
 model Aula {
-  id         String     @id @default(uuid())
-  cursoId    String
+  id         String   @id @default(uuid())
   titulo     String
   ordem      Int
-  video_url  String?
-  descricao  String?
-  curso      Curso      @relation(fields: [cursoId], references: [id])
-  progresso  Progresso[]
-  createdAt  DateTime   @default(now())
+  video_url  String
+  cursoId    String
+  curso      Curso    @relation(fields: [cursoId], references: [id])
+  comentarios Comentario[]
+  conclusoes  ConclusaoAula[]
+}
+
+model Comentario {
+  id         String   @id @default(uuid())
+  conteudo   String
+  criado_em  DateTime @default(now())
+  usuarioId  String
+  aulaId     String
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+  aula       Aula     @relation(fields: [aulaId], references: [id])
+}
+
+model ConclusaoAula {
+  id         String   @id @default(uuid())
+  usuarioId  String
+  aulaId     String
+  concluido_em DateTime @default(now())
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+  aula       Aula     @relation(fields: [aulaId], references: [id])
+}
+
+model Certificado {
+  id            String   @id @default(uuid())
+  usuarioId     String
+  cursoId       String
+  criado_em     DateTime @default(now())
+  url_publico   String
+  qr_code_url   String
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  curso         Curso    @relation(fields: [cursoId], references: [id])
+  acessos       AcessoCertificado[]
+}
+
+model AcessoCertificado {
+  id              String   @id @default(uuid())
+  certificadoId   String
+  ip              String
+  acessado_em     DateTime @default(now())
+  certificado     Certificado @relation(fields: [certificadoId], references: [id])
 }
 
 model Inscricao {
   id        String   @id @default(uuid())
   userId    String
   cursoId   String
-  user      User     @relation(fields: [userId], references: [id])
+  criado_em DateTime @default(now())
+  usuario   Usuario  @relation(fields: [userId], references: [id])
   curso     Curso    @relation(fields: [cursoId], references: [id])
-  createdAt DateTime @default(now())
-
-  @@unique([userId, cursoId])
 }
 
-model Progresso {
+model Receita {
+  id          String   @id @default(uuid())
+  titulo      String
+  imagem_url  String
+  criado_em   DateTime @default(now())
+  favoritos   Favorito[]
+}
+
+model Favorito {
   id         String   @id @default(uuid())
   userId     String
-  aulaId     String
-  concluida  Boolean  @default(false)
-  updatedAt  DateTime @updatedAt
-  user       User     @relation(fields: [userId], references: [id])
-  aula       Aula     @relation(fields: [aulaId], references: [id])
-
-  @@unique([userId, aulaId])
+  receitaId  String
+  criado_em  DateTime @default(now())
+  usuario    Usuario  @relation(fields: [userId], references: [id])
+  receita    Receita  @relation(fields: [receitaId], references: [id])
 }
 
