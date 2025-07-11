@@ -8,6 +8,9 @@ export default function PerfilAlunoAdmin() {
   const params = useParams();
   const router = useRouter();
   const [aluno, setAluno] = useState<any>(null);
+  const [inscricoes, setInscricoes] = useState<any[]>([]);
+  const [aulasConcluidas, setAulasConcluidas] = useState<any[]>([]);
+  const [certificados, setCertificados] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
@@ -31,19 +34,25 @@ export default function PerfilAlunoAdmin() {
         .eq('id', params.id)
         .single();
 
-      const [{ count: inscritos }, { count: aulas }, { count: certificados }] = await Promise.all([
-        supabase.from('inscricoes').select('*', { count: 'exact', head: true }).eq('userId', params.id),
-        supabase.from('conclusaoaula').select('*', { count: 'exact', head: true }).eq('usuarioId', params.id),
-        supabase.from('certificado').select('*', { count: 'exact', head: true }).eq('usuarioId', params.id),
-      ]);
+      const { data: cursos } = await supabase
+        .from('inscricoes')
+        .select('curso:cursoId(titulo, id)')
+        .eq('userId', params.id);
 
-      setAluno({
-        ...usuario,
-        cursos: inscritos || 0,
-        aulas: aulas || 0,
-        certificados: certificados || 0
-      });
+      const { data: aulas } = await supabase
+        .from('conclusaoaula')
+        .select('aula:aulaId(titulo, cursoId)')
+        .eq('usuarioId', params.id);
 
+      const { data: certs } = await supabase
+        .from('certificado')
+        .select('cursoId, url')
+        .eq('usuarioId', params.id);
+
+      setAluno(usuario);
+      setInscricoes(cursos || []);
+      setAulasConcluidas(aulas || []);
+      setCertificados(certs || []);
       setCarregando(false);
     };
 
@@ -51,20 +60,44 @@ export default function PerfilAlunoAdmin() {
   }, [params.id, router]);
 
   if (carregando) return <p className="p-8">🔄 Carregando informações do aluno...</p>;
-
   if (!aluno) return <p className="p-8 text-red-600">❌ Aluno não encontrado.</p>;
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">👤 Perfil do Aluno</h1>
+    <div className="p-8 max-w-5xl mx-auto space-y-8">
+      <h1 className="text-2xl font-bold">👤 Perfil do Aluno</h1>
 
       <div className="bg-white border rounded shadow p-6 space-y-2">
         <p><strong>Nome:</strong> {aluno.nome}</p>
         <p><strong>Email:</strong> {aluno.email}</p>
         <p><strong>Tipo:</strong> {aluno.tipo}</p>
-        <p><strong>Cursos inscritos:</strong> {aluno.cursos}</p>
-        <p><strong>Aulas concluídas:</strong> {aluno.aulas}</p>
-        <p><strong>Certificados emitidos:</strong> {aluno.certificados}</p>
+        <p><strong>Cursos inscritos:</strong> {inscricoes.length}</p>
+        <p><strong>Aulas concluídas:</strong> {aulasConcluidas.length}</p>
+        <p><strong>Certificados emitidos:</strong> {certificados.length}</p>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">🎓 Cursos Inscritos</h2>
+        <ul className="list-disc pl-6">
+          {inscricoes.map((i) => (
+            <li key={i.curso.id}>{i.curso.titulo}</li>
+          ))}
+        </ul>
+
+        <h2 className="text-xl font-semibold">📚 Aulas Concluídas</h2>
+        <ul className="list-disc pl-6">
+          {aulasConcluidas.map((a, idx) => (
+            <li key={idx}>{a.aula.titulo}</li>
+          ))}
+        </ul>
+
+        <h2 className="text-xl font-semibold">📄 Certificados Emitidos</h2>
+        <ul className="list-disc pl-6">
+          {certificados.map((c, idx) => (
+            <li key={idx}>
+              Curso ID: {c.cursoId} — <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Ver Certificado</a>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <button
@@ -76,3 +109,4 @@ export default function PerfilAlunoAdmin() {
     </div>
   );
 }
+
