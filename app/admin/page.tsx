@@ -1,5 +1,4 @@
 //app/admin/page.tsx — Página inicial do Painel Administrativo
-'use client';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
@@ -68,3 +67,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
