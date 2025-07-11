@@ -8,23 +8,32 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  email       String       @unique
-  createdAt   DateTime     @default(now())
-  receitas    Receita[]    @relation("AutorReceitas")
-  favoritos   Favorito[]
-  inscricoes  Inscricao[]
-  progresso   Progresso[]
+  id         String      @id @default(uuid())
+  email      String      @unique
+  createdAt  DateTime    @default(now())
+  perfil     Perfil?
+  receitas   Receita[]   @relation("AutorReceitas")
+  favoritos  Favorito[]
+  inscricoes Inscricao[]
+  progresso  Progresso[]
+}
+
+model Perfil {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  tipo      String   // 'admin' ou 'aluno'
+  createdAt DateTime @default(now())
 }
 
 model Receita {
   id            String     @id @default(uuid())
   titulo        String
   descricao     String?
-  imagemUrl     String?
-  tempoPreparo  String?
+  imagem_url    String?
+  tempo_preparo String?
   dificuldade   String?
-  modoPreparo   String?
+  modo_preparo  String?
   ingredientes  String?
   autorId       String
   autor         User       @relation("AutorReceitas", fields: [autorId], references: [id])
@@ -33,24 +42,24 @@ model Receita {
 }
 
 model Favorito {
-  id         String     @id @default(uuid())
+  id         String   @id @default(uuid())
   userId     String
   receitaId  String
-  user       User       @relation(fields: [userId], references: [id])
-  receita    Receita    @relation(fields: [receitaId], references: [id])
-  createdAt  DateTime   @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  receita    Receita  @relation(fields: [receitaId], references: [id])
+  createdAt  DateTime @default(now())
 
   @@unique([userId, receitaId])
 }
 
 model Curso {
-  id          String     @id @default(uuid())
+  id          String      @id @default(uuid())
   titulo      String
   descricao   String?
-  imagemUrl   String?
-  slug        String     @unique
-  gratuito    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
+  imagem_url  String?
+  slug        String      @unique
+  gratuito    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
   aulas       Aula[]
   inscricoes  Inscricao[]
 }
@@ -60,7 +69,7 @@ model Aula {
   cursoId    String
   titulo     String
   ordem      Int
-  videoUrl   String?
+  video_url  String?
   descricao  String?
   curso      Curso      @relation(fields: [cursoId], references: [id])
   progresso  Progresso[]
@@ -68,24 +77,25 @@ model Aula {
 }
 
 model Inscricao {
-  id        String     @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   cursoId   String
-  user      User       @relation(fields: [userId], references: [id])
-  curso     Curso      @relation(fields: [cursoId], references: [id])
-  createdAt DateTime   @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  curso     Curso    @relation(fields: [cursoId], references: [id])
+  createdAt DateTime @default(now())
 
   @@unique([userId, cursoId])
 }
 
 model Progresso {
-  id         String     @id @default(uuid())
+  id         String   @id @default(uuid())
   userId     String
   aulaId     String
-  concluida  Boolean    @default(false)
-  updatedAt  DateTime   @updatedAt
-  user       User       @relation(fields: [userId], references: [id])
-  aula       Aula       @relation(fields: [aulaId], references: [id])
+  concluida  Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id])
+  aula       Aula     @relation(fields: [aulaId], references: [id])
 
   @@unique([userId, aulaId])
 }
+
