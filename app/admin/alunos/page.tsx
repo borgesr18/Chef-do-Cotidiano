@@ -46,6 +46,7 @@ export default function GerenciarAlunos() {
         })
       );
 
+      alunosComProgresso.sort((a, b) => b.certificados - a.certificados);
       setAlunos(alunosComProgresso);
       setCarregando(false);
     };
@@ -60,6 +61,20 @@ export default function GerenciarAlunos() {
     );
   };
 
+  const exportarCSV = () => {
+    const linhas = [
+      ['Nome', 'Email', 'Perfil', 'Cursos', 'Aulas', 'Certificados'],
+      ...alunos.map((a) => [a.nome, a.email, a.tipo, a.cursos, a.aulas, a.certificados])
+    ];
+    const csv = linhas.map((l) => l.join(';')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'alunos.csv';
+    a.click();
+  };
+
   const alunosFiltrados = alunos.filter(
     (a) =>
       a.nome.toLowerCase().includes(filtro.toLowerCase()) ||
@@ -70,15 +85,23 @@ export default function GerenciarAlunos() {
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">👨‍🎓 Alunos Cadastrados</h1>
+      <h1 className="text-2xl font-bold mb-4">👨‍🎓 Alunos Cadastrados</h1>
 
-      <input
-        type="text"
-        placeholder="🔎 Buscar por nome ou email"
-        value={filtro}
-        onChange={(e) => setFiltro(e.target.value)}
-        className="border p-2 mb-4 w-full max-w-md rounded"
-      />
+      <div className="flex gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="🔎 Buscar por nome ou email"
+          value={filtro}
+          onChange={(e) => setFiltro(e.target.value)}
+          className="border p-2 rounded w-full max-w-md"
+        />
+        <button
+          onClick={exportarCSV}
+          className="bg-green-600 text-white px-4 rounded hover:bg-green-700"
+        >
+          📤 Exportar CSV
+        </button>
+      </div>
 
       <table className="w-full border text-sm">
         <thead className="bg-gray-100">
@@ -95,7 +118,14 @@ export default function GerenciarAlunos() {
         <tbody>
           {alunosFiltrados.map((aluno) => (
             <tr key={aluno.id}>
-              <td className="p-2 border">{aluno.nome}</td>
+              <td className="p-2 border">
+                <button
+                  onClick={() => router.push(`/admin/alunos/${aluno.id}`)}
+                  className="text-blue-600 hover:underline"
+                >
+                  {aluno.nome}
+                </button>
+              </td>
               <td className="p-2 border">{aluno.email}</td>
               <td className="p-2 border">{aluno.tipo}</td>
               <td className="p-2 border text-center">{aluno.cursos}</td>
@@ -118,4 +148,3 @@ export default function GerenciarAlunos() {
     </div>
   );
 }
-
