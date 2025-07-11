@@ -12,7 +12,10 @@ export default function GerenciarPerfis() {
     requireAdmin();
 
     const carregarUsuarios = async () => {
-      const { data, error } = await supabase.from('users').select('id, email');
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, email, perfis(tipo)');
+
       if (!error && data) setUsuarios(data);
       setCarregando(false);
     };
@@ -36,6 +39,7 @@ export default function GerenciarPerfis() {
           <thead>
             <tr className="bg-gray-200">
               <th className="text-left p-2">E-mail</th>
+              <th className="text-left p-2">Tipo</th>
               <th className="text-left p-2">Ação</th>
             </tr>
           </thead>
@@ -43,6 +47,7 @@ export default function GerenciarPerfis() {
             {usuarios.map((user) => (
               <tr key={user.id} className="border-t">
                 <td className="p-2">{user.email}</td>
+                <td className="p-2">{user.perfis?.tipo || 'aluno'}</td>
                 <td className="p-2">
                   <button
                     onClick={() => promoverParaAdmin(user.id)}
