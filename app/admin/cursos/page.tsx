@@ -1,9 +1,14 @@
 //app/admin/cursos/page.tsx — Cadastro de Curso
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { requireAdmin } from '@/lib/roleCheck';
 
 export default function CadastroCurso() {
+  useEffect(() => {
+    requireAdmin();
+  }, []);
+
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [imagem, setImagem] = useState('');
