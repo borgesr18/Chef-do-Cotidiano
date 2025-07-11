@@ -1,9 +1,14 @@
 //app/admin/receitas/page.tsx — Cadastro de Receita
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { requireAdmin } from '@/lib/roleCheck';
 
 export default function CadastroReceita() {
+  useEffect(() => {
+    requireAdmin();
+  }, []);
+
   const [titulo, setTitulo] = useState('');
   const [tempo, setTempo] = useState('');
   const [imagem, setImagem] = useState('');
