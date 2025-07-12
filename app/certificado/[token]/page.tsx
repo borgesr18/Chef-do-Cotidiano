@@ -1,4 +1,5 @@
 // Diretório: app/certificado/[token]/page.tsx — Página pública do certificado
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -18,12 +19,30 @@ export default function PaginaCertificado() {
     const buscarCertificado = async () => {
       const { data, error } = await supabase
         .from('certificado')
-        .select('id, curso(titulo), usuario(nome, email), data_emissao, hashVerificacao')
+        .select('id, token, hashVerificacao, curso(titulo), usuario(nome, email), data_emissao')
         .eq('token', token)
         .single();
 
       if (!data || error) {
         setErro('❌ Certificado não encontrado ou inválido.');
+        setCarregando(false);
+        return;
+      }
+
+      // Verificação do hash
+      const res = await fetch('/api/verificar-hash', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: data.token,
+          email: data.usuario.email,
+          hashInformado: data.hashVerificacao
+        })
+      });
+
+      const { valido } = await res.json();
+      if (!valido) {
+        setErro('⚠️ Certificado com verificação falha. Pode ser falso ou adulterado.');
         setCarregando(false);
         return;
       }
@@ -50,7 +69,7 @@ export default function PaginaCertificado() {
         certificadoId: data.id,
         acessado_em: new Date().toISOString(),
         email: data.usuario.email,
-        ip,
+        ip
       });
 
       const { count } = await supabase
@@ -63,7 +82,7 @@ export default function PaginaCertificado() {
         await supabase.from('ip_bloqueado').upsert({
           certificadoId: data.id,
           ip,
-          bloqueadoEm: new Date().toISOString(),
+          bloqueadoEm: new Date().toISOString()
         });
       }
     };
@@ -138,5 +157,3 @@ export default function PaginaCertificado() {
     </div>
   );
 }
-
-
