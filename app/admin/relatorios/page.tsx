@@ -3,7 +3,8 @@
 
 import { useEffect, useState } from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, LineChart, Line,
+  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+  ResponsiveContainer, LineChart, Line, PieChart, Pie
 } from 'recharts';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -77,6 +78,17 @@ export default function RelatoriosAdmin() {
     total,
   }));
 
+  const dadosPorTipoUsuario = certificados.reduce((acc, curr) => {
+    const tipo = curr.usuario?.tipo || 'Desconhecido';
+    acc[tipo] = (acc[tipo] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const dadosGraficoTipoUsuario = Object.entries(dadosPorTipoUsuario).map(([name, value]) => ({
+    name,
+    value,
+  }));
+
   return (
     <div className="p-8 space-y-6">
       <h1 className="text-2xl font-bold">📄 Relatórios de Certificados</h1>
@@ -122,7 +134,7 @@ export default function RelatoriosAdmin() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white border rounded p-4">
           <h2 className="text-lg font-semibold mb-2">🎯 Certificados por Curso</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -146,6 +158,25 @@ export default function RelatoriosAdmin() {
               <Tooltip />
               <Line type="monotone" dataKey="total" stroke="#10b981" />
             </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white border rounded p-4">
+          <h2 className="text-lg font-semibold mb-2">👤 Certificados por Tipo de Usuário</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Tooltip />
+              <Pie
+                data={dadosGraficoTipoUsuario}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#6366f1"
+                label
+              />
+            </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
