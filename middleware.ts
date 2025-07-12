@@ -7,30 +7,25 @@ export async function middleware(req: NextRequest) {
   const supabase = createMiddlewareClient({ req, res });
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  const url = req.nextUrl.clone();
+  const isAdminRoute = req.nextUrl.pathname.startsWith('/admin');
 
-  if (!user) {
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
+  // Bloquear acesso a /admin para não logados
+  if (isAdminRoute && !session) {
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  const { data: perfil } = await supabase
-    .from('usuarios')
-    .select('tipo')
-    .eq('id', user.id)
-    .single();
-
-  if (req.nextUrl.pathname.startsWith('/admin') && perfil?.tipo !== 'ADMIN') {
-    url.pathname = '/aluno/dashboard';
-    return NextResponse.redirect(url);
+  // Bloquear acesso a /admin se não for admin (opcional: refine com role no user_metadata)
+  if (isAdminRoute && session?.user?.user_metadata?.tipo !== 'admin') {
+    return NextResponse.redirect(new URL('/nao-autorizado', req.url));
   }
 
   return res;
 }
 
+// Aplicar middleware apenas às rotas protegidas
 export const config = {
-  matcher: ['/admin/:path*', '/aluno/:path*'],
+  matcher: ['/admin/:path*'],
 };
