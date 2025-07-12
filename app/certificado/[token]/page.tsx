@@ -10,6 +10,7 @@ export default function PaginaCertificado() {
   const { token } = useParams();
   const [certificado, setCertificado] = useState<any>(null);
   const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
     const buscarCertificado = async () => {
@@ -19,16 +20,35 @@ export default function PaginaCertificado() {
         .eq('token', token)
         .single();
 
+      if (!data || error) {
+        setErro('❌ Certificado não encontrado ou inválido.');
+        setCarregando(false);
+        return;
+      }
+
+      // Verificar limite de acessos (ex: 100)
+      const { count } = await supabase
+        .from('auditoria_certificado')
+        .select('*', { count: 'exact', head: true })
+        .eq('certificadoId', data.id);
+
+      if (count && count > 100) {
+        setErro('⚠️ Limite de verificações excedido para este certificado.');
+        setCarregando(false);
+        return;
+      }
+
       setCertificado(data);
       setCarregando(false);
 
-      if (data?.id) {
-        await supabase.from('auditoria_certificado').insert({
-          certificadoId: data.id,
-          acessado_em: new Date().toISOString(),
-          email: data.usuario.email
-        });
-      }
+      // Registrar acesso (auditoria)
+      const ip = await fetch('/api/ip').then(res => res.text()).catch(() => '');
+      await supabase.from('auditoria_certificado').insert({
+        certificadoId: data.id,
+        acessado_em: new Date().toISOString(),
+        email: data.usuario.email,
+        ip
+      });
     };
 
     buscarCertificado();
@@ -55,7 +75,7 @@ export default function PaginaCertificado() {
   };
 
   if (carregando) return <p className="p-8">🔄 Carregando certificado...</p>;
-  if (!certificado) return <p className="p-8 text-red-600">❌ Certificado não encontrado.</p>;
+  if (erro) return <p className="p-8 text-red-600">{erro}</p>;
 
   return (
     <div className="min-h-screen bg-white p-10 text-center space-y-6">
