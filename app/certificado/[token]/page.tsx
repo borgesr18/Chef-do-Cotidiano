@@ -1,11 +1,12 @@
 // Diretório: app/certificado/[token]/page.tsx — Página pública do certificado
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import QRCode from 'qrcode.react';
 import { supabase } from '@/lib/supabaseClient';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { uploadCertificadoPDF } from '@/lib/certificadoStorage';
 
 export default function PaginaCertificado() {
   const { token } = useParams();
@@ -17,7 +18,7 @@ export default function PaginaCertificado() {
     const buscarCertificado = async () => {
       const { data, error } = await supabase
         .from('certificado')
-        .select('id, curso(titulo), usuario(nome, email), data_emissao')
+        .select('id, curso(titulo), usuario(nome, email), data_emissao, hashVerificacao')
         .eq('token', token)
         .single();
 
@@ -76,80 +77,32 @@ export default function PaginaCertificado() {
     if (!certificado) return;
 
     const doc = new jsPDF({ orientation: 'landscape' });
-    const largura = doc.internal.pageSize.getWidth();
-    const altura = doc.internal.pageSize.getHeight();
 
-    // Borda
-    doc.setDrawColor(0);
-    doc.rect(10, 10, largura - 20, altura - 20);
+    doc.setFontSize(24);
+    doc.text('Certificado de Conclusão', 105, 30, { align: 'center' });
 
-    // Logotipo
-    const logo = new Image();
-    logo.src = '/logo-certificado.png'; // coloque a imagem em public/logo-certificado.png
+    doc.setFontSize(16);
+    doc.text(`Certificamos que ${certificado.usuario.nome}`, 105, 50, { align: 'center' });
+    doc.text(`concluiu o curso "${certificado.curso.titulo}"`, 105, 60, { align: 'center' });
+    doc.text(`em ${new Date(certificado.data_emissao).toLocaleDateString()}`, 105, 70, { align: 'center' });
 
-    logo.onload = async () => {
-      doc.addImage(logo, 'PNG', largura / 2 - 25, 15, 50, 20);
+    doc.setFontSize(10);
+    doc.text(`Verifique este certificado em: ${urlAtual}`, 105, 90, { align: 'center' });
 
-      // Texto
-      doc.setFontSize(24);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Certificado de Conclusão', largura / 2, 50, { align: 'center' });
+    const hashVisivel = certificado.hashVerificacao?.slice(0, 16) || '';
+    doc.text(`Código de Verificação: ${hashVisivel}...`, 105, 98, { align: 'center' });
 
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Certificamos que ${certificado.usuario.nome}`, largura / 2, 70, { align: 'center' });
-      doc.text(
-        `concluiu com êxito o curso "${certificado.curso.titulo}"`,
-        largura / 2,
-        80,
-        { align: 'center' }
-      );
-      doc.text(
-        `em ${new Date(certificado.data_emissao).toLocaleDateString()}`,
-        largura / 2,
-        90,
-        { align: 'center' }
-      );
+    const pdfBlob = doc.output('blob');
+    const url = await uploadCertificadoPDF(pdfBlob, `${token}.pdf`);
 
-      // QR Code
-      const canvas = document.createElement('canvas');
-      const qr = new QRCode(canvas, {
-        text: urlAtual,
-        width: 100,
-        height: 100,
-      });
-
-      setTimeout(() => {
-        const qrDataUrl = canvas.toDataURL();
-        doc.addImage(qrDataUrl, 'PNG', largura / 2 - 15, 110, 30, 30);
-        doc.setFontSize(10);
-        doc.text('Verificação online', largura / 2, 145, { align: 'center' });
-
-        // Assinatura
-        doc.setFontSize(12);
-        doc.text('Rodrigo Borges', largura - 60, altura - 35);
-        doc.setFontSize(10);
-        doc.text('Instrutor Chef do Cotidiano', largura - 60, altura - 30);
-        doc.line(largura - 80, altura - 40, largura - 30, altura - 40);
-
-        doc.save('certificado.pdf');
-      }, 200);
-    };
+    console.log('PDF enviado para:', url);
   };
 
   if (carregando) return <p className="p-8">🔄 Carregando certificado...</p>;
   if (erro) return <p className="p-8 text-red-600">{erro}</p>;
 
   return (
-    <div className="min-h-screen bg-white p-10 text-center space-y-6 print:bg-white">
-      <style>{`
-        @media print {
-          button {
-            display: none;
-          }
-        }
-      `}</style>
-
+    <div className="min-h-screen bg-white p-10 text-center space-y-6">
       <h1 className="text-3xl font-bold text-gray-800">🎓 Certificado de Conclusão</h1>
       <p className="text-lg text-gray-700">Certificamos que</p>
       <h2 className="text-2xl font-semibold text-black">{certificado.usuario.nome}</h2>
@@ -178,7 +131,12 @@ export default function PaginaCertificado() {
           📥 Baixar PDF
         </button>
       </div>
+
+      <p className="text-xs text-gray-400 mt-4">
+        Código de Verificação: {certificado.hashVerificacao?.slice(0, 16)}...
+      </p>
     </div>
   );
 }
+
 
