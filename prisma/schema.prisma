@@ -1,96 +1,94 @@
-// Datasource e Generator
+// ✅ schema.prisma unificado — Chef do Cotidiano
+
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-// Modelos principais
-// ------------------
-model Usuario {
-  id        String   @id @default(cuid())
-  nome      String
-  email     String   @unique
-  senha     String
-  tipo      Role     @default(ALUNO)
-  criadoEm  DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
-
-  // Relacionamentos
-  receitas     Receita[]
-  favoritos    Favorito[]
-  inscricoes   Inscricao[]
-  progresso    Progresso[]
-  certificados Certificado[]
-  auditorias   Auditoria[]
-  notificacoes Notificacao[]
-  preferencias PreferenciaNotificacao[]
-}
-
-enum Role {
+enum TipoUsuario {
   ADMIN
   ALUNO
 }
 
-model Receita {
-  id          String   @id @default(cuid())
-  titulo      String
-  descricao   String
-  imagemUrl   String
-  criadoEm    DateTime @default(now())
-  autor       Usuario  @relation(fields: [autorId], references: [id])
-  autorId     String
-  favoritos   Favorito[]
+enum TipoNotificacao {
+  CERTIFICADO
+  COMENTARIO
+  AULA_CONCLUIDA
+  RESPOSTA
+  NOVO_CURSO
 }
 
-model Favorito {
-  id        String   @id @default(cuid())
-  userId    String
-  receitaId String
-  criadoEm  DateTime @default(now())
+enum CanalNotificacao {
+  EMAIL
+  WHATSAPP
+}
 
-  usuario   Usuario  @relation(fields: [userId], references: [id])
-  receita   Receita  @relation(fields: [receitaId], references: [id])
+model Usuario {
+  id          String           @id @default(uuid())
+  nome        String
+  email       String           @unique
+  senha       String?
+  tipo        TipoUsuario      @default(ALUNO)
+  criadoEm    DateTime         @default(now())
+
+  inscricoes  Inscricao[]
+  progresso   Progresso[]
+  favoritos   Favorito[]
+  certificados Certificado[]
+  comentarios Comentario[]
+  notificacoes Notificacao[]
+  auditorias  Auditoria[]
+  preferencias Preferencia?
 }
 
 model Curso {
-  id         String   @id @default(cuid())
-  titulo     String
-  descricao  String
-  imagemUrl  String
-  criadoEm   DateTime @default(now())
-  aulas      Aula[]
+  id        String   @id @default(uuid())
+  titulo    String
+  descricao String
+  imagem_url String
+  criadoEm  DateTime @default(now())
+  aulas     Aula[]
   inscricoes Inscricao[]
   certificados Certificado[]
 }
 
 model Aula {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   titulo    String
-  videoUrl  String
+  ordem     Int
+  video_url String
   cursoId   String
-  criadoEm  DateTime @default(now())
-
-  curso     Curso    @relation(fields: [cursoId], references: [id])
+  curso     Curso     @relation(fields: [cursoId], references: [id])
   progresso Progresso[]
+  comentarios Comentario[]
+}
+
+model Receita {
+  id          String   @id @default(uuid())
+  titulo      String
+  descricao   String
+  imagem_url  String
+  criadoEm    DateTime @default(now())
+  autorId     String?
+  autor       Usuario? @relation(fields: [autorId], references: [id])
+  favoritos   Favorito[]
 }
 
 model Inscricao {
-  id        String   @id @default(cuid())
-  userId    String
-  cursoId   String
-  criadoEm  DateTime @default(now())
-
-  usuario   Usuario  @relation(fields: [userId], references: [id])
-  curso     Curso    @relation(fields: [cursoId], references: [id])
+  id       String   @id @default(uuid())
+  userId   String
+  cursoId  String
+  criadoEm DateTime @default(now())
+  usuario  Usuario  @relation(fields: [userId], references: [id])
+  curso    Curso    @relation(fields: [cursoId], references: [id])
 }
 
 model Progresso {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   userId    String
   aulaId    String
   concluida Boolean  @default(false)
@@ -100,13 +98,33 @@ model Progresso {
   aula      Aula     @relation(fields: [aulaId], references: [id])
 }
 
+model Favorito {
+  id         String   @id @default(uuid())
+  userId     String
+  receitaId  String
+  criadoEm   DateTime @default(now())
+
+  usuario    Usuario  @relation(fields: [userId], references: [id])
+  receita    Receita  @relation(fields: [receitaId], references: [id])
+}
+
+model Comentario {
+  id         String   @id @default(uuid())
+  userId     String
+  aulaId     String
+  texto      String
+  criadoEm   DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  usuario    Usuario  @relation(fields: [userId], references: [id])
+  aula       Aula     @relation(fields: [aulaId], references: [id])
+}
+
 model Certificado {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   userId     String
   cursoId    String
   token      String   @unique
   criadoEm   DateTime @default(now())
-  valido     Boolean  @default(true)
 
   usuario    Usuario  @relation(fields: [userId], references: [id])
   curso      Curso    @relation(fields: [cursoId], references: [id])
@@ -114,59 +132,44 @@ model Certificado {
 }
 
 model Auditoria {
-  id             String   @id @default(cuid())
-  userId         String?
-  certificadoId  String?
-  ip             String
-  userAgent      String?
-  criadoEm       DateTime @default(now())
+  id            String   @id @default(uuid())
+  certificadoId String
+  ip            String
+  userAgent     String
+  criadoEm      DateTime @default(now())
+  usuarioId     String?
 
-  usuario        Usuario?     @relation(fields: [userId], references: [id])
-  certificado    Certificado? @relation(fields: [certificadoId], references: [id])
+  certificado   Certificado @relation(fields: [certificadoId], references: [id])
+  usuario       Usuario?    @relation(fields: [usuarioId], references: [id])
 }
 
-model IPBloqueado {
-  id        String   @id @default(cuid())
-  ip        String   @unique
-  motivo    String?
-  bloqueadoEm DateTime @default(now())
+model Preferencia {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  email     Boolean  @default(true)
+  whatsapp  Boolean  @default(false)
+
+  usuario   Usuario  @relation(fields: [userId], references: [id])
 }
 
 model Notificacao {
-  id        String   @id @default(cuid())
-  userId    String
-  titulo    String
-  mensagem  String
-  tipo      TipoNotificacao
-  canal     CanalNotificacao
-  lida      Boolean  @default(false)
-  manual    Boolean  @default(false)
+  id         String   @id @default(uuid())
+  userId     String
+  titulo     String
+  mensagem   String
+  tipo       TipoNotificacao
+  canal      CanalNotificacao
+  criadoEm   DateTime @default(now())
+
+  usuario    Usuario  @relation(fields: [userId], references: [id])
+}
+
+model IpBloqueado {
+  id        String   @id @default(uuid())
+  ip        String   @unique
+  tentativas Int     @default(1)
+  bloqueado Boolean  @default(false)
   criadoEm  DateTime @default(now())
-
-  usuario   Usuario  @relation(fields: [userId], references: [id])
 }
 
-enum TipoNotificacao {
-  CURSO_CONCLUIDO
-  AULA_CONCLUIDA
-  NOVO_COMENTARIO
-  RESPOSTA_COMENTARIO
-  NOVO_CERTIFICADO
-  OUTRO
-}
-
-enum CanalNotificacao {
-  EMAIL
-  WHATSAPP
-  AMBOS
-}
-
-model PreferenciaNotificacao {
-  id        String   @id @default(cuid())
-  userId    String
-  tipo      TipoNotificacao
-  canal     CanalNotificacao
-
-  usuario   Usuario  @relation(fields: [userId], references: [id])
-}
 
