@@ -1,4 +1,4 @@
-// ✅ schema.prisma unificado — Chef do Cotidiano
+// ✅ schema.prisma reconstruído e corrigido — Chef do Cotidiano
 
 generator client {
   provider = "prisma-client-js"
@@ -10,50 +10,48 @@ datasource db {
 }
 
 model Usuario {
-  id               String        @id @default(uuid())
+  id               String        @id @default(uuid()) @db.Uuid
   nome             String
   email            String        @unique
   senha            String?
-  telefone         String?       // ✅ ADICIONADO
+  telefone         String?
   tipo             TipoUsuario   @default(ALUNO)
-  notificaEmail    Boolean       @default(true)    // ✅ ADICIONADO
-  notificaWhatsapp Boolean       @default(false)   // ✅ ADICIONADO
+  notificaEmail    Boolean       @default(true)
+  notificaWhatsapp Boolean       @default(false)
   criadoEm         DateTime      @default(now())
   atualizacoes     DateTime[]    @default([])
 
-  // Relacionamentos
-  cursos       Curso[]       @relation("AutorCursos")
-  inscricoes   Inscricao[]
-  progresso    Progresso[]
-  favoritos    Favorito[]
-  receitas     Receita[]     @relation("AutorReceitas")
-  comentarios  Comentario[]
-  certificados Certificado[]
-  auditorias   Auditoria[]
-  notificacoes Notificacao[]
+  cursos           Curso[]       @relation("AutorCursos")
+  inscricoes       Inscricao[]
+  progresso        Progresso[]
+  favoritos        Favorito[]
+  receitas         Receita[]     @relation("AutorReceitas")
+  comentarios      Comentario[]
+  certificados     Certificado[]
+  auditorias       Auditoria[]
+  notificacoes     Notificacao[]
 }
 
 model Curso {
-  id         String     @id @default(uuid())
-  titulo     String
-  descricao  String
-  imagem_url String
-  criadoEm   DateTime   @default(now())
-  autorId    String
+  id           String       @id @default(uuid()) @db.Uuid
+  titulo       String
+  descricao    String
+  imagem_url   String
+  criadoEm     DateTime     @default(now())
+  autorId      String        @db.Uuid
 
-  // Relacionamentos
-  aulas      Aula[]
-  autor      Usuario     @relation("AutorCursos", fields: [autorId], references: [id])
-  inscricoes Inscricao[]
+  aulas        Aula[]
+  autor        Usuario       @relation("AutorCursos", fields: [autorId], references: [id])
+  inscricoes   Inscricao[]
   certificados Certificado[]
 }
 
 model Aula {
-  id         String     @id @default(uuid())
+  id         String     @id @default(uuid()) @db.Uuid
   titulo     String
   ordem      Int
   video_url  String
-  cursoId    String
+  cursoId    String     @db.Uuid
   criadoEm   DateTime   @default(now())
 
   curso      Curso      @relation(fields: [cursoId], references: [id])
@@ -62,9 +60,9 @@ model Aula {
 }
 
 model Inscricao {
-  id       String   @id @default(uuid())
-  userId   String
-  cursoId  String
+  id       String   @id @default(uuid()) @db.Uuid
+  userId   String   @db.Uuid
+  cursoId  String   @db.Uuid
   criadoEm DateTime @default(now())
 
   usuario  Usuario  @relation(fields: [userId], references: [id])
@@ -72,9 +70,9 @@ model Inscricao {
 }
 
 model Progresso {
-  id        String   @id @default(uuid())
-  userId    String
-  aulaId    String
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  aulaId    String   @db.Uuid
   concluida Boolean  @default(false)
   criadoEm  DateTime @default(now())
 
@@ -83,21 +81,21 @@ model Progresso {
 }
 
 model Receita {
-  id         String    @id @default(uuid())
+  id         String    @id @default(uuid()) @db.Uuid
   titulo     String
   descricao  String
   imagem_url String
   criadoEm   DateTime  @default(now())
-  autorId    String
+  autorId    String    @db.Uuid
 
   autor      Usuario   @relation("AutorReceitas", fields: [autorId], references: [id])
   favoritos  Favorito[]
 }
 
 model Favorito {
-  id         String   @id @default(uuid())
-  userId     String
-  receitaId  String
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  receitaId  String   @db.Uuid
   criadoEm   DateTime @default(now())
 
   usuario    Usuario  @relation(fields: [userId], references: [id])
@@ -105,21 +103,21 @@ model Favorito {
 }
 
 model Comentario {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   mensagem  String
   criadoEm  DateTime @default(now())
-  usuarioId String
-  aulaId    String
+  usuarioId String   @db.Uuid
+  aulaId    String   @db.Uuid
 
   usuario   Usuario  @relation(fields: [usuarioId], references: [id])
   aula      Aula     @relation(fields: [aulaId], references: [id])
 }
 
 model Certificado {
-  id         String   @id @default(uuid())
+  id         String   @id @default(uuid()) @db.Uuid
   token      String   @unique
-  cursoId    String
-  userId     String
+  cursoId    String   @db.Uuid
+  userId     String   @db.Uuid
   criadoEm   DateTime @default(now())
   valido     Boolean  @default(true)
 
@@ -128,8 +126,8 @@ model Certificado {
 }
 
 model Auditoria {
-  id          String   @id @default(uuid())
-  userId      String
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
   ip          String
   localizacao String?
   userAgent   String?
@@ -139,8 +137,8 @@ model Auditoria {
 }
 
 model Notificacao {
-  id         String   @id @default(uuid())
-  userId     String
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
   titulo     String
   mensagem   String
   tipo       TipoNotificacao
