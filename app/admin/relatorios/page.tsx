@@ -2,14 +2,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, LineChart, Line,
+} from 'recharts';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function RelatoriosAdmin() {
   const [certificados, setCertificados] = useState<any[]>([]);
-  const [filtroCurso, setFiltroCurso] = useState('');
-  const [filtroEmail, setFiltroEmail] = useState('');
-  const [filtroInicio, setFiltroInicio] = useState('');
-  const [filtroFim, setFiltroFim] = useState('');
+  const [cursoFiltro, setCursoFiltro] = useState('');
+  const [emailFiltro, setEmailFiltro] = useState('');
+  const [dataInicio, setDataInicio] = useState('');
+  const [dataFim, setDataFim] = useState('');
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
@@ -20,14 +24,11 @@ export default function RelatoriosAdmin() {
     setCarregando(true);
     try {
       let url = '/api/certificados';
-      const params = new URLSearchParams();
-      if (filtroCurso) params.append('curso', filtroCurso);
-      if (filtroEmail) params.append('email', filtroEmail);
-      if (filtroInicio && filtroFim) {
-        params.append('inicio', filtroInicio);
-        params.append('fim', filtroFim);
-      }
-      if (params.toString()) url += `?${params.toString()}`;
+      const filtros = [];
+      if (dataInicio && dataFim) filtros.push(`inicio=${dataInicio}&fim=${dataFim}`);
+      if (cursoFiltro) filtros.push(`curso=${encodeURIComponent(cursoFiltro)}`);
+      if (emailFiltro) filtros.push(`email=${encodeURIComponent(emailFiltro)}`);
+      if (filtros.length > 0) url += `?${filtros.join('&')}`;
 
       const res = await fetch(url);
       const data = await res.json();
@@ -38,78 +39,125 @@ export default function RelatoriosAdmin() {
     setCarregando(false);
   };
 
-  const exportarPDF = () => {
+  const gerarPDF = () => {
     const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text('Relatório de Certificados', 105, 20, { align: 'center' });
-
-    certificados.forEach((c, i) => {
-      const y = 40 + i * 10;
-      doc.text(
-        `${c.usuario?.nome} - ${c.usuario?.email} - ${c.curso?.titulo} - ${new Date(c.data_emissao).toLocaleDateString()}`,
-        10,
-        y
-      );
+    doc.text('Relatório de Certificados', 14, 15);
+    autoTable(doc, {
+      startY: 20,
+      head: [['Curso', 'Aluno', 'Email', 'Data de Emissão']],
+      body: certificados.map(c => [
+        c.curso?.titulo,
+        c.usuario?.nome,
+        c.usuario?.email,
+        new Date(c.data_emissao).toLocaleDateString(),
+      ]),
     });
-
-    doc.save('relatorio-certificados.pdf');
+    doc.save('relatorio_certificados.pdf');
   };
 
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">📄 Relatórios de Certificados</h1>
+  const dadosPorCurso = certificados.reduce((acc, curr) => {
+    const curso = curr.curso?.titulo || 'Sem curso';
+    acc[curso] = (acc[curso] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
-      <div className="flex flex-col md:flex-row gap-4 mb-4">
+  const dadosGraficoCurso = Object.entries(dadosPorCurso).map(([curso, total]) => ({
+    curso,
+    total,
+  }));
+
+  const dadosPorData = certificados.reduce((acc, curr) => {
+    const data = new Date(curr.data_emissao).toLocaleDateString();
+    acc[data] = (acc[data] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const dadosGraficoLinha = Object.entries(dadosPorData).map(([data, total]) => ({
+    data,
+    total,
+  }));
+
+  return (
+    <div className="p-8 space-y-6">
+      <h1 className="text-2xl font-bold">📄 Relatórios de Certificados</h1>
+
+      <div className="flex flex-wrap gap-4">
         <input
           type="text"
-          placeholder="Curso"
-          value={filtroCurso}
-          onChange={(e) => setFiltroCurso(e.target.value)}
+          placeholder="Filtrar por curso"
+          value={cursoFiltro}
+          onChange={(e) => setCursoFiltro(e.target.value)}
           className="border rounded px-2 py-1"
         />
         <input
-          type="email"
-          placeholder="E-mail"
-          value={filtroEmail}
-          onChange={(e) => setFiltroEmail(e.target.value)}
-          className="border rounded px-2 py-1"
-        />
-        <input
-          type="date"
-          value={filtroInicio}
-          onChange={(e) => setFiltroInicio(e.target.value)}
+          type="text"
+          placeholder="Filtrar por email"
+          value={emailFiltro}
+          onChange={(e) => setEmailFiltro(e.target.value)}
           className="border rounded px-2 py-1"
         />
         <input
           type="date"
-          value={filtroFim}
-          onChange={(e) => setFiltroFim(e.target.value)}
+          value={dataInicio}
+          onChange={(e) => setDataInicio(e.target.value)}
+          className="border rounded px-2 py-1"
+        />
+        <input
+          type="date"
+          value={dataFim}
+          onChange={(e) => setDataFim(e.target.value)}
           className="border rounded px-2 py-1"
         />
         <button
           onClick={buscarCertificados}
           className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
         >
-          🔍 Buscar
+          🔍 Filtrar
         </button>
         <button
-          onClick={exportarPDF}
+          onClick={gerarPDF}
           className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
         >
           📥 Exportar PDF
         </button>
       </div>
 
-      {carregando ? (
-        <p>🔄 Carregando...</p>
-      ) : (
-        <table className="min-w-full text-sm border">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white border rounded p-4">
+          <h2 className="text-lg font-semibold mb-2">🎯 Certificados por Curso</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={dadosGraficoCurso}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="curso" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="total" fill="#3b82f6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white border rounded p-4">
+          <h2 className="text-lg font-semibold mb-2">📆 Certificados por Dia</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={dadosGraficoLinha}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="data" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="total" stroke="#10b981" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="overflow-auto">
+        <table className="min-w-full text-sm border mt-6">
           <thead>
             <tr className="bg-gray-100">
-              <th className="border px-2 py-1">Curso</th>
-              <th className="border px-2 py-1">Aluno</th>
-              <th className="border px-2 py-1">E-mail</th>
-              <th className="border px-2 py-1">Data</th>
+              <th className="border px-2 py-1 text-left">Curso</th>
+              <th className="border px-2 py-1 text-left">Aluno</th>
+              <th className="border px-2 py-1 text-left">Email</th>
+              <th className="border px-2 py-1 text-left">Data de Emissão</th>
             </tr>
           </thead>
           <tbody>
@@ -125,7 +173,7 @@ export default function RelatoriosAdmin() {
             ))}
           </tbody>
         </table>
-      )}
+      </div>
     </div>
   );
 }
