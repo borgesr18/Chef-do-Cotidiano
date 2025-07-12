@@ -2,22 +2,37 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase-browser';
 
-export function LogoutButton() {
+export default function LogoutButton() {
   const router = useRouter();
+  const supabase = createClient();
+  const [carregando, setCarregando] = useState(false);
 
   const handleLogout = async () => {
+    setCarregando(true);
     await supabase.auth.signOut();
     router.push('/login');
   };
 
+  useEffect(() => {
+    // Para prevenir problemas de renderização no lado cliente
+    if (typeof window !== 'undefined') {
+      supabase.auth.getSession().then(({ data }) => {
+        if (!data.session) router.push('/login');
+      });
+    }
+  }, []);
+
   return (
     <button
       onClick={handleLogout}
-      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+      className="text-sm text-red-600 hover:underline disabled:opacity-50"
+      disabled={carregando}
     >
-      Sair
+      {carregando ? 'Saindo...' : '🚪 Sair'}
     </button>
   );
 }
+
