@@ -26,28 +26,18 @@ export default function PaginaCertificado() {
         return;
       }
 
-      // Verifica se IP está bloqueado
-const { data: bloqueado } = await supabase
-  .from('ip_bloqueado')
-  .select('id')
-  .eq('certificadoId', data.id)
-  .eq('ip', ip)
-  .maybeSingle();
+      const ip = await fetch('/api/ip').then(res => res.text()).catch(() => '');
 
-if (bloqueado) {
-  setErro('⚠️ Acesso bloqueado por excesso de verificações deste IP.');
-  setCarregando(false);
-  return;
-}
+      // Verificar se o IP já está bloqueado
+      const { data: bloqueado } = await supabase
+        .from('ip_bloqueado')
+        .select('id')
+        .eq('certificadoId', data.id)
+        .eq('ip', ip)
+        .maybeSingle();
 
-      // Verificar limite de acessos (ex: 100)
-      const { count } = await supabase
-        .from('auditoria_certificado')
-        .select('*', { count: 'exact', head: true })
-        .eq('certificadoId', data.id);
-
-      if (count && count > 100) {
-        setErro('⚠️ Limite de verificações excedido para este certificado.');
+      if (bloqueado) {
+        setErro('⚠️ Acesso bloqueado por excesso de verificações deste IP.');
         setCarregando(false);
         return;
       }
@@ -55,14 +45,28 @@ if (bloqueado) {
       setCertificado(data);
       setCarregando(false);
 
-      // Registrar acesso (auditoria)
-      const ip = await fetch('/api/ip').then(res => res.text()).catch(() => '');
+      // Registrar acesso
       await supabase.from('auditoria_certificado').insert({
         certificadoId: data.id,
         acessado_em: new Date().toISOString(),
         email: data.usuario.email,
-        ip
+        ip,
       });
+
+      // Verificar se deve bloquear IP
+      const { count } = await supabase
+        .from('auditoria_certificado')
+        .select('*', { count: 'exact', head: true })
+        .eq('certificadoId', data.id)
+        .eq('ip', ip);
+
+      if (count >= 5) {
+        await supabase.from('ip_bloqueado').upsert({
+          certificadoId: data.id,
+          ip,
+          bloqueadoEm: new Date().toISOString(),
+        });
+      }
     };
 
     buscarCertificado();
@@ -72,8 +76,8 @@ if (bloqueado) {
 
   const gerarPDF = () => {
     if (!certificado) return;
-    const doc = new jsPDF({ orientation: 'landscape' });
 
+    const doc = new jsPDF({ orientation: 'landscape' });
     doc.setFontSize(24);
     doc.text('Certificado de Conclusão', 105, 30, { align: 'center' });
 
@@ -98,7 +102,9 @@ if (bloqueado) {
       <h2 className="text-2xl font-semibold text-black">{certificado.usuario.nome}</h2>
       <p className="text-lg text-gray-700">concluiu com êxito o curso</p>
       <h3 className="text-xl italic text-gray-800">"{certificado.curso.titulo}"</h3>
-      <p className="text-sm text-gray-500">em {new Date(certificado.data_emissao).toLocaleDateString()}</p>
+      <p className="text-sm text-gray-500">
+        em {new Date(certificado.data_emissao).toLocaleDateString()}
+      </p>
 
       <div className="mt-8">
         <QRCode value={urlAtual} size={128} />
