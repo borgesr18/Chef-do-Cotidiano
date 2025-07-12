@@ -1,78 +1,112 @@
 //app/admin/verificar-certificado/page.tsx
 
-"use client";
+'use client';
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function VerificarCertificadoAdmin() {
-  const [input, setInput] = useState("");
-  const [resultado, setResultado] = useState<any | null>(null);
+  const [busca, setBusca] = useState('');
+  const [resultado, setResultado] = useState<any>(null);
   const [erro, setErro] = useState<string | null>(null);
-  const [carregando, setCarregando] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [historico, setHistorico] = useState<any[]>([]);
 
-  const buscar = async () => {
-    setErro(null);
+  const verificar = async () => {
+    setLoading(true);
     setResultado(null);
-    setCarregando(true);
+    setErro(null);
 
-    const { data, error } = await supabase
-      .from("certificado")
-      .select("id, token, hashVerificacao, usuario(nome, email), curso(titulo), data_emissao")
-      .or(
-        `token.eq.${input},hashVerificacao.eq.${input},usuario.email.eq.${input}`
-      )
-      .limit(10);
+    try {
+      const { data, error } = await supabase
+        .from('certificado')
+        .select('token, hashVerificacao, curso(titulo), usuario(nome, email), data_emissao')
+        .or(`token.eq.${busca},hashVerificacao.eq.${busca},usuario.email.eq.${busca}`)
+        .limit(10);
 
-    if (error || !data || data.length === 0) {
-      setErro("Nenhum certificado encontrado com os dados informados.");
-    } else {
-      setResultado(data);
+      if (!data || data.length === 0 || error) {
+        setErro('❌ Nenhum certificado encontrado para este dado.');
+        return;
+      }
+
+      setResultado(data[0]);
+      setHistorico(data);
+    } catch (err) {
+      console.error(err);
+      setErro('Erro na verificação.');
+    } finally {
+      setLoading(false);
     }
-
-    setCarregando(false);
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">🔍 Verificar Certificado</h1>
-      <div className="flex gap-2">
+    <div className="max-w-3xl mx-auto p-8">
+      <h1 className="text-2xl font-bold mb-6">🔍 Verificação de Certificado</h1>
+
+      <div className="flex gap-2 mb-4">
         <input
-          className="w-full border px-4 py-2 rounded"
-          placeholder="Digite o token, hash ou email do aluno"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          type="text"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          placeholder="Digite hash, token ou email"
+          className="border px-4 py-2 rounded w-full"
         />
         <button
+          onClick={verificar}
           className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-          onClick={buscar}
-          disabled={carregando || !input}
+          disabled={loading || !busca}
         >
-          {carregando ? "🔄 Buscando..." : "Buscar"}
+          {loading ? 'Verificando...' : 'Verificar'}
         </button>
       </div>
+
       {erro && <p className="text-red-600">{erro}</p>}
+
       {resultado && (
-        <div className="space-y-4 mt-4">
-          {resultado.map((cert: any) => (
-            <div key={cert.id} className="border p-4 rounded shadow-sm">
-              <p><strong>Aluno:</strong> {cert.usuario.nome} ({cert.usuario.email})</p>
-              <p><strong>Curso:</strong> {cert.curso.titulo}</p>
-              <p><strong>Emissão:</strong> {new Date(cert.data_emissao).toLocaleDateString()}</p>
-              <p><strong>Token:</strong> {cert.token}</p>
-              <p><strong>Hash:</strong> {cert.hashVerificacao}</p>
-              <a
-                href={`/certificado/${cert.token}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                🔗 Ver Certificado Público
-              </a>
-            </div>
-          ))}
+        <div className="border rounded p-4 mt-4 bg-gray-50">
+          <p><strong>Aluno:</strong> {resultado.usuario.nome} ({resultado.usuario.email})</p>
+          <p><strong>Curso:</strong> {resultado.curso.titulo}</p>
+          <p><strong>Data de Emissão:</strong> {new Date(resultado.data_emissao).toLocaleDateString()}</p>
+          <p><strong>Token:</strong> {resultado.token}</p>
+          <p><strong>Hash:</strong> {resultado.hashVerificacao}</p>
+
+          <a
+            href={`/certificado/${resultado.token}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline mt-2 inline-block"
+          >
+            🌐 Ver Certificado Público
+          </a>
+        </div>
+      )}
+
+      {historico.length > 1 && (
+        <div className="mt-6">
+          <h2 className="font-semibold text-lg mb-2">📚 Histórico de Verificações</h2>
+          <table className="w-full text-sm border">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="p-2 border">Aluno</th>
+                <th className="p-2 border">Curso</th>
+                <th className="p-2 border">Token</th>
+                <th className="p-2 border">Data</th>
+              </tr>
+            </thead>
+            <tbody>
+              {historico.map((item, i) => (
+                <tr key={i} className="hover:bg-gray-50">
+                  <td className="p-2 border">{item.usuario.nome}</td>
+                  <td className="p-2 border">{item.curso.titulo}</td>
+                  <td className="p-2 border text-xs">{item.token}</td>
+                  <td className="p-2 border">{new Date(item.data_emissao).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
   );
 }
+
