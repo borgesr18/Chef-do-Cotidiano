@@ -1,72 +1,88 @@
 //lib/notificar.ts
-import { Resend } from 'resend';
 import { prisma } from './prisma';
+import { Resend } from 'resend';
+import { v4 as uuidv4 } from 'uuid';
 
-const resend = new Resend(process.env.RESEND_API_KEY || 'simulado');
+const resend = new Resend(process.env.RESEND_API_KEY || '');
 
-// Envio de e-mail real com fallback
-export async function notificarEmail(destinatario: string, titulo: string, html: string) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[Email] Para: ${destinatario}\nAssunto: ${titulo}\n${html}`);
-    return;
-  }
-
-  try {
-    await resend.emails.send({
-      from: 'Chef do Cotidiano <contato@chefdocotidiano.com>',
-      to: destinatario,
-      subject: titulo,
-      html
-    });
-  } catch (error) {
-    console.error('Erro ao enviar e-mail:', error);
-  }
+// Simulação de envio WhatsApp (você pode trocar isso futuramente)
+async function enviarWhatsApp(numero: string, mensagem: string) {
+  console.log(`📱 Enviando WhatsApp para ${numero}: ${mensagem}`);
+  return { status: 'simulado' };
 }
 
-// Envio simulado por WhatsApp (substituir por API real depois)
-export async function notificarWhatsapp(numero: string, mensagem: string) {
-  console.log(`[WhatsApp] Para: ${numero}\n${mensagem}`);
-  // Aqui poderá futuramente fazer POST para uma API real do WhatsApp
-}
-
-// Registro da notificação na tabela
-export async function registrarNotificacao(
-  userId: string,
-  titulo: string,
-  mensagem: string,
-  canal: 'email' | 'whatsapp',
-  tipo: 'comentario' | 'aula' | 'certificado' | 'admin'
-) {
-  try {
-    await prisma.notificacao.create({
-      data: {
-        userId,
-        titulo,
-        mensagem,
-        canal,
-        tipo
-      }
-    });
-  } catch (err) {
-    console.error('Erro ao registrar notificação:', err);
-  }
-}
-
-// Enviar notificação para todos os administradores
-export async function notificarAdmins(titulo: string, mensagem: string) {
-  const admins = await prisma.usuario.findMany({
-    where: { tipo: 'ADMIN' }
+export async function notificarUsuario({
+  userId,
+  titulo,
+  mensagem,
+  tipo,
+}: {
+  userId: string;
+  titulo: string;
+  mensagem: string;
+  tipo: 'comentario' | 'certificado' | 'aula' | 'resposta';
+}) {
+  const usuario = await prisma.usuario.findUnique({
+    where: { id: userId },
   });
 
-  for (const admin of admins) {
-    if (admin.notificaEmail) {
-      await notificarEmail(admin.email, titulo, `<p>${mensagem}</p>`);
-      await registrarNotificacao(admin.id, titulo, mensagem, 'email', 'admin');
-    }
+  if (!usuario) return;
 
-    if (admin.notificaWhatsapp && admin.telefone) {
-      await notificarWhatsapp(admin.telefone, `🔔 ${titulo}: ${mensagem}`);
-      await registrarNotificacao(admin.id, titulo, mensagem, 'whatsapp', 'admin');
+  const notificacoesEnviadas = [];
+
+  // 📨 Enviar por e-mail se permitido
+  if (usuario.notificaEmail && usuario.email) {
+    try {
+      await resend.emails.send({
+        from: 'Chef do Cotidiano <no-reply@chefdocotidiano.com>',
+        to: usuario.email,
+        subject: titulo,
+        html: `<p>${mensagem}</p>`,
+      });
+
+      notificacoesEnviadas.push({
+        canal: 'email',
+        status: 'sucesso',
+      });
+
+      await prisma.notificacao.create({
+        data: {
+          userId,
+          titulo,
+          mensagem,
+          tipo,
+          canal: 'email',
+        },
+      });
+    } catch (e) {
+      console.error('Erro ao enviar e-mail:', e);
     }
   }
+
+  // 📲 Enviar por WhatsApp se permitido
+  if (usuario.notificaWhatsapp && usuario.telefone) {
+    try {
+      await enviarWhatsApp(usuario.telefone, mensagem);
+
+      notificacoesEnviadas.push({
+        canal: 'whatsapp',
+        status: 'simulado',
+      });
+
+      await prisma.notificacao.create({
+        data: {
+          userId,
+          titulo,
+          mensagem,
+          tipo,
+          canal: 'whatsapp',
+        },
+      });
+    } catch (e) {
+      console.error('Erro ao enviar WhatsApp:', e);
+    }
+  }
+
+  return notificacoesEnviadas;
 }
+
