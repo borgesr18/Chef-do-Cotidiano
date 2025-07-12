@@ -10,17 +10,16 @@ datasource db {
 }
 
 model Usuario {
-  id               String         @id @default(uuid())
+  id               String        @id @default(uuid())
   nome             String
-  email            String         @unique
+  email            String        @unique
   senha            String?
-  tipo             String         @default("ALUNO")
-  telefone         String?
-  notificaEmail    Boolean        @default(true)
-  notificaWhatsapp Boolean        @default(false)
-  notificacoes     Notificacao[]
-  // ... demais relações
-}
+  telefone         String?       // ✅ ADICIONADO
+  tipo             TipoUsuario   @default(ALUNO)
+  notificaEmail    Boolean       @default(true)    // ✅ ADICIONADO
+  notificaWhatsapp Boolean       @default(false)   // ✅ ADICIONADO
+  criadoEm         DateTime      @default(now())
+  atualizacoes     DateTime[]    @default([])
 
   // Relacionamentos
   cursos       Curso[]       @relation("AutorCursos")
@@ -140,15 +139,15 @@ model Auditoria {
 }
 
 model Notificacao {
-  id        String   @id @default(uuid())
-  titulo    String
-  mensagem  String
-  tipo      String
-  canal     String
-  lida      Boolean  @default(false)
-  criadoEm  DateTime @default(now())
-  userId    String
-  usuario   Usuario  @relation(fields: [userId], references: [id])
+  id         String   @id @default(uuid())
+  userId     String
+  titulo     String
+  mensagem   String
+  tipo       TipoNotificacao
+  canal      CanalNotificacao
+  criadoEm   DateTime @default(now())
+
+  usuario    Usuario  @relation(fields: [userId], references: [id])
 }
 
 enum TipoUsuario {
@@ -168,5 +167,4 @@ enum CanalNotificacao {
   EMAIL
   WHATSAPP
 }
-
 
