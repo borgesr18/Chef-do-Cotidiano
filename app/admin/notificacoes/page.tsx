@@ -25,8 +25,6 @@ export default function AdminNotificacoes() {
     carregar();
   }, []);
 
-  const tipos = ['comentario', 'aula', 'certificado', 'admin'];
-
   const notificacoesFiltradas = notificacoes.filter((n) => {
     const buscaTexto =
       n.usuario.nome.toLowerCase().includes(filtro.toLowerCase()) ||
@@ -67,6 +65,8 @@ export default function AdminNotificacoes() {
     link.click();
     document.body.removeChild(link);
   };
+
+  const tipos = ['comentario', 'aula', 'certificado', 'admin'];
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
@@ -134,3 +134,4 @@ export default function AdminNotificacoes() {
     </div>
   );
 }
+
