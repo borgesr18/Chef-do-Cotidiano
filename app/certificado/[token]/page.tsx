@@ -26,6 +26,20 @@ export default function PaginaCertificado() {
         return;
       }
 
+      // Verifica se IP está bloqueado
+const { data: bloqueado } = await supabase
+  .from('ip_bloqueado')
+  .select('id')
+  .eq('certificadoId', data.id)
+  .eq('ip', ip)
+  .maybeSingle();
+
+if (bloqueado) {
+  setErro('⚠️ Acesso bloqueado por excesso de verificações deste IP.');
+  setCarregando(false);
+  return;
+}
+
       // Verificar limite de acessos (ex: 100)
       const { count } = await supabase
         .from('auditoria_certificado')
