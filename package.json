@@ -1,0 +1,36 @@
+{
+  "name": "chef-do-cotidiano",
+  "version": "1.0.0",
+  "description": "Plataforma de cursos e receitas para homens – Chef do Cotidiano",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.11.0",
+    "@supabase/supabase-js": "^2.42.3",
+    "autoprefixer": "^10.4.16",
+    "bcryptjs": "^2.4.3",
+    "next": "14.2.3",
+    "postcss": "^8.4.38",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "resend": "^0.24.0",
+    "tailwindcss": "^3.4.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/node": "20.11.30",
+    "@types/react": "18.2.46",
+    "@types/react-dom": "18.2.18",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.3",
+    "prisma": "^5.11.0",
+    "ts-node": "^10.9.2",
+    "typescript": "5.4.5"
+  }
+}
