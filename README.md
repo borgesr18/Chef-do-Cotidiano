@@ -1,61 +1,64 @@
-// Estrutura base do projeto Next.js (App Router) para o site "Chef do Cotidiano"
-
-// [... arquivos existentes ...]
-
-// README.md
-/*
 # Chef do Cotidiano 🍳
 
-**Chef do Cotidiano** é uma plataforma voltada ao ensino de culinária prática para homens, desenvolvida com Next.js 14, App Router, Supabase e TailwindCSS.
+**Chef do Cotidiano** é uma plataforma educacional completa voltada ao ensino de culinária prática para homens. Oferece cursos online, emissão de certificados com validação pública, painel administrativo, e controle de usuários e notificações.
 
-## 🚀 Funcionalidades
-- Página institucional e de receitas
-- Sistema de cursos
-- Autenticação com Supabase (login e cadastro)
-- Componentes reutilizáveis e design responsivo
+---
 
-## 🧰 Tecnologias utilizadas
-- [Next.js 14](https://nextjs.org/docs)
-- [React](https://react.dev/)
-- [TailwindCSS](https://tailwindcss.com/)
-- [Supabase](https://supabase.com/)
+## 🚀 Funcionalidades Principais
+
+### 👨‍🍳 Público (aluno)
+- Acesso aos cursos
+- Conclusão e emissão de certificados
+- Página pública de verificação de certificado com QR Code
+- Notificações por e-mail e WhatsApp (configuráveis)
+
+### 🔐 Autenticação
+- Login/cadastro com Supabase Auth
+- Sistema multiusuário com tipos: `ALUNO`, `ADMIN`
+
+### 🧑‍🏫 Admin
+- Painel completo com:
+  - Dashboard
+  - Emissão de certificados
+  - Relatórios com filtros e gráficos (PDF)
+  - Tela de verificação manual
+  - Histórico de auditoria e IPs bloqueados
+- Exportação em PDF
+- Gráficos com Recharts
+
+### 📄 Certificados
+- Gerados com jsPDF
+- Salvos automaticamente no Supabase Storage
+- Com código de verificação criptografado (SHA256)
+- QR Code com link direto
+- Auditoria e segurança anti-spam por IP
+
+---
+
+## 🧰 Tecnologias Utilizadas
+
+- [Next.js 14](https://nextjs.org/)
+- [React](https://reactjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Supabase](https://supabase.com/)
+- [Prisma ORM](https://www.prisma.io/)
+- [jsPDF](https://github.com/parallax/jsPDF)
+- [uuid](https://www.npmjs.com/package/uuid)
+- [Recharts](https://recharts.org/)
 
-## 📦 Instalação local
+---
+
+## ⚙️ Instalação Local
+
 ```bash
 # Clone o repositório
-https://github.com/seuusuario/chefdocotidiano
+git clone https://github.com/seuusuario/chefdocotidiano
+cd chefdocotidiano
 
 # Instale as dependências
 npm install
 
-# Crie um arquivo .env.local com as chaves do Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+# Crie o arquivo .env.local com suas credenciais Supabase
+cp .env.example .env.local
 
-# Inicie o servidor local
-npm run dev
-```
-
-## 🔑 Variáveis de Ambiente
-| Nome                          | Descrição                            |
-|-------------------------------|----------------------------------------|
-| NEXT_PUBLIC_SUPABASE_URL     | URL do seu projeto Supabase            |
-| NEXT_PUBLIC_SUPABASE_ANON_KEY| Chave pública anônima do Supabase     |
-
-## 🧪 Testar login/cadastro
-1. Crie uma conta no [Supabase](https://supabase.com/)
-2. Crie um novo projeto e copie a URL e chave anônima
-3. Ative a autenticação por e-mail/senha nas configurações
-4. Cole os dados no `.env.local`
-
-## ☁️ Deploy na Vercel
-1. Vá até [vercel.com](https://vercel.com)
-2. Conecte seu repositório GitHub
-3. Adicione as variáveis do Supabase no painel de environment
-4. Clique em “Deploy”
-
----
-
-Feito com ❤️ por Rodrigo Borges — Chef do Cotidiano
-*/
