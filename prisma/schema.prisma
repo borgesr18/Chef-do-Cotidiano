@@ -1,151 +1,172 @@
-generator client {
-  provider = "prisma-client-js"
-}
+// Datasource e Generator
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modelos principais
+// ------------------
 model Usuario {
-  id                String           @id @default(uuid())
-  nome              String
-  email             String           @unique
-  tipo              TipoUsuario      @default(ALUNO)
-  notificacoes      Notificacao[]
-  certificados      Certificado[]
-  progresso         Progresso[]
-  inscricoes        Inscricao[]
-  favoritos         Favorito[]
-  preferencias      PreferenciaNotificacao?
-  auditorias        Auditoria[]
-  criadoEm          DateTime         @default(now())
-}
-
-model Curso {
-  id          String     @id @default(uuid())
-  titulo      String
-  descricao   String
-  imagem_url  String
-  aulas       Aula[]
-  inscricoes  Inscricao[]
-  criadoEm    DateTime   @default(now())
-}
-
-model Aula {
-  id         String     @id @default(uuid())
-  titulo     String
-  video_url  String
-  curso      Curso      @relation(fields: [cursoId], references: [id])
-  cursoId    String
-  ordem      Int
-  progresso  Progresso[]
-  criadoEm   DateTime   @default(now())
-}
-
-model Receita {
-  id         String     @id @default(uuid())
-  titulo     String
-  descricao  String
-  imagem_url String
-  criadoEm   DateTime   @default(now())
-  favoritos  Favorito[]
-}
-
-model Favorito {
-  id        String   @id @default(uuid())
-  user      Usuario  @relation(fields: [userId], references: [id])
-  userId    String
-  receita   Receita  @relation(fields: [receitaId], references: [id])
-  receitaId String
+  id        String   @id @default(cuid())
+  nome      String
+  email     String   @unique
+  senha     String
+  tipo      Role     @default(ALUNO)
   criadoEm  DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  // Relacionamentos
+  receitas     Receita[]
+  favoritos    Favorito[]
+  inscricoes   Inscricao[]
+  progresso    Progresso[]
+  certificados Certificado[]
+  auditorias   Auditoria[]
+  notificacoes Notificacao[]
+  preferencias PreferenciaNotificacao[]
 }
 
-model Inscricao {
-  id       String   @id @default(uuid())
-  user     Usuario  @relation(fields: [userId], references: [id])
-  userId   String
-  curso    Curso    @relation(fields: [cursoId], references: [id])
-  cursoId  String
-  criadoEm DateTime @default(now())
-}
-
-model Progresso {
-  id         String   @id @default(uuid())
-  user       Usuario  @relation(fields: [userId], references: [id])
-  userId     String
-  aula       Aula     @relation(fields: [aulaId], references: [id])
-  aulaId     String
-  concluida  Boolean  @default(false)
-  criadoEm   DateTime @default(now())
-}
-
-model Certificado {
-  id         String   @id @default(uuid())
-  user       Usuario  @relation(fields: [userId], references: [id])
-  userId     String
-  curso      Curso    @relation(fields: [cursoId], references: [id])
-  cursoId    String
-  token      String   @unique
-  criadoEm   DateTime @default(now())
-  auditorias Auditoria[]
-}
-
-model Auditoria {
-  id             String        @id @default(uuid())
-  certificado    Certificado   @relation(fields: [certificadoId], references: [id])
-  certificadoId  String
-  usuario        Usuario       @relation(fields: [usuarioId], references: [id])
-  usuarioId      String
-  ip             String
-  criadoEm       DateTime      @default(now())
-}
-
-model IPBloqueado {
-  id       String   @id @default(uuid())
-  ip       String   @unique
-  motivo   String?
-  criadoEm DateTime @default(now())
-}
-
-model Notificacao {
-  id         String       @id @default(uuid())
-  usuario    Usuario      @relation(fields: [usuarioId], references: [id])
-  usuarioId  String
-  titulo     String
-  mensagem   String
-  tipo       TipoNotificacao
-  canal      CanalNotificacao
-  criadoEm   DateTime     @default(now())
-}
-
-model PreferenciaNotificacao {
-  id                String   @id @default(uuid())
-  usuario           Usuario  @relation(fields: [usuarioId], references: [id])
-  usuarioId         String   @unique
-  emailComentario   Boolean  @default(true)
-  emailCertificado  Boolean  @default(true)
-  emailAula         Boolean  @default(true)
-  whatsappComentario Boolean @default(false)
-  whatsappCertificado Boolean @default(false)
-  whatsappAula        Boolean @default(false)
-  criadoEm          DateTime @default(now())
-}
-
-enum TipoUsuario {
+enum Role {
   ADMIN
   ALUNO
 }
 
+model Receita {
+  id          String   @id @default(cuid())
+  titulo      String
+  descricao   String
+  imagemUrl   String
+  criadoEm    DateTime @default(now())
+  autor       Usuario  @relation(fields: [autorId], references: [id])
+  autorId     String
+  favoritos   Favorito[]
+}
+
+model Favorito {
+  id        String   @id @default(cuid())
+  userId    String
+  receitaId String
+  criadoEm  DateTime @default(now())
+
+  usuario   Usuario  @relation(fields: [userId], references: [id])
+  receita   Receita  @relation(fields: [receitaId], references: [id])
+}
+
+model Curso {
+  id         String   @id @default(cuid())
+  titulo     String
+  descricao  String
+  imagemUrl  String
+  criadoEm   DateTime @default(now())
+  aulas      Aula[]
+  inscricoes Inscricao[]
+  certificados Certificado[]
+}
+
+model Aula {
+  id        String   @id @default(cuid())
+  titulo    String
+  videoUrl  String
+  cursoId   String
+  criadoEm  DateTime @default(now())
+
+  curso     Curso    @relation(fields: [cursoId], references: [id])
+  progresso Progresso[]
+}
+
+model Inscricao {
+  id        String   @id @default(cuid())
+  userId    String
+  cursoId   String
+  criadoEm  DateTime @default(now())
+
+  usuario   Usuario  @relation(fields: [userId], references: [id])
+  curso     Curso    @relation(fields: [cursoId], references: [id])
+}
+
+model Progresso {
+  id        String   @id @default(cuid())
+  userId    String
+  aulaId    String
+  concluida Boolean  @default(false)
+  criadoEm  DateTime @default(now())
+
+  usuario   Usuario  @relation(fields: [userId], references: [id])
+  aula      Aula     @relation(fields: [aulaId], references: [id])
+}
+
+model Certificado {
+  id         String   @id @default(cuid())
+  userId     String
+  cursoId    String
+  token      String   @unique
+  criadoEm   DateTime @default(now())
+  valido     Boolean  @default(true)
+
+  usuario    Usuario  @relation(fields: [userId], references: [id])
+  curso      Curso    @relation(fields: [cursoId], references: [id])
+  auditorias Auditoria[]
+}
+
+model Auditoria {
+  id             String   @id @default(cuid())
+  userId         String?
+  certificadoId  String?
+  ip             String
+  userAgent      String?
+  criadoEm       DateTime @default(now())
+
+  usuario        Usuario?     @relation(fields: [userId], references: [id])
+  certificado    Certificado? @relation(fields: [certificadoId], references: [id])
+}
+
+model IPBloqueado {
+  id        String   @id @default(cuid())
+  ip        String   @unique
+  motivo    String?
+  bloqueadoEm DateTime @default(now())
+}
+
+model Notificacao {
+  id        String   @id @default(cuid())
+  userId    String
+  titulo    String
+  mensagem  String
+  tipo      TipoNotificacao
+  canal     CanalNotificacao
+  lida      Boolean  @default(false)
+  manual    Boolean  @default(false)
+  criadoEm  DateTime @default(now())
+
+  usuario   Usuario  @relation(fields: [userId], references: [id])
+}
+
 enum TipoNotificacao {
-  COMENTARIO
-  AULA
-  CERTIFICADO
-  ADMIN
+  CURSO_CONCLUIDO
+  AULA_CONCLUIDA
+  NOVO_COMENTARIO
+  RESPOSTA_COMENTARIO
+  NOVO_CERTIFICADO
+  OUTRO
 }
 
 enum CanalNotificacao {
   EMAIL
   WHATSAPP
+  AMBOS
+}
+
+model PreferenciaNotificacao {
+  id        String   @id @default(cuid())
+  userId    String
+  tipo      TipoNotificacao
+  canal     CanalNotificacao
+
+  usuario   Usuario  @relation(fields: [userId], references: [id])
 }
 
