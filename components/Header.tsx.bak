@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/auth-client-client';
+import { supabase } from '@/lib/auth-client';
 import LogoutButton from './LogoutButton';
 
 export default function Header() {

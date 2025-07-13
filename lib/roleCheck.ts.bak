@@ -1,5 +1,5 @@
 //lib/roleCheck.ts
-import { createSupabaseServerClient } from '@/lib/auth-client-server';
+import { createSupabaseServerClient } from '@/lib/auth-server';
 import { redirect } from 'next/navigation';
 
 export async function requireAdmin() {
