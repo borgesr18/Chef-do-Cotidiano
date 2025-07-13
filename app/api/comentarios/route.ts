@@ -5,13 +5,16 @@ import { prisma } from '@/lib/prisma';
 import { notificarUsuario } from '@/lib/notificar';
 import { createSupabaseEdgeClient } from '@/lib/auth-edge';
 
+// Garante que estamos rodando no ambiente correto (Node.js)
+export const runtime = 'nodejs';
+
 async function getUsuarioAutenticadoEdge() {
   const supabase = createSupabaseEdgeClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return null;
 
-  // Aqui você pode complementar com dados do usuário no banco (opcional)
+  // Busca o usuário no banco pelo ID do Supabase
   const usuario = await prisma.usuario.findUnique({
     where: { id: user.id },
   });
@@ -20,45 +23,65 @@ async function getUsuarioAutenticadoEdge() {
 }
 
 export async function POST(req: NextRequest) {
-  const usuario = await getUsuarioAutenticadoEdge();
+  try {
+    const usuario = await getUsuarioAutenticadoEdge();
 
-  if (!usuario) {
-    return NextResponse.json({ erro: 'Não autenticado' }, { status: 401 });
-  }
+    if (!usuario) {
+      return NextResponse.json({ erro: 'Usuário não autenticado' }, { status: 401 });
+    }
 
-  const body = await req.json();
-  const { receitaId, texto } = body;
+    const body = await req.json();
+    const { receitaId, texto } = body;
 
-  if (!texto || !receitaId) {
-    return NextResponse.json({ erro: 'Campos obrigatórios faltando' }, { status: 400 });
-  }
+    // Validações básicas
+    if (!texto || typeof texto !== 'string' || texto.trim().length === 0) {
+      return NextResponse.json({ erro: 'O texto do comentário é obrigatório' }, { status: 400 });
+    }
 
-  // 🔥 Criar o comentário
-  const comentario = await prisma.comentario.create({
-    data: {
-      texto,
-      receitaId,
-      userId: usuario.id,
-    },
-    include: {
-      receita: {
-        select: {
-          titulo: true,
-          autorId: true,
+    if (!receitaId) {
+      return NextResponse.json({ erro: 'ID da receita é obrigatório' }, { status: 400 });
+    }
+
+    // Verifica se a receita existe
+    const receita = await prisma.receita.findUnique({
+      where: { id: receitaId },
+    });
+
+    if (!receita) {
+      return NextResponse.json({ erro: 'Receita não encontrada' }, { status: 404 });
+    }
+
+    // Cria o comentário
+    const comentario = await prisma.comentario.create({
+      data: {
+        texto,
+        receitaId,
+        userId: usuario.id,
+      },
+      include: {
+        receita: {
+          select: {
+            titulo: true,
+            autorId: true,
+          },
         },
       },
-    },
-  });
-
-  // 🔔 Notificar o autor da receita (se não for o próprio autor comentando)
-  if (comentario.receita.autorId && comentario.receita.autorId !== usuario.id) {
-    await notificarUsuario({
-      userId: comentario.receita.autorId,
-      titulo: `Novo comentário em sua receita: ${comentario.receita.titulo}`,
-      mensagem: `O usuário ${usuario.nome} comentou: "${texto}"`,
-      tipo: 'comentario',
     });
-  }
 
-  return NextResponse.json({ sucesso: true, comentario });
+    // Notifica o autor da receita (se não for o próprio autor comentando)
+    if (comentario.receita.autorId && comentario.receita.autorId !== usuario.id) {
+      await notificarUsuario({
+        userId: comentario.receita.autorId,
+        titulo: `Novo comentário na sua receita: ${comentario.receita.titulo}`,
+        mensagem: `O usuário ${usuario.nome} comentou: "${texto}"`,
+        tipo: 'comentario',
+      });
+    }
+
+    return NextResponse.json({ sucesso: true, comentario }, { status: 201 });
+
+  } catch (erro: any) {
+    console.error('Erro ao criar comentário:', erro);
+    return NextResponse.json({ erro: 'Erro interno do servidor' }, { status: 500 });
+  }
 }
