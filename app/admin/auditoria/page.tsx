@@ -20,7 +20,7 @@ export default function PainelAuditoria() {
 
         // Agrupar por email + IP para alertas
         const suspeitos = data.reduce((acc, cur) => {
-          const chave = `${cur.certificado.token}_${cur.ip}`;
+          const chave = `${cur.certificado[0]?.token || 'unknown'}_${cur.ip}`;
           acc[chave] = (acc[chave] || 0) + 1;
           return acc;
         }, {} as Record<string, number>);

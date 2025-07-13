@@ -114,12 +114,13 @@ model Comentario {
 }
 
 model Certificado {
-  id         String   @id @default(uuid()) @db.Uuid
-  token      String   @unique
-  cursoId    String   @db.Uuid
-  userId     String   @db.Uuid
-  criadoEm   DateTime @default(now())
-  valido     Boolean  @default(true)
+  id              String   @id @default(uuid()) @db.Uuid
+  token           String   @unique
+  cursoId         String   @db.Uuid
+  userId          String   @db.Uuid
+  hashVerificacao String?
+  criadoEm        DateTime @default(now())
+  valido          Boolean  @default(true)
 
   curso      Curso    @relation(fields: [cursoId], references: [id])
   usuario    Usuario  @relation(fields: [userId], references: [id])
@@ -165,4 +166,5 @@ enum CanalNotificacao {
   EMAIL
   WHATSAPP
 }
+
 

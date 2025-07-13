@@ -27,8 +27,7 @@ export async function criarCertificado(cursoId: string, usuarioId: string, email
     data: {
       token,
       cursoId,
-      usuarioId,
-      data_emissao: new Date(),
+      userId: usuarioId,
       hashVerificacao
     }
   });

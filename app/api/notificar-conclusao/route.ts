@@ -2,13 +2,8 @@
 
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { Twilio } from 'twilio';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
-const twilio = new Twilio(
-  process.env.TWILIO_SID!,
-  process.env.TWILIO_AUTH_TOKEN!
-);
 
 export async function POST(req: Request) {
   try {
@@ -34,18 +29,27 @@ export async function POST(req: Request) {
       console.error('Erro ao enviar e-mail:', emailError);
     }
 
-    // Envio por WhatsApp (via Twilio)
+    // Envio por WhatsApp (via Twilio) - apenas se configurado
+    const twilioSid = process.env.TWILIO_SID;
+    const twilioToken = process.env.TWILIO_AUTH_TOKEN;
     const whatsappTo = process.env.ADMIN_WHATSAPP;
     const whatsappFrom = process.env.TWILIO_PHONE_NUMBER;
 
-    if (whatsappTo && whatsappFrom) {
-      await twilio.messages.create({
-        body: '📚 Aula concluída com sucesso no Chef do Cotidiano! Continue aprendendo!',
-        from: `whatsapp:${whatsappFrom}`,
-        to: `whatsapp:${whatsappTo}`,
-      });
+    if (twilioSid && twilioToken && whatsappTo && whatsappFrom) {
+      try {
+        const { Twilio } = await import('twilio');
+        const twilio = new Twilio(twilioSid, twilioToken);
+        
+        await twilio.messages.create({
+          body: '📚 Aula concluída com sucesso no Chef do Cotidiano! Continue aprendendo!',
+          from: `whatsapp:${whatsappFrom}`,
+          to: `whatsapp:${whatsappTo}`,
+        });
+      } catch (error) {
+        console.warn('Erro ao enviar WhatsApp:', error);
+      }
     } else {
-      console.warn('Número de WhatsApp não configurado corretamente no .env');
+      console.warn('Configuração do Twilio/WhatsApp não encontrada - pulando envio por WhatsApp');
     }
 
     return NextResponse.json({ sucesso: true });

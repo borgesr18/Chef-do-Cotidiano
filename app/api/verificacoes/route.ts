@@ -4,20 +4,19 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { certificadoId, tipo, valor, ip } = body;
+  const { certificadoId, tipo, valor, ip, userId } = body;
 
-  if (!certificadoId || !tipo || !valor) {
+  if (!certificadoId || !tipo || !valor || !userId) {
     return NextResponse.json({ error: 'Dados incompletos.' }, { status: 400 });
   }
 
   try {
-    await prisma.verificacao.create({
+    await prisma.auditoria.create({
       data: {
-        certificadoId,
-        tipo,
-        valor,
-        ip,
-        verificadoEm: new Date(),
+        userId,
+        ip: ip || 'IP desconhecido',
+        localizacao: `Verificação ${tipo}: ${valor}`,
+        userAgent: `Certificado: ${certificadoId}`,
       },
     });
     return NextResponse.json({ sucesso: true });
@@ -28,17 +27,17 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const historico = await prisma.verificacao.findMany({
+    const historico = await prisma.auditoria.findMany({
+      where: {
+        localizacao: {
+          startsWith: 'Verificação'
+        }
+      },
       include: {
-        certificado: {
-          include: {
-            usuario: true,
-            curso: true,
-          },
-        },
+        usuario: true,
       },
       orderBy: {
-        verificadoEm: 'desc',
+        criadoEm: 'desc',
       },
       take: 100,
     });

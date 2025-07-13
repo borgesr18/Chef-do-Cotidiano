@@ -31,35 +31,22 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { receitaId, texto } = body;
+    const { aulaId, texto } = body;
 
     // Validações básicas
     if (!texto || typeof texto !== 'string' || texto.trim().length === 0) {
       return NextResponse.json({ erro: 'O texto do comentário é obrigatório' }, { status: 400 });
     }
 
-    if (!receitaId) {
-      return NextResponse.json({ erro: 'ID da receita é obrigatório' }, { status: 400 });
+    if (!aulaId) {
+      return NextResponse.json({ erro: 'ID da aula é obrigatório' }, { status: 400 });
     }
 
-    // Verifica se a receita existe
-    const receita = await prisma.receita.findUnique({
-      where: { id: receitaId },
-    });
-
-    if (!receita) {
-      return NextResponse.json({ erro: 'Receita não encontrada' }, { status: 404 });
-    }
-
-    // Cria o comentário
-    const comentario = await prisma.comentario.create({
-      data: {
-        texto,
-        receitaId,
-        userId: usuario.id,
-      },
+    // Verifica se a aula existe
+    const aula = await prisma.aula.findUnique({
+      where: { id: aulaId },
       include: {
-        receita: {
+        curso: {
           select: {
             titulo: true,
             autorId: true,
@@ -68,13 +55,38 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Notifica o autor da receita (se não for o próprio autor comentando)
-    if (comentario.receita.autorId && comentario.receita.autorId !== usuario.id) {
+    if (!aula) {
+      return NextResponse.json({ erro: 'Aula não encontrada' }, { status: 404 });
+    }
+
+    // Cria o comentário
+    const comentario = await prisma.comentario.create({
+      data: {
+        mensagem: texto,
+        aulaId,
+        usuarioId: usuario.id,
+      },
+      include: {
+        aula: {
+          include: {
+            curso: {
+              select: {
+                titulo: true,
+                autorId: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Notifica o autor do curso (se não for o próprio autor comentando)
+    if (comentario.aula.curso.autorId && comentario.aula.curso.autorId !== usuario.id) {
       await notificarUsuario({
-        userId: comentario.receita.autorId,
-        titulo: `Novo comentário na sua receita: ${comentario.receita.titulo}`,
+        userId: comentario.aula.curso.autorId,
+        titulo: `Novo comentário na aula: ${aula.titulo}`,
         mensagem: `O usuário ${usuario.nome} comentou: "${texto}"`,
-        tipo: 'comentario',
+        tipo: 'COMENTARIO',
       });
     }
 

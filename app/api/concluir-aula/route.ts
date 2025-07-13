@@ -6,13 +6,24 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   const { aulaId, userId } = await req.json();
 
-  const progresso = await prisma.progresso.upsert({
+  const progressoExistente = await prisma.progresso.findFirst({
     where: {
-      userId_aulaId: { userId, aulaId }
-    },
-    update: { concluido: true },
-    create: { userId, aulaId, concluido: true }
+      userId: userId,
+      aulaId: aulaId
+    }
   });
+
+  let progresso;
+  if (progressoExistente) {
+    progresso = await prisma.progresso.update({
+      where: { id: progressoExistente.id },
+      data: { concluida: true }
+    });
+  } else {
+    progresso = await prisma.progresso.create({
+      data: { userId, aulaId, concluida: true }
+    });
+  }
 
   const aula = await prisma.aula.findUnique({
     where: { id: aulaId },

@@ -42,7 +42,7 @@ export default function CertificadosAluno() {
         const concluidas = aulasCurso?.filter((aula) =>
           progresso?.data?.find((p) => p.aulaId === aula.id)
         );
-        return aulasCurso.length > 0 && aulasCurso.length === concluidas.length;
+        return aulasCurso && aulasCurso.length > 0 && concluidas && aulasCurso.length === concluidas.length;
       });
 
       setCertificados(cursosCompletos || []);
