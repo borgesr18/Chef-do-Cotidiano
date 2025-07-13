@@ -1,11 +1,12 @@
-//components/Header.tsx
+// components/Header.tsx
 'use client';
-import LogoutButton from './LogoutButton';
+
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/auth-client';
+import LogoutButton from './LogoutButton';
 
 export default function Header() {
-  const [usuarioLogado, setUsuarioLogado] = useState(false);
+  const [usuarioLogado, setUsuarioLogado] = useState<boolean | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -23,10 +24,16 @@ export default function Header() {
           <a href="/cursos" className="hover:underline">Cursos</a>
           <a href="/sobre" className="hover:underline">Sobre</a>
           <a href="/contato" className="hover:underline">Contato</a>
-          {usuarioLogado ? (
+
+          {usuarioLogado === null ? null : usuarioLogado ? (
             <LogoutButton />
           ) : (
-            <a href="/login" className="bg-white text-black px-3 py-1 rounded">Entrar</a>
+            <a
+              href="/login"
+              className="bg-white text-black px-4 py-1 rounded hover:bg-gray-200 transition"
+            >
+              Entrar
+            </a>
           )}
         </nav>
       </div>
