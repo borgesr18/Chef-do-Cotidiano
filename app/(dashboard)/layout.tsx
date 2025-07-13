@@ -1,7 +1,7 @@
 // app/(dashboard)/layout.tsx
 import { ReactNode } from "react";
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/auth-client-server";
+import { createSupabaseServerClient } from "@/lib/auth-server";
 
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/ui/Header";

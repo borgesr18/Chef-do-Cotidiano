@@ -1,5 +1,5 @@
 //app/dashboard/page.tsx
-import { createSupabaseServerClient } from '@/lib/auth-client-server';
+import { createSupabaseServerClient } from '@/lib/auth-server';
 import { redirect } from 'next/navigation';
 
 export default async function Dashboard() {
