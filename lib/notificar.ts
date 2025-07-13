@@ -16,7 +16,7 @@ interface NotificarUsuarioParams {
   userId: string;
   titulo: string;
   mensagem: string;
-  tipo: 'comentario' | 'certificado' | 'aula' | 'resposta';
+  tipo: 'COMENTARIO' | 'CERTIFICADO' | 'CONCLUSAO' | 'RESPOSTA' | 'PERSONALIZADA';
 }
 
 export async function notificarUsuario({
@@ -57,7 +57,7 @@ export async function notificarUsuario({
           titulo,
           mensagem,
           tipo,
-          canal: 'email',
+          canal: 'EMAIL',
         },
       });
     } catch (e) {
@@ -79,7 +79,7 @@ export async function notificarUsuario({
           titulo,
           mensagem,
           tipo,
-          canal: 'whatsapp',
+          canal: 'WHATSAPP',
         },
       });
     } catch (e) {
@@ -90,3 +90,25 @@ export async function notificarUsuario({
   return notificacoesEnviadas;
 }
 
+export async function notificarEmail(destinatario: string, titulo: string, html: string) {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[Email] Para: ${destinatario}\nAssunto: ${titulo}\n${html}`);
+    return;
+  }
+
+  try {
+    await resend.emails.send({
+      from: 'Chef do Cotidiano <no-reply@chefdocotidiano.com>',
+      to: destinatario,
+      subject: titulo,
+      html
+    });
+  } catch (error) {
+    console.error('Erro ao enviar e-mail:', error);
+  }
+}
+
+export async function notificarWhatsapp(numero: string, mensagem: string) {
+  console.log(`[WhatsApp] Para: ${numero}\n${mensagem}`);
+  // Aqui poderá futuramente fazer POST para uma API real do WhatsApp
+}

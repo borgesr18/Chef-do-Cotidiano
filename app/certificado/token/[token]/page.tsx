@@ -19,7 +19,7 @@ export default function PaginaCertificado() {
     const buscarCertificado = async () => {
       const { data, error } = await supabase
         .from('certificados')
-        .select('id, curso(titulo), usuario(nome, email), data_emissao, hashVerificacao')
+        .select('*')
         .eq('token', token)
         .single()
 
@@ -50,7 +50,7 @@ export default function PaginaCertificado() {
       await supabase.from('auditoria_certificado').insert({
         certificadoId: data.id,
         acessado_em: new Date().toISOString(),
-        email: data.usuario.email,
+        email: data.email || 'email@exemplo.com',
         ip,
       })
 
@@ -60,7 +60,7 @@ export default function PaginaCertificado() {
         .eq('certificadoId', data.id)
         .eq('ip', ip)
 
-      if (count >= 5) {
+      if (count && count >= 5) {
         await supabase.from('ip_bloqueado').upsert({
           certificadoId: data.id,
           ip,
@@ -83,9 +83,9 @@ export default function PaginaCertificado() {
     doc.text('Certificado de Conclusão', 105, 30, { align: 'center' })
 
     doc.setFontSize(16)
-    doc.text(`Certificamos que ${certificado.usuario.nome}`, 105, 50, { align: 'center' })
-    doc.text(`concluiu o curso "${certificado.curso.titulo}"`, 105, 60, { align: 'center' })
-    doc.text(`em ${new Date(certificado.data_emissao).toLocaleDateString()}`, 105, 70, { align: 'center' })
+    doc.text(`Certificamos que ${certificado.nome || 'Nome do Usuário'}`, 105, 50, { align: 'center' })
+    doc.text(`concluiu o curso "${certificado.titulo || 'Título do Curso'}"`, 105, 60, { align: 'center' })
+    doc.text(`em ${new Date(certificado.criadoEm).toLocaleDateString()}`, 105, 70, { align: 'center' })
 
     doc.setFontSize(10)
     doc.text(`Verifique este certificado em: ${urlAtual}`, 105, 90, { align: 'center' })
@@ -106,11 +106,11 @@ export default function PaginaCertificado() {
     <div className="min-h-screen bg-white p-10 text-center space-y-6">
       <h1 className="text-3xl font-bold text-gray-800">🎓 Certificado de Conclusão</h1>
       <p className="text-lg text-gray-700">Certificamos que</p>
-      <h2 className="text-2xl font-semibold text-black">{certificado.usuario.nome}</h2>
+      <h2 className="text-2xl font-semibold text-black">{certificado.nome || 'Nome do Usuário'}</h2>
       <p className="text-lg text-gray-700">concluiu com êxito o curso</p>
-      <h3 className="text-xl italic text-gray-800">"{certificado.curso.titulo}"</h3>
+      <h3 className="text-xl italic text-gray-800">"{certificado.titulo || 'Título do Curso'}"</h3>
       <p className="text-sm text-gray-500">
-        em {new Date(certificado.data_emissao).toLocaleDateString()}
+        em {new Date(certificado.criadoEm).toLocaleDateString()}
       </p>
 
       <div className="mt-8">

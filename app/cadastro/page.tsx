@@ -33,6 +33,7 @@ export default function Cadastro() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full mb-2 p-2 border"
+          required
         />
         <input
           type="password"

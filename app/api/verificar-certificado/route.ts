@@ -21,6 +21,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ status: 'ok' });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Erro interno do servidor' }, { status: 500 });
   }
 }

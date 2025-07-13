@@ -15,14 +15,14 @@ export async function GET(req: Request) {
 
     const certificados = await prisma.certificado.findMany({
       where: filtroData ? {
-        data_emissao: filtroData
+        criadoEm: filtroData
       } : undefined,
       include: {
         curso: true,
         usuario: true,
       },
       orderBy: {
-        data_emissao: 'desc',
+        criadoEm: 'desc',
       }
     });
 

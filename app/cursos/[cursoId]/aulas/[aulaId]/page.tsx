@@ -24,7 +24,7 @@ export default function AulaPage() {
       } = await supabase.auth.getUser();
       if (!user) return router.push('/login');
       setUserId(user.id);
-      setUserEmail(user.email);
+      setUserEmail(user.email || '');
 
       const { data } = await supabase
         .from('aulas')

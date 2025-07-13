@@ -35,7 +35,7 @@ export default function ConfiguracoesAluno() {
     await supabase.from('usuarios').update({
       notificaEmail: email,
       notificaWhatsapp: whatsapp
-    }).eq('id', user.id);
+    }).eq('id', user?.id);
     alert('Preferências salvas com sucesso!');
   };
 
