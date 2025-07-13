@@ -1,8 +1,9 @@
-app/admin/cursos/[id]/page.tsx — Edição de Curso Existente
+// app/admin/cursos/[id]/page.tsx — Edição de Curso Existente
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/auth-client';
 
 export default function EditarCurso() {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function EditarCurso() {
       setAutor(data.autor);
       setCarregando(false);
     };
+
     if (cursoId) carregarCurso();
   }, [cursoId]);
 
@@ -39,14 +41,19 @@ export default function EditarCurso() {
     if (!titulo || !descricao || !imagemUrl || !autor) {
       return setErro('Preencha todos os campos');
     }
-    const { error } = await supabase.from('cursos').update({
-      titulo,
-      descricao,
-      imagem_url: imagemUrl,
-      autor,
-    }).eq('id', cursoId);
+
+    const { error } = await supabase
+      .from('cursos')
+      .update({
+        titulo,
+        descricao,
+        imagem_url: imagemUrl,
+        autor,
+      })
+      .eq('id', cursoId);
 
     if (error) return setErro(error.message);
+
     router.push('/admin/cursos');
   };
 
@@ -91,3 +98,4 @@ export default function EditarCurso() {
     </div>
   );
 }
+
