@@ -1,7 +1,8 @@
-//app/admin/perfis/page.tsx — Painel de gerenciamento de perfis
+// app/admin/perfis/page.tsx — Painel de gerenciamento de perfis
 'use client';
+
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/auth-client'; // cliente browser
 import { requireAdmin } from '@/lib/roleCheck';
 
 export default function GerenciarPerfis() {
@@ -24,7 +25,10 @@ export default function GerenciarPerfis() {
   }, []);
 
   const promoverParaAdmin = async (userId: string) => {
-    const { error } = await supabase.from('perfis').upsert({ user_id: userId, tipo: 'admin' });
+    const { error } = await supabase
+      .from('perfis')
+      .upsert({ user_id: userId, tipo: 'admin' });
+
     if (error) alert('Erro ao promover');
     else alert('Usuário promovido a admin');
   };
@@ -55,7 +59,6 @@ export default function GerenciarPerfis() {
                   >
                     Tornar Admin
                   </button>
-                  {/* Botão de remover perfil será adicionado depois */}
                 </td>
               </tr>
             ))}
@@ -65,3 +68,4 @@ export default function GerenciarPerfis() {
     </div>
   );
 }
+
