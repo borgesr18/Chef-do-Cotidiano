@@ -7,4 +7,3 @@ import { cookies } from 'next/headers';
 export const createSupabaseServerClient = () => {
   return createServerComponentClient({ cookies });
 };
-
