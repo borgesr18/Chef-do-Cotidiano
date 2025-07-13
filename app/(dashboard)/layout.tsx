@@ -1,18 +1,17 @@
 // app/(dashboard)/layout.tsx
 import { ReactNode } from "react";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/auth-server";
 
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/ui/Header";
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    return redirect("/login");
+    redirect("/login");
   }
 
   return (
@@ -25,3 +24,4 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     </div>
   );
 }
+
