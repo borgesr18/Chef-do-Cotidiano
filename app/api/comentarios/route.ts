@@ -1,12 +1,26 @@
-//app/api/comentarios/route.ts
+// app/api/comentarios/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { notificarUsuario } from '@/lib/notificar';
-import { getUsuarioAutenticado } from '@/lib/auth';
+import { createSupabaseEdgeClient } from '@/lib/auth-edge';
+
+async function getUsuarioAutenticadoEdge() {
+  const supabase = createSupabaseEdgeClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  // Aqui você pode complementar com dados do usuário no banco (opcional)
+  const usuario = await prisma.usuario.findUnique({
+    where: { id: user.id },
+  });
+
+  return usuario;
+}
 
 export async function POST(req: NextRequest) {
-  const usuario = await getUsuarioAutenticado();
+  const usuario = await getUsuarioAutenticadoEdge();
 
   if (!usuario) {
     return NextResponse.json({ erro: 'Não autenticado' }, { status: 401 });
