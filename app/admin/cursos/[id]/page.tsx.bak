@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { supabase } from '@/lib/auth-client-client';
+import { supabase } from '@/lib/auth-client';
 
 export default function EditarCurso() {
   const router = useRouter();

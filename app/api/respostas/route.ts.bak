@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { notificarUsuario } from '@/lib/notificar';
-import { createSupabaseEdgeClient } from '@/lib/auth-client-edge';
+import { createSupabaseEdgeClient } from '@/lib/auth-edge';
 
 export async function POST(req: NextRequest) {
   const usuario = await getUsuarioAutenticado();

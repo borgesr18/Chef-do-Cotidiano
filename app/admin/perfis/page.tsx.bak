@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/auth-client-client'; // cliente browser
+import { supabase } from '@/lib/auth-client'; // cliente browser
 import { requireAdmin } from '@/lib/roleCheck';
 
 export default function GerenciarPerfis() {

@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { notificarUsuario } from '@/lib/notificar';
-import { createSupabaseEdgeClient } from '@/lib/auth-client-edge';
+import { createSupabaseEdgeClient } from '@/lib/auth-edge';
 
 // Garante que estamos rodando no ambiente correto (Node.js)
 export const runtime = 'nodejs';
