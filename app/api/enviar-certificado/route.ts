@@ -1,18 +1,19 @@
-//app/api/enviar-certificado/route.ts
+// app/api/enviar-certificado/route.ts
+
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export async function POST(req: Request) {
-  const { email, url } = await req.json();
-
-  if (!email || !url) {
-    return NextResponse.json({ error: 'Dados incompletos' }, { status: 400 });
-  }
-
   try {
-    const { data, error } = await resend.emails.send({
+    const { email, url } = await req.json();
+
+    if (!email || !url) {
+      return NextResponse.json({ error: 'Dados incompletos' }, { status: 400 });
+    }
+
+    const { error } = await resend.emails.send({
       from: 'Chef do Cotidiano <nao-responda@chefdocotidiano.com>',
       to: email,
       subject: '📄 Seu Certificado – Chef do Cotidiano',
@@ -23,13 +24,19 @@ export async function POST(req: Request) {
         <br/>
         <p>Obrigado por cozinhar com a gente 🍳</p>
         <p>Equipe Chef do Cotidiano</p>
-      `
+      `,
     });
 
-    if (error) throw error;
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    return NextResponse.json({ error: err }, { status: 500 });
+  } catch (err: any) {
+    return NextResponse.json(
+      { error: err?.message || 'Erro inesperado' },
+      { status: 500 }
+    );
   }
 }
+
