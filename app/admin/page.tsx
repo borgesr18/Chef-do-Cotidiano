@@ -1,7 +1,9 @@
-//app/admin/page.tsx — Página inicial do Painel Administrativo
+// app/admin/page.tsx — Página inicial do Painel Administrativo
+'use client';
+
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/auth-client';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -23,6 +25,7 @@ export default function AdminDashboard() {
       if (perfil?.tipo !== 'admin') return router.push('/');
       setTipo('admin');
     };
+
     verificarAdmin();
   }, [router]);
 
@@ -67,4 +70,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
