@@ -1,14 +1,22 @@
-//lib/notificar.ts
+// lib/notificar.ts
+
 import { prisma } from './prisma';
 import { Resend } from 'resend';
 import { v4 as uuidv4 } from 'uuid';
 
-const resend = new Resend(process.env.RESEND_API_KEY || '');
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
-// Simulação de envio WhatsApp (você pode trocar isso futuramente)
+// 📲 Função simulada de envio por WhatsApp
 async function enviarWhatsApp(numero: string, mensagem: string) {
   console.log(`📱 Enviando WhatsApp para ${numero}: ${mensagem}`);
-  return { status: 'simulado' };
+  return { status: 'simulado' }; // Trocar futuramente por integração real
+}
+
+interface NotificarUsuarioParams {
+  userId: string;
+  titulo: string;
+  mensagem: string;
+  tipo: 'comentario' | 'certificado' | 'aula' | 'resposta';
 }
 
 export async function notificarUsuario({
@@ -16,37 +24,35 @@ export async function notificarUsuario({
   titulo,
   mensagem,
   tipo,
-}: {
-  userId: string;
-  titulo: string;
-  mensagem: string;
-  tipo: 'comentario' | 'certificado' | 'aula' | 'resposta';
-}) {
+}: NotificarUsuarioParams) {
   const usuario = await prisma.usuario.findUnique({
     where: { id: userId },
   });
 
-  if (!usuario) return;
+  if (!usuario) {
+    console.warn(`Usuário com ID ${userId} não encontrado.`);
+    return [];
+  }
 
-  const notificacoesEnviadas = [];
+  const notificacoesEnviadas: { canal: string; status: string }[] = [];
 
-  // 📨 Enviar por e-mail se permitido
+  // 📨 Enviar e-mail (Resend)
   if (usuario.notificaEmail && usuario.email) {
     try {
-      await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: 'Chef do Cotidiano <no-reply@chefdocotidiano.com>',
         to: usuario.email,
         subject: titulo,
         html: `<p>${mensagem}</p>`,
       });
 
-      notificacoesEnviadas.push({
-        canal: 'email',
-        status: 'sucesso',
-      });
+      if (error) throw error;
+
+      notificacoesEnviadas.push({ canal: 'email', status: 'sucesso' });
 
       await prisma.notificacao.create({
         data: {
+          id: uuidv4(),
           userId,
           titulo,
           mensagem,
@@ -55,22 +61,20 @@ export async function notificarUsuario({
         },
       });
     } catch (e) {
-      console.error('Erro ao enviar e-mail:', e);
+      console.error(`Erro ao enviar e-mail para ${usuario.email}:`, e);
     }
   }
 
-  // 📲 Enviar por WhatsApp se permitido
+  // 📲 Enviar WhatsApp (simulado ou real)
   if (usuario.notificaWhatsapp && usuario.telefone) {
     try {
       await enviarWhatsApp(usuario.telefone, mensagem);
 
-      notificacoesEnviadas.push({
-        canal: 'whatsapp',
-        status: 'simulado',
-      });
+      notificacoesEnviadas.push({ canal: 'whatsapp', status: 'simulado' });
 
       await prisma.notificacao.create({
         data: {
+          id: uuidv4(),
           userId,
           titulo,
           mensagem,
@@ -79,7 +83,7 @@ export async function notificarUsuario({
         },
       });
     } catch (e) {
-      console.error('Erro ao enviar WhatsApp:', e);
+      console.error(`Erro ao enviar WhatsApp para ${usuario.telefone}:`, e);
     }
   }
 
