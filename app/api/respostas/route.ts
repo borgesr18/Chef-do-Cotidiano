@@ -2,8 +2,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getUsuarioAutenticado } from '@/lib/auth';
 import { notificarUsuario } from '@/lib/notificar';
+import { createSupabaseEdgeClient } from '@/lib/auth-edge';
 
 export async function POST(req: NextRequest) {
   const usuario = await getUsuarioAutenticado();
