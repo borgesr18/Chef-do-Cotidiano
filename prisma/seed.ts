@@ -1,10 +1,50 @@
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
+import { createClient } from '@supabase/supabase-js';
 
 const prisma = new PrismaClient();
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+);
+
 async function main() {
-  // 🔐 Criar usuários
+  // 🔐 Criar usuários no Supabase Auth primeiro
+  console.log('🔐 Criando usuários no Supabase Auth...');
+  
+  const { data: adminAuth, error: adminAuthError } = await supabase.auth.admin.createUser({
+    email: 'admin@chefdocotidiano.com',
+    password: 'admin123',
+    email_confirm: true
+  });
+
+  if (adminAuthError && !adminAuthError.message.includes('already registered')) {
+    console.error('Erro ao criar admin no Supabase:', adminAuthError);
+  } else {
+    console.log('✅ Admin criado/encontrado no Supabase Auth');
+  }
+
+  const { data: alunoAuth, error: alunoAuthError } = await supabase.auth.admin.createUser({
+    email: 'aluno@exemplo.com',
+    password: 'aluno123',
+    email_confirm: true
+  });
+
+  if (alunoAuthError && !alunoAuthError.message.includes('already registered')) {
+    console.error('Erro ao criar aluno no Supabase:', alunoAuthError);
+  } else {
+    console.log('✅ Aluno criado/encontrado no Supabase Auth');
+  }
+
+  // 🔐 Criar usuários no banco Prisma
+  console.log('🔐 Criando usuários no banco Prisma...');
   const senhaAdmin = await hash('admin123', 10);
   const senhaAluno = await hash('aluno123', 10);
 
@@ -12,6 +52,7 @@ async function main() {
     where: { email: 'admin@chefdocotidiano.com' },
     update: {},
     create: {
+      id: adminAuth?.user?.id || 'admin-fallback-id',
       nome: 'Administrador',
       email: 'admin@chefdocotidiano.com',
       senha: senhaAdmin,
@@ -23,6 +64,7 @@ async function main() {
     where: { email: 'aluno@exemplo.com' },
     update: {},
     create: {
+      id: alunoAuth?.user?.id || 'aluno-fallback-id',
       nome: 'Aluno Teste',
       email: 'aluno@exemplo.com',
       senha: senhaAluno,
@@ -36,6 +78,7 @@ async function main() {
         titulo: 'Culinária Básica',
         descricao: 'Aprenda o essencial da cozinha prática',
         imagem_url: 'https://via.placeholder.com/300x200.png?text=Culinária+Básica',
+        autorId: admin.id,
         aulas: {
           createMany: {
             data: [
@@ -51,6 +94,7 @@ async function main() {
         titulo: 'Carnes e Grelhados',
         descricao: 'Domine o preparo de carnes suculentas e grelhados perfeitos',
         imagem_url: 'https://via.placeholder.com/300x200.png?text=Carnes+e+Grelhados',
+        autorId: admin.id,
         aulas: {
           createMany: {
             data: [
@@ -66,6 +110,7 @@ async function main() {
         titulo: 'Cozinha Rápida e Saudável',
         descricao: 'Receitas rápidas, práticas e equilibradas para o dia a dia',
         imagem_url: 'https://via.placeholder.com/300x200.png?text=Cozinha+Saudável',
+        autorId: admin.id,
         aulas: {
           createMany: {
             data: [
