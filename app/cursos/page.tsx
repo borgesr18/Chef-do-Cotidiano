@@ -35,17 +35,27 @@ export default function Cursos() {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-2">Cursos</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="container mx-auto px-6 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          Nossos Cursos
+        </h1>
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          Aprenda culinária prática com nossos cursos especializados
+        </p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {cursos.map((curso) => (
-          <div key={curso.id} className="bg-white rounded shadow p-4">
-            <img src={curso.imagem_url} alt={curso.titulo} className="w-full h-40 object-cover rounded" />
-            <h3 className="mt-2 font-bold">{curso.titulo}</h3>
-            <p className="text-sm text-gray-600">{curso.descricao}</p>
+          <div key={curso.id} className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 transition-all duration-200 hover:shadow-xl hover:scale-[1.02] group">
+            <div className="relative overflow-hidden rounded-lg mb-4">
+              <img src={curso.imagem_url} alt={curso.titulo} className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">{curso.titulo}</h3>
+            <p className="text-gray-600 text-sm mb-4">{curso.descricao}</p>
             <button
               onClick={() => handleInscrever(curso.id)}
-              className="mt-2 bg-black text-white px-4 py-2 rounded"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full"
             >
               Inscrever-se
             </button>
