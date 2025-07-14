@@ -23,30 +23,42 @@ export default async function Dashboard() {
   ];
 
   return (
-    <div className="p-8 space-y-12">
-      <h1 className="text-2xl font-bold mb-4">Bem-vindo, {user.email}</h1>
+    <div className="container mx-auto px-6 py-12">
+      <div className="mb-12">
+        <h1 className="text-4xl font-display font-bold text-neutral-900 mb-2">
+          Bem-vindo de volta! 👋
+        </h1>
+        <p className="text-xl text-neutral-600">{user.email}</p>
+      </div>
 
-      <section>
-        <h2 className="text-xl font-semibold mb-2">Receitas Salvas</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section className="mb-16">
+        <h2 className="text-3xl font-display font-semibold text-neutral-900 mb-8">Receitas Salvas</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {receitasSalvas.map((receita) => (
-            <div key={receita.id} className="bg-white rounded shadow p-4">
-              <img src={receita.imagem} alt={receita.titulo} className="w-full h-40 object-cover rounded" />
-              <h3 className="mt-2 font-bold">{receita.titulo}</h3>
-              <p className="text-sm text-gray-600">Tempo: {receita.tempo}</p>
+            <div key={receita.id} className="card group cursor-pointer">
+              <div className="relative overflow-hidden rounded-lg mb-4">
+                <img src={receita.imagem} alt={receita.titulo} className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-neutral-700">
+                  ⏱️ {receita.tempo}
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-2 group-hover:text-primary-600 transition-colors">{receita.titulo}</h3>
+              <p className="text-neutral-600 text-sm">Tempo: {receita.tempo}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold mb-2">Cursos Inscritos</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <h2 className="text-3xl font-display font-semibold text-neutral-900 mb-8">Cursos Inscritos</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {cursosInscritos.map((curso) => (
-            <div key={curso.id} className="bg-white rounded shadow p-4">
-              <img src={curso.imagem} alt={curso.titulo} className="w-full h-40 object-cover rounded" />
-              <h3 className="mt-2 font-bold">{curso.titulo}</h3>
-              <p className="text-sm text-gray-600">{curso.descricao}</p>
+            <div key={curso.id} className="card group cursor-pointer">
+              <div className="relative overflow-hidden rounded-lg mb-4">
+                <img src={curso.imagem} alt={curso.titulo} className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-2 group-hover:text-primary-600 transition-colors">{curso.titulo}</h3>
+              <p className="text-neutral-600 text-sm">{curso.descricao}</p>
             </div>
           ))}
         </div>

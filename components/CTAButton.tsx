@@ -1,13 +1,26 @@
-//components/CTAButton.tsx
+import Link from 'next/link';
+
 interface CTAButtonProps {
   children: React.ReactNode;
-  href: string;
+  href?: string;
+  onClick?: () => void;
+  variant?: 'primary' | 'secondary';
 }
 
-export default function CTAButton({ children, href }: CTAButtonProps) {
+export default function CTAButton({ children, href, onClick, variant = 'primary' }: CTAButtonProps) {
+  const className = variant === 'primary' ? 'btn-primary' : 'btn-secondary';
+
+  if (href) {
+    return (
+      <Link href={href} className={className}>
+        {children}
+      </Link>
+    );
+  }
+
   return (
-    <a href={href} className="inline-block bg-black text-white px-6 py-3 rounded hover:bg-gray-800">
+    <button onClick={onClick} className={className}>
       {children}
-    </a>
+    </button>
   );
 }
