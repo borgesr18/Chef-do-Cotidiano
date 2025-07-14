@@ -65,32 +65,45 @@ export default function DashboardAdmin() {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">📊 Dashboard de Certificados</h1>
-
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <input
-          type="date"
-          value={filtroInicio}
-          onChange={(e) => setFiltroInicio(e.target.value)}
-          className="border rounded px-2 py-1"
-        />
-        <input
-          type="date"
-          value={filtroFim}
-          onChange={(e) => setFiltroFim(e.target.value)}
-          className="border rounded px-2 py-1"
-        />
-        <button
-          onClick={buscarCertificados}
-          className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
-        >
-          🔍 Filtrar
-        </button>
+    <div className="container mx-auto px-6 py-12">
+      <div className="mb-12">
+        <h1 className="text-4xl font-display font-bold text-neutral-900 mb-4 flex items-center">
+          <span className="mr-3">📊</span>
+          Dashboard de Certificados
+        </h1>
+        <p className="text-xl text-neutral-600">Acompanhe as métricas e relatórios de certificados emitidos</p>
       </div>
 
-      <div className="text-sm text-gray-700 mb-6">
-        Total de certificados encontrados: <strong>{certificados.length}</strong>
+      <div className="card mb-8">
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">Filtros</h3>
+        <div className="flex flex-col md:flex-row gap-4">
+          <input
+            type="date"
+            value={filtroInicio}
+            onChange={(e) => setFiltroInicio(e.target.value)}
+            className="input-field"
+          />
+          <input
+            type="date"
+            value={filtroFim}
+            onChange={(e) => setFiltroFim(e.target.value)}
+            className="input-field"
+          />
+          <button
+            onClick={buscarCertificados}
+            className="btn-primary flex items-center"
+          >
+            <span className="mr-2">🔍</span>
+            Filtrar
+          </button>
+        </div>
+      </div>
+
+      <div className="card mb-8">
+        <div className="text-center">
+          <div className="text-3xl font-bold text-primary-600 mb-2">{certificados.length}</div>
+          <div className="text-neutral-600">Total de certificados encontrados</div>
+        </div>
       </div>
 
       {/* GRÁFICO POR MÊS */}
@@ -123,35 +136,53 @@ export default function DashboardAdmin() {
         </ResponsiveContainer>
       </div>
 
-      {/* TABELA DETALHADA */}
-      {carregando ? (
-        <p>🔄 Carregando certificados...</p>
-      ) : (
-        <div className="overflow-auto">
-          <table className="min-w-full text-sm border">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border px-2 py-1 text-left">Curso</th>
-                <th className="border px-2 py-1 text-left">Aluno</th>
-                <th className="border px-2 py-1 text-left">E-mail</th>
-                <th className="border px-2 py-1 text-left">Data de Emissão</th>
-              </tr>
-            </thead>
-            <tbody>
-              {certificados.map((c) => (
-                <tr key={c.id}>
-                  <td className="border px-2 py-1">{c.curso?.titulo}</td>
-                  <td className="border px-2 py-1">{c.usuario?.nome}</td>
-                  <td className="border px-2 py-1">{c.usuario?.email}</td>
-                  <td className="border px-2 py-1">
-                    {new Date(c.data_emissao).toLocaleDateString()}
-                  </td>
+      <div className="card">
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">📚 Certificados por Curso</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={porCurso}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="curso" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="total" fill="#10B981" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="card">
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">📋 Detalhes dos Certificados</h3>
+        {carregando ? (
+          <div className="text-center py-8">
+            <div className="text-primary-600 text-lg">🔄 Carregando certificados...</div>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className="border-b border-neutral-200">
+                  <th className="text-left py-3 px-4 font-semibold text-neutral-900">Curso</th>
+                  <th className="text-left py-3 px-4 font-semibold text-neutral-900">Aluno</th>
+                  <th className="text-left py-3 px-4 font-semibold text-neutral-900">E-mail</th>
+                  <th className="text-left py-3 px-4 font-semibold text-neutral-900">Data de Emissão</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {certificados.map((c) => (
+                  <tr key={c.id} className="border-b border-neutral-100 hover:bg-neutral-50 transition-colors">
+                    <td className="py-3 px-4 text-neutral-700">{c.curso?.titulo}</td>
+                    <td className="py-3 px-4 text-neutral-700">{c.usuario?.nome}</td>
+                    <td className="py-3 px-4 text-neutral-700">{c.usuario?.email}</td>
+                    <td className="py-3 px-4 text-neutral-700">
+                      {new Date(c.data_emissao).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
