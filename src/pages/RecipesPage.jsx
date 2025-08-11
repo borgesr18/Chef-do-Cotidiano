@@ -17,6 +17,7 @@ import {
 import { useRecipes } from '../hooks/useRecipes'
 import { useCategories } from '../hooks/useCategories'
 import { generateSlug } from '../lib/utils'
+import { SEO } from '../components/SEO'
 
 export const RecipesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -149,6 +150,12 @@ export const RecipesPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Receitas - Chef do Cotidiano"
+        description="Explore nossa coleção completa de receitas deliciosas. Encontre pratos principais, sobremesas, lanches e muito mais."
+        image="/og-recipes.jpg"
+      />
+      
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <nav className="text-sm text-muted-foreground mb-4">
