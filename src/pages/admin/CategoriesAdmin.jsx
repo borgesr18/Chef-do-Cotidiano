@@ -47,7 +47,7 @@ export const CategoriesAdmin = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true)
-      const { data, error } = await categories.getAll()
+      const { data, error } = await categories.getAllForAdmin()
       if (error) throw error
       setCategoriesList(data || [])
     } catch (error) {
