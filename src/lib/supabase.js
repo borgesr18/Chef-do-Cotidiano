@@ -413,5 +413,498 @@ export const storage = {
   }
 }
 
+// Funções para gerenciar cursos
+export const courses = {
+  // Buscar todos os cursos
+  getAll: async (limit = 10, offset = 0) => {
+    const { data, error } = await supabase
+      .from('courses')
+      .select(`
+        *,
+        profiles:instructor_id (
+          full_name,
+          avatar_url
+        ),
+        categories (
+          name,
+          slug
+        )
+      `)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+    
+    return { data, error }
+  },
+
+  // Buscar curso por slug
+  getBySlug: async (slug) => {
+    const { data, error } = await supabase
+      .from('courses')
+      .select(`
+        *,
+        profiles:instructor_id (
+          full_name,
+          avatar_url,
+          bio
+        ),
+        categories (
+          name,
+          slug
+        ),
+        course_modules (
+          *,
+          course_lessons (
+            *
+          )
+        )
+      `)
+      .eq('slug', slug)
+      .eq('status', 'published')
+      .single()
+    
+    return { data, error }
+  },
+
+  // Criar curso
+  create: async (courseData) => {
+    const { data, error } = await supabase
+      .from('courses')
+      .insert([courseData])
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Atualizar curso
+  update: async (id, courseData) => {
+    const { data, error } = await supabase
+      .from('courses')
+      .update(courseData)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Deletar curso
+  delete: async (id) => {
+    const { error } = await supabase
+      .from('courses')
+      .delete()
+      .eq('id', id)
+    
+    return { error }
+  }
+}
+
+// Funções para gerenciar módulos de curso
+export const courseModules = {
+  // Buscar módulos por curso
+  getByCourse: async (courseId) => {
+    const { data, error } = await supabase
+      .from('course_modules')
+      .select(`
+        *,
+        course_lessons (
+          *
+        )
+      `)
+      .eq('course_id', courseId)
+      .order('sort_order', { ascending: true })
+    
+    return { data, error }
+  },
+
+  create: async (moduleData) => {
+    const { data, error } = await supabase
+      .from('course_modules')
+      .insert([moduleData])
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Atualizar módulo
+  update: async (id, moduleData) => {
+    const { data, error } = await supabase
+      .from('course_modules')
+      .update(moduleData)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Deletar módulo
+  delete: async (id) => {
+    const { error } = await supabase
+      .from('course_modules')
+      .delete()
+      .eq('id', id)
+    
+    return { error }
+  }
+}
+
+// Funções para gerenciar aulas
+export const courseLessons = {
+  // Buscar aulas por módulo
+  getByModule: async (moduleId) => {
+    const { data, error } = await supabase
+      .from('course_lessons')
+      .select('*')
+      .eq('module_id', moduleId)
+      .order('sort_order', { ascending: true })
+    
+    return { data, error }
+  },
+
+  create: async (lessonData) => {
+    const { data, error } = await supabase
+      .from('course_lessons')
+      .insert([lessonData])
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Atualizar aula
+  update: async (id, lessonData) => {
+    const { data, error } = await supabase
+      .from('course_lessons')
+      .update(lessonData)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Deletar aula
+  delete: async (id) => {
+    const { error } = await supabase
+      .from('course_lessons')
+      .delete()
+      .eq('id', id)
+    
+    return { error }
+  }
+}
+
+// Funções para gerenciar matrículas
+export const courseEnrollments = {
+  // Buscar matrículas por curso
+  getByCourse: async (courseId) => {
+    const { data, error } = await supabase
+      .from('course_enrollments')
+      .select(`
+        *,
+        profiles (
+          full_name,
+          avatar_url,
+          email
+        )
+      `)
+      .eq('course_id', courseId)
+      .order('enrolled_at', { ascending: false })
+    
+    return { data, error }
+  },
+
+  enroll: async (courseId, userId) => {
+    const { data, error } = await supabase
+      .from('course_enrollments')
+      .insert([{ course_id: courseId, user_id: userId }])
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Verificar se usuário está matriculado
+  checkEnrollment: async (courseId, userId) => {
+    const { data, error } = await supabase
+      .from('course_enrollments')
+      .select('id')
+      .eq('course_id', courseId)
+      .eq('user_id', userId)
+      .single()
+    
+    return { data: !!data, error }
+  }
+}
+
+// Funções para gerenciar posts do blog
+export const blogPosts = {
+  // Buscar todos os posts
+  getAll: async (limit = 10, offset = 0) => {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select(`
+        *,
+        profiles:author_id (
+          full_name,
+          avatar_url
+        ),
+        categories (
+          name,
+          slug
+        )
+      `)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+    
+    return { data, error }
+  },
+
+  // Buscar posts publicados
+  getPublished: async (limit = 10, offset = 0) => {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select(`
+        *,
+        profiles:author_id (
+          full_name,
+          avatar_url
+        ),
+        categories (
+          name,
+          slug
+        )
+      `)
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+    
+    return { data, error }
+  },
+
+  // Buscar post por slug
+  getBySlug: async (slug) => {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select(`
+        *,
+        profiles:author_id (
+          full_name,
+          avatar_url,
+          bio
+        ),
+        categories (
+          name,
+          slug
+        )
+      `)
+      .eq('slug', slug)
+      .eq('status', 'published')
+      .single()
+    
+    return { data, error }
+  },
+
+  create: async (postData) => {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .insert([postData])
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Atualizar post
+  update: async (id, postData) => {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .update(postData)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Deletar post
+  delete: async (id) => {
+    const { error } = await supabase
+      .from('blog_posts')
+      .delete()
+      .eq('id', id)
+    
+    return { error }
+  }
+}
+
+// Funções para gerenciar usuários (admin)
+export const users = {
+  // Buscar todos os usuários
+  getAll: async (limit = 10, offset = 0) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+    
+    return { data, error }
+  },
+
+  // Buscar usuário por ID
+  getById: async (id) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', id)
+      .single()
+    
+    return { data, error }
+  },
+
+  // Atualizar role do usuário
+  updateRole: async (userId, role) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ role })
+      .eq('id', userId)
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Atualizar perfil do usuário
+  updateProfile: async (userId, profileData) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(profileData)
+      .eq('id', userId)
+      .select()
+      .single()
+    
+    return { data, error }
+  }
+}
+
+// Funções para analytics
+export const analytics = {
+  // Buscar estatísticas do dashboard
+  getDashboardStats: async () => {
+    try {
+      const [recipesResult, usersResult, coursesResult, viewsResult] = await Promise.all([
+        supabase.from('recipes').select('id', { count: 'exact', head: true }),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('courses').select('id', { count: 'exact', head: true }),
+        supabase.from('recipe_analytics').select('views', { count: 'exact', head: true })
+      ])
+
+      return {
+        data: {
+          totalRecipes: recipesResult.count || 0,
+          totalUsers: usersResult.count || 0,
+          totalCourses: coursesResult.count || 0,
+          totalViews: viewsResult.count || 0
+        },
+        error: null
+      }
+    } catch (error) {
+      return { data: null, error }
+    }
+  },
+
+  // Registrar visualização de receita
+  recordRecipeView: async (recipeId, userId = null) => {
+    const { data, error } = await supabase
+      .from('recipe_analytics')
+      .insert([{
+        recipe_id: recipeId,
+        user_id: userId,
+        event_type: 'view'
+      }])
+    
+    return { data, error }
+  },
+
+  // Registrar like em receita
+  recordRecipeLike: async (recipeId, userId) => {
+    const { data, error } = await supabase
+      .from('recipe_analytics')
+      .insert([{
+        recipe_id: recipeId,
+        user_id: userId,
+        event_type: 'like'
+      }])
+    
+    return { data, error }
+  },
+
+  // Buscar receitas mais populares
+  getPopularRecipes: async (limit = 10) => {
+    const { data, error } = await supabase
+      .from('recipe_analytics')
+      .select(`
+        recipe_id,
+        recipes (
+          title,
+          slug,
+          image_url
+        )
+      `)
+      .eq('event_type', 'view')
+      .order('created_at', { ascending: false })
+      .limit(limit)
+    
+    return { data, error }
+  }
+}
+
+// Funções para ingredientes
+export const ingredients = {
+  // Buscar todos os ingredientes
+  getAll: async () => {
+    const { data, error } = await supabase
+      .from('ingredients')
+      .select('*')
+      .order('name', { ascending: true })
+    
+    return { data, error }
+  },
+
+  create: async (ingredientData) => {
+    const { data, error } = await supabase
+      .from('ingredients')
+      .insert([ingredientData])
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Atualizar ingrediente
+  update: async (id, ingredientData) => {
+    const { data, error } = await supabase
+      .from('ingredients')
+      .update(ingredientData)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Deletar ingrediente
+  delete: async (id) => {
+    const { error } = await supabase
+      .from('ingredients')
+      .delete()
+      .eq('id', id)
+    
+    return { error }
+  }
+}
+
 export default supabase
 
