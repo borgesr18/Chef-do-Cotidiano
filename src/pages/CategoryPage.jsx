@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useRecipes } from '../hooks/useRecipes'
 import { useCategories } from '../hooks/useCategories'
+import { SEO } from '../components/SEO'
 
 export const CategoryPage = () => {
   const { category: categorySlug } = useParams()
@@ -122,6 +123,11 @@ export const CategoryPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title={`Receitas de ${currentCategory.name} - Chef do Cotidiano`}
+        description={`Explore nossa coleção de receitas de ${currentCategory.name}. Pratos deliciosos e práticos para o seu dia a dia.`}
+        image="/og-category.jpg"
+      />
       <div className="bg-muted/30 py-16">
         <div className="container mx-auto px-4">
           <nav className="text-sm text-muted-foreground mb-6">

@@ -219,6 +219,25 @@ export const RecipeDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title={`${recipe?.title || 'Receita'} - Chef do Cotidiano`}
+        description={recipe?.description || 'Receita deliciosa do Chef do Cotidiano'}
+        image={recipe?.featured_image || '/og-recipe.jpg'}
+        type="article"
+        article={recipe ? {
+          publishedTime: recipe.created_at,
+          modifiedTime: recipe.updated_at,
+          author: recipe.author_name || 'Chef Rodrigo',
+          tags: recipe.tags || []
+        } : null}
+      />
+      
+      {recipe && (
+        <script type="application/ld+json">
+          {JSON.stringify(generateRecipeStructuredData(recipe))}
+        </script>
+      )}
+      
       <div className="container mx-auto px-4 py-8">
         <nav className="text-sm text-muted-foreground mb-6">
           <Link to="/" className="hover:text-primary">Início</Link>
