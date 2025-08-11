@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext({})
@@ -16,6 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Obter sessão inicial
@@ -110,6 +112,16 @@ export const AuthProvider = ({ children }) => {
         email,
         password
       })
+      
+      if (!error && data.user) {
+        setTimeout(() => {
+          const userProfile = profile || data.user.user_metadata
+          if (userProfile?.role === 'admin' || userProfile?.role === 'super_admin') {
+            navigate('/admin')
+          }
+        }, 1000)
+      }
+      
       return { data, error }
     } finally {
       setLoading(false)

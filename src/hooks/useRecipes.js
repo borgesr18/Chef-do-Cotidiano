@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { recipes } from '../lib/supabase'
+import { generateSlug } from '../lib/utils'
 
 export const useRecipes = (options = {}) => {
   const [data, setData] = useState([])
@@ -98,26 +99,45 @@ export const useRecipes = (options = {}) => {
   // Buscar receitas
   const fetchRecipes = async (offset = 0, reset = false) => {
     try {
+      console.log('fetchRecipes called with:', { offset, reset, category, featured })
       setLoading(true)
       setError(null)
 
       let result
-      if (featured) {
-        // Buscar receitas em destaque
-        result = await recipes.getPublished(limit, offset)
-        if (result.data) {
-          result.data = result.data.filter(recipe => recipe.is_featured)
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('API timeout')), 2000)
+      )
+      
+      try {
+        if (featured) {
+          // Buscar receitas em destaque
+          result = await Promise.race([
+            recipes.getPublished(limit, offset),
+            timeoutPromise
+          ])
+          if (result.data) {
+            result.data = result.data.filter(recipe => recipe.is_featured)
+          }
+        } else if (category) {
+          // Buscar por categoria
+          result = await Promise.race([
+            recipes.getByCategory(category, limit, offset),
+            timeoutPromise
+          ])
+        } else {
+          // Buscar todas as receitas
+          result = await Promise.race([
+            recipes.getPublished(limit, offset),
+            timeoutPromise
+          ])
         }
-      } else if (category) {
-        // Buscar por categoria
-        result = await recipes.getByCategory(category, limit, offset)
-      } else {
-        // Buscar todas as receitas
-        result = await recipes.getPublished(limit, offset)
+      } catch (apiError) {
+        console.log('API call timed out or failed, using mock data')
+        throw apiError
       }
 
       if (result.error) {
-        console.log('API failed, using mock data for recipes')
+        console.log('API failed, using mock data for recipes', { filteredCount: mockRecipes.length })
         let filteredMockRecipes = mockRecipes
         
         if (featured) {
@@ -128,6 +148,7 @@ export const useRecipes = (options = {}) => {
           )
         }
         
+        console.log('Setting mock data:', { count: filteredMockRecipes.length, loading: false })
         setData(filteredMockRecipes)
         setHasMore(false)
         setLoading(false)
@@ -146,7 +167,7 @@ export const useRecipes = (options = {}) => {
       setHasMore(newRecipes.length === limit)
 
     } catch (err) {
-      console.log('API failed, using mock data for recipes')
+      console.log('API failed (catch), using mock data for recipes', { error: err.message })
       let filteredMockRecipes = mockRecipes
       
       if (featured) {
@@ -157,10 +178,13 @@ export const useRecipes = (options = {}) => {
         )
       }
       
+      console.log('Setting mock data (catch):', { count: filteredMockRecipes.length, loading: false })
       setData(filteredMockRecipes)
       setHasMore(false)
       setError(err)
+      setLoading(false)
     } finally {
+      console.log('fetchRecipes finally block - setting loading to false')
       setLoading(false)
     }
   }
@@ -253,21 +277,56 @@ export const useRecipe = (slug) => {
 
     const fetchRecipe = async () => {
       try {
+        console.log('useRecipe fetchRecipe called with slug:', slug)
         setLoading(true)
         setError(null)
 
-        const result = await recipes.getBySlug(slug)
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('API timeout')), 2000)
+        )
+
+        let result
+        try {
+          result = await Promise.race([
+            recipes.getBySlug(slug),
+            timeoutPromise
+          ])
+        } catch (apiError) {
+          console.log('useRecipe API call timed out, using mock data')
+          throw apiError
+        }
         
         if (result.error) {
-          setError(result.error)
+          console.log('useRecipe API failed, using mock data for recipe:', slug)
+          const mockRecipe = mockRecipes.find(r => 
+            r.slug === slug || generateSlug(r.title) === slug
+          )
+          if (mockRecipe) {
+            console.log('Found mock recipe:', mockRecipe.title)
+            setRecipe(mockRecipe)
+          } else {
+            console.log('No mock recipe found for slug:', slug)
+            setError(result.error)
+          }
           return
         }
 
         setRecipe(result.data)
 
       } catch (err) {
-        setError(err)
+        console.log('useRecipe catch block, using mock data for recipe:', slug)
+        const mockRecipe = mockRecipes.find(r => 
+          r.slug === slug || generateSlug(r.title) === slug
+        )
+        if (mockRecipe) {
+          console.log('Found mock recipe in catch:', mockRecipe.title)
+          setRecipe(mockRecipe)
+        } else {
+          console.log('No mock recipe found in catch for slug:', slug)
+          setError(err)
+        }
       } finally {
+        console.log('useRecipe finally block - setting loading to false')
         setLoading(false)
       }
     }

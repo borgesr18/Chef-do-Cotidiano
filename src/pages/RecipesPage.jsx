@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { useRecipes } from '../hooks/useRecipes'
 import { useCategories } from '../hooks/useCategories'
+import { generateSlug } from '../lib/utils'
 
 export const RecipesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -292,62 +293,67 @@ export const RecipesPage = () => {
             ) : (
               <>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredRecipes.map((recipe) => (
-                    <Card key={recipe.id} className="overflow-hidden hover:shadow-xl transition-shadow group">
-                      <div className="relative">
-                        <img 
-                          src={recipe.featured_image || recipe.image} 
-                          alt={recipe.title}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <div className="absolute top-4 right-4">
-                          <Button size="sm" variant="secondary" className="rounded-full">
-                            <Heart className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <Badge className="absolute bottom-4 left-4">
-                          {recipe.category_name || recipe.category}
-                        </Badge>
-                      </div>
-                      
-                      <CardHeader>
-                        <div className="flex justify-between items-start mb-2">
-                          <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                            {recipe.title}
-                          </CardTitle>
-                          <div className="flex items-center space-x-1">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-medium">{recipe.avg_rating || recipe.rating || '4.5'}</span>
-                          </div>
-                        </div>
-                        <CardDescription>{recipe.description}</CardDescription>
-                      </CardHeader>
-                      
-                      <CardContent>
-                        <div className="flex justify-between items-center mb-4">
-                          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                            <div className="flex items-center space-x-1">
-                              <Clock className="h-4 w-4" />
-                              <span>{recipe.total_time || recipe.cookTime || '30'} min</span>
+                  {filteredRecipes.map((recipe) => {
+                    const recipeSlug = recipe.slug || generateSlug(recipe.title)
+                    return (
+                      <Link key={recipe.id} to={`/recipes/${recipeSlug}`}>
+                        <Card className="overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer">
+                          <div className="relative">
+                            <img 
+                              src={recipe.featured_image || recipe.image} 
+                              alt={recipe.title}
+                              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                            <div className="absolute top-4 right-4">
+                              <Button size="sm" variant="secondary" className="rounded-full" onClick={(e) => e.preventDefault()}>
+                                <Heart className="h-4 w-4" />
+                              </Button>
                             </div>
-                            <div className="flex items-center space-x-1">
-                              <Users className="h-4 w-4" />
-                              <span>{recipe.difficulty || 'Médio'}</span>
-                            </div>
+                            <Badge className="absolute bottom-4 left-4">
+                              {recipe.category_name || recipe.category}
+                            </Badge>
                           </div>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">
-                            por {recipe.author_name || recipe.author || 'Chef Rodrigo'}
-                          </span>
-                          <Button size="sm" variant="ghost">
-                            <Share2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                          
+                          <CardHeader>
+                            <div className="flex justify-between items-start mb-2">
+                              <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                                {recipe.title}
+                              </CardTitle>
+                              <div className="flex items-center space-x-1">
+                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                <span className="text-sm font-medium">{recipe.avg_rating || recipe.rating || '4.5'}</span>
+                              </div>
+                            </div>
+                            <CardDescription>{recipe.description}</CardDescription>
+                          </CardHeader>
+                          
+                          <CardContent>
+                            <div className="flex justify-between items-center mb-4">
+                              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                                <div className="flex items-center space-x-1">
+                                  <Clock className="h-4 w-4" />
+                                  <span>{recipe.total_time || recipe.cookTime || '30'} min</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <Users className="h-4 w-4" />
+                                  <span>{recipe.difficulty || 'Médio'}</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-muted-foreground">
+                                por {recipe.author_name || recipe.author || 'Chef Rodrigo'}
+                              </span>
+                              <Button size="sm" variant="ghost" onClick={(e) => e.preventDefault()}>
+                                <Share2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    )
+                  })}
                 </div>
 
                 {hasMore && (
