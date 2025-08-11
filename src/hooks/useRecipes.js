@@ -104,35 +104,22 @@ export const useRecipes = (options = {}) => {
       setError(null)
 
       let result
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('API timeout')), 2000)
-      )
-      
       try {
         if (featured) {
           // Buscar receitas em destaque
-          result = await Promise.race([
-            recipes.getPublished(limit, offset),
-            timeoutPromise
-          ])
+          result = await recipes.getPublished(limit, offset)
           if (result.data) {
             result.data = result.data.filter(recipe => recipe.is_featured)
           }
         } else if (category) {
           // Buscar por categoria
-          result = await Promise.race([
-            recipes.getByCategory(category, limit, offset),
-            timeoutPromise
-          ])
+          result = await recipes.getByCategory(category, limit, offset)
         } else {
           // Buscar todas as receitas
-          result = await Promise.race([
-            recipes.getPublished(limit, offset),
-            timeoutPromise
-          ])
+          result = await recipes.getPublished(limit, offset)
         }
       } catch (apiError) {
-        console.log('API call timed out or failed, using mock data')
+        console.log('API call failed, using mock data as fallback in dev')
         throw apiError
       }
 

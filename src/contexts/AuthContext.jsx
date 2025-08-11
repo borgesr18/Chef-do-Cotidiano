@@ -69,23 +69,22 @@ export const AuthProvider = ({ children }) => {
   const loadUserProfile = async (userId) => {
     console.log('loadUserProfile called for userId:', userId)
     try {
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Query timeout')), 5000)
-      )
-      
-      const queryPromise = supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle()
-      
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise])
 
       console.log('Profile query result:', { data, error })
 
-      if (!data && !error) {
+      if (error) {
+        console.error('Erro ao carregar perfil:', error)
+        setProfile(null)
+        return
+      }
+
+      if (!data) {
         console.log('Profile not found, creating new profile...')
-        // Perfil não existe, criar um novo
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
           .insert([
@@ -102,48 +101,19 @@ export const AuthProvider = ({ children }) => {
 
         if (createError) {
           console.error('Erro ao criar perfil:', createError)
-          console.log('Creating temporary profile in memory...')
-          const tempProfile = {
-            id: userId,
-            full_name: user?.user_metadata?.full_name || 'Admin User',
-            avatar_url: user?.user_metadata?.avatar_url || '',
-            role: 'admin',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }
-          setProfile(tempProfile)
-        } else {
-          console.log('Profile created successfully:', newProfile)
-          setProfile(newProfile)
+          setProfile(null)
+          return
         }
-      } else if (error) {
-        console.error('Erro ao carregar perfil:', error)
-        console.log('Creating temporary profile due to query error...')
-        const tempProfile = {
-          id: userId,
-          full_name: user?.user_metadata?.full_name || 'Admin User',
-          avatar_url: user?.user_metadata?.avatar_url || '',
-          role: 'admin',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-        setProfile(tempProfile)
-      } else {
-        console.log('Profile loaded successfully:', data)
-        setProfile(data)
+
+        setProfile(newProfile)
+        return
       }
+
+      console.log('Profile loaded successfully:', data)
+      setProfile(data)
     } catch (error) {
       console.error('Erro ao carregar perfil:', error)
-      console.log('Creating temporary profile due to catch error...')
-      const tempProfile = {
-        id: userId,
-        full_name: user?.user_metadata?.full_name || 'Admin User',
-        avatar_url: user?.user_metadata?.avatar_url || '',
-        role: 'admin',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-      setProfile(tempProfile)
+      setProfile(null)
     }
   }
 

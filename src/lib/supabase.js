@@ -11,8 +11,8 @@ if (
   (supabaseUrl.includes('placeholder') || supabaseAnonKey.endsWith('.placeholder'))
 ) {
   // eslint-disable-next-line no-console
-  console.warn(
-    '[Supabase] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Using placeholders will cause 403 errors. Configure your .env with valid project credentials.'
+  console.error(
+    '[Supabase] Credenciais ausentes. Configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY. Usar placeholders causará 403.'
   )
 }
 
@@ -25,7 +25,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
   global: {
     headers: {
-      Accept: 'application/json'
+      Accept: 'application/json',
+      apikey: supabaseAnonKey
     }
   }
 })
