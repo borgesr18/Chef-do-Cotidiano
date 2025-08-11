@@ -13,19 +13,9 @@ export const usePayment = () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('User not authenticated')
 
-      const enrollmentData = {
-        user_id: user.id,
-        course_id: courseId,
-        enrollment_date: new Date().toISOString(),
-        payment_status: 'pending',
-        payment_method: paymentData.method,
-        amount_paid: paymentData.amount,
-        transaction_id: paymentData.transactionId
-      }
-
       const { data, error } = await supabase
         .from('course_enrollments')
-        .insert([enrollmentData])
+        .insert([{ user_id: user.id, course_id: courseId }])
         .select()
         .single()
 
@@ -45,13 +35,10 @@ export const usePayment = () => {
       setLoading(true)
       setError(null)
 
+      // Placeholder: tabela de pagamentos não existe no schema atual; ajuste quando implementar.
       const { data, error } = await supabase
         .from('course_enrollments')
-        .update({
-          payment_status: status,
-          transaction_id: transactionId,
-          updated_at: new Date().toISOString()
-        })
+        .update({ updated_at: new Date().toISOString() })
         .eq('id', enrollmentId)
         .select()
         .single()
@@ -82,7 +69,7 @@ export const usePayment = () => {
           courses(title, slug, featured_image, price)
         `)
         .eq('user_id', user.id)
-        .order('enrollment_date', { ascending: false })
+        .order('enrolled_at', { ascending: false })
 
       if (error) throw error
 

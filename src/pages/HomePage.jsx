@@ -188,7 +188,7 @@ export const HomePage = () => {
             ) : (
               displayCategories.map((category) => (
                 <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer group" asChild>
-                  <Link to={`/recipes/${category.slug}`}>
+                  <Link to={`/recipes/category/${category.slug}`}>
                     <CardContent className="p-6 text-center">
                       <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">
                         {category.icon}

@@ -36,12 +36,12 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Receitas</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/recipes/carnes" className="hover:text-primary transition-colors">Carnes</Link></li>
-              <li><Link to="/recipes/massas" className="hover:text-primary transition-colors">Massas</Link></li>
-              <li><Link to="/recipes/churrasco" className="hover:text-primary transition-colors">Churrasco</Link></li>
-              <li><Link to="/recipes/frutos-do-mar" className="hover:text-primary transition-colors">Frutos do Mar</Link></li>
-              <li><Link to="/recipes/bebidas" className="hover:text-primary transition-colors">Bebidas</Link></li>
-              <li><Link to="/recipes/sobremesas" className="hover:text-primary transition-colors">Sobremesas</Link></li>
+              <li><Link to="/recipes/category/carnes" className="hover:text-primary transition-colors">Carnes</Link></li>
+              <li><Link to="/recipes/category/massas" className="hover:text-primary transition-colors">Massas</Link></li>
+              <li><Link to="/recipes/category/churrasco" className="hover:text-primary transition-colors">Churrasco</Link></li>
+              <li><Link to="/recipes/category/frutos-do-mar" className="hover:text-primary transition-colors">Frutos do Mar</Link></li>
+              <li><Link to="/recipes/category/bebidas" className="hover:text-primary transition-colors">Bebidas</Link></li>
+              <li><Link to="/recipes/category/sobremesas" className="hover:text-primary transition-colors">Sobremesas</Link></li>
             </ul>
           </div>
           

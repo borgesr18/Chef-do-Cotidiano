@@ -173,7 +173,7 @@ export const recipes = {
           full_name,
           avatar_url
         ),
-        categories (
+        categories!inner (
           name,
           slug
         )
