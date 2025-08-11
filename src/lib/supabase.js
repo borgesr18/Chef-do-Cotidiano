@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 
 // Configurações do Supabase
 // Em produção, essas variáveis devem vir do arquivo .env
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co'
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'your-supabase-url'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-supabase-anon-key'
 
 // Criar cliente Supabase
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
