@@ -457,6 +457,9 @@ CREATE POLICY "Usuários podem ver perfis públicos" ON profiles
 CREATE POLICY "Usuários podem atualizar próprio perfil" ON profiles
   FOR UPDATE USING (auth.uid() = id);
 
+CREATE POLICY "Usuários podem criar próprio perfil" ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
 -- Políticas para receitas
 CREATE POLICY "Todos podem ver receitas publicadas" ON recipes
   FOR SELECT USING (status = 'published');
