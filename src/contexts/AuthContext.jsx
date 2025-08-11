@@ -92,8 +92,7 @@ export const AuthProvider = ({ children }) => {
             {
               id: userId,
               full_name: user?.user_metadata?.full_name || '',
-              avatar_url: user?.user_metadata?.avatar_url || '',
-              role: 'admin'
+              avatar_url: user?.user_metadata?.avatar_url || ''
             }
           ])
           .select()
