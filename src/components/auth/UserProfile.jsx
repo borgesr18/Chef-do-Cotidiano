@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { 
@@ -143,9 +144,11 @@ export const UserProfile = () => {
         )}
         
         {isAdmin() && (
-          <DropdownMenuItem>
-            <Shield className="mr-2 h-4 w-4" />
-            <span>Painel Admin</span>
+          <DropdownMenuItem asChild>
+            <Link to="/admin">
+              <Shield className="mr-2 h-4 w-4" />
+              <span>Painel Admin</span>
+            </Link>
           </DropdownMenuItem>
         )}
         
