@@ -238,12 +238,43 @@ export const recipes = {
       .eq('id', id)
     
     return { error }
+  },
+
+  // Buscar todas as receitas para admin (incluindo drafts)
+  getAllForAdmin: async (limit = 50, offset = 0) => {
+    try {
+      const { data, error } = await supabase
+        .from('recipes')
+        .select(`
+          *,
+          profiles:author_id (
+            full_name,
+            avatar_url
+          ),
+          categories (
+            name,
+            slug
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1)
+      
+      if (error) throw error
+      return { data: data || [], error: null }
+    } catch (error) {
+      console.error('Error fetching recipes for admin:', error)
+      return { data: [], error }
+    }
+  },
+
+  getAll: async (limit = 50, offset = 0) => {
+    return recipes.getAllForAdmin(limit, offset)
   }
 }
 
 // Funções para gerenciar categorias
 export const categories = {
-  // Buscar todas as categorias
+  // Buscar todas as categorias (apenas ativas - para uso público)
   getAll: async () => {
     const { data, error } = await supabase
       .from('categories')
@@ -252,6 +283,22 @@ export const categories = {
       .order('sort_order', { ascending: true })
     
     return { data, error }
+  },
+
+  // Buscar todas as categorias (incluindo inativas - para admin)
+  getAllForAdmin: async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('sort_order', { ascending: true })
+      
+      if (error) throw error
+      return { data: data || [], error: null }
+    } catch (error) {
+      console.error('Error fetching categories for admin:', error)
+      return { data: [], error }
+    }
   },
 
   // Buscar categoria por slug
@@ -264,6 +311,39 @@ export const categories = {
       .single()
     
     return { data, error }
+  },
+
+  // Criar nova categoria
+  create: async (categoryData) => {
+    const { data, error } = await supabase
+      .from('categories')
+      .insert([categoryData])
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Atualizar categoria
+  update: async (id, categoryData) => {
+    const { data, error } = await supabase
+      .from('categories')
+      .update(categoryData)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Deletar categoria
+  delete: async (id) => {
+    const { error } = await supabase
+      .from('categories')
+      .delete()
+      .eq('id', id)
+    
+    return { error }
   }
 }
 
@@ -798,20 +878,31 @@ export const analytics = {
         supabase.from('recipes').select('id', { count: 'exact', head: true }),
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
         supabase.from('courses').select('id', { count: 'exact', head: true }),
-        supabase.from('recipe_analytics').select('views', { count: 'exact', head: true })
+        supabase.from('recipe_analytics').select('views')
       ])
+
+      const totalViews = viewsResult.data?.reduce((sum, item) => sum + (item.views || 0), 0) || 0
 
       return {
         data: {
           totalRecipes: recipesResult.count || 0,
           totalUsers: usersResult.count || 0,
           totalCourses: coursesResult.count || 0,
-          totalViews: viewsResult.count || 0
+          totalViews: totalViews
         },
         error: null
       }
     } catch (error) {
-      return { data: null, error }
+      console.error('Error fetching dashboard stats:', error)
+      return {
+        data: {
+          totalRecipes: 0,
+          totalUsers: 0,
+          totalCourses: 0,
+          totalViews: 0
+        },
+        error: null
+      }
     }
   },
 

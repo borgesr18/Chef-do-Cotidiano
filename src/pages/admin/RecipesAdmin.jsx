@@ -36,7 +36,7 @@ export const RecipesAdmin = () => {
   const fetchRecipes = async () => {
     try {
       setLoading(true)
-      const { data, error } = await recipes.getPublished(50, 0)
+      const { data, error } = await recipes.getAllForAdmin(50, 0)
       if (error) throw error
       setRecipesList(data || [])
     } catch (error) {
