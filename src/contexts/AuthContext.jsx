@@ -77,13 +77,13 @@ export const AuthProvider = ({ children }) => {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single()
+        .maybeSingle()
       
       const { data, error } = await Promise.race([queryPromise, timeoutPromise])
 
       console.log('Profile query result:', { data, error })
 
-      if (error && error.code === 'PGRST116') {
+      if (!data && !error) {
         console.log('Profile not found, creating new profile...')
         // Perfil não existe, criar um novo
         const { data: newProfile, error: createError } = await supabase
