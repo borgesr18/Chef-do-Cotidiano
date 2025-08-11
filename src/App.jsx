@@ -47,27 +47,25 @@ function App() {
                   <Route path="/about" element={<div className="container mx-auto px-4 py-16 text-center"><h1 className="text-3xl font-bold mb-4">Sobre</h1><p className="text-muted-foreground">Em breve...</p></div>} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
                   
-                  <Route path="/admin" element={
+                  <Route path="/admin/*" element={
                     <ProtectedRoute requiredRole="admin">
-                      <AdminLayout>
-                        <Routes>
-                          <Route index element={<AdminDashboard />} />
-                          <Route path="recipes" element={<RecipesAdmin />} />
-                          <Route path="recipes/new" element={<RecipeForm />} />
-                          <Route path="recipes/:id/edit" element={<RecipeForm />} />
-                          <Route path="categories" element={<CategoriesAdmin />} />
-                          <Route path="courses" element={<CoursesAdmin />} />
-                          <Route path="courses/new" element={<CourseForm />} />
-                          <Route path="courses/:id/edit" element={<CourseForm />} />
-                          <Route path="blog" element={<BlogAdmin />} />
-                          <Route path="blog/new" element={<BlogForm />} />
-                          <Route path="blog/:id/edit" element={<BlogForm />} />
-                          <Route path="users" element={<UsersAdmin />} />
-                          <Route path="settings" element={<SettingsAdmin />} />
-                        </Routes>
-                      </AdminLayout>
+                      <AdminLayout />
                     </ProtectedRoute>
-                  } />
+                  }>
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="recipes" element={<RecipesAdmin />} />
+                    <Route path="recipes/new" element={<RecipeForm />} />
+                    <Route path="recipes/:id/edit" element={<RecipeForm />} />
+                    <Route path="categories" element={<CategoriesAdmin />} />
+                    <Route path="courses" element={<CoursesAdmin />} />
+                    <Route path="courses/new" element={<CourseForm />} />
+                    <Route path="courses/:id/edit" element={<CourseForm />} />
+                    <Route path="blog" element={<BlogAdmin />} />
+                    <Route path="blog/new" element={<BlogForm />} />
+                    <Route path="blog/:id/edit" element={<BlogForm />} />
+                    <Route path="users" element={<UsersAdmin />} />
+                    <Route path="settings" element={<SettingsAdmin />} />
+                  </Route>
             </Routes>
           </Suspense>
         </main>
