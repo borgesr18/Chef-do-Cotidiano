@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dialog'
 import { categories, supabase } from '../../lib/supabase'
 import { Plus, Edit, Trash2, Search } from 'lucide-react'
+import { toast } from 'sonner'
 
 export const CategoriesAdmin = () => {
   const [categoriesList, setCategoriesList] = useState([])
@@ -63,9 +64,11 @@ export const CategoriesAdmin = () => {
       if (editDialog.category) {
         const { error } = await supabase.from('categories').update(formData).eq('id', editDialog.category.id)
         if (error) throw error
+        toast.success('Categoria atualizada com sucesso!')
       } else {
         const { error } = await supabase.from('categories').insert([formData])
         if (error) throw error
+        toast.success('Categoria criada com sucesso!')
       }
       
       await fetchCategories()
@@ -73,6 +76,7 @@ export const CategoriesAdmin = () => {
       resetForm()
     } catch (error) {
       console.error('Error saving category:', error)
+      toast.error('Erro ao salvar categoria')
     }
   }
 
@@ -96,8 +100,10 @@ export const CategoriesAdmin = () => {
       
       setCategoriesList(prev => prev.filter(c => c.id !== category.id))
       setDeleteDialog({ open: false, category: null })
+      toast.success('Categoria excluída com sucesso!')
     } catch (error) {
       console.error('Error deleting category:', error)
+      toast.error('Erro ao excluir categoria')
     }
   }
 

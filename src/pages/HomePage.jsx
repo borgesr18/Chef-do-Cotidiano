@@ -19,6 +19,7 @@ import {
 import { useRecipes } from '../hooks/useRecipes'
 import { useCategories } from '../hooks/useCategories'
 import { generateSlug } from '../lib/utils'
+import { SEO } from '../components/SEO'
 
 export const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -119,6 +120,11 @@ export const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Chef do Cotidiano - Receitas Masculinas e Práticas"
+        description="Receitas deliciosas e práticas para o seu dia a dia. Aprenda a cozinhar com o Chef do Cotidiano. Cursos online, receitas exclusivas e dicas profissionais."
+        image="/og-home.jpg"
+      />
       <section id="home" className="relative py-20 lg:py-32">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">

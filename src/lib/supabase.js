@@ -531,6 +531,28 @@ export const courses = {
     return { data, error }
   },
 
+  // Buscar cursos publicados
+  getPublished: async (limit = 10, offset = 0) => {
+    const { data, error } = await supabase
+      .from('courses')
+      .select(`
+        *,
+        profiles:instructor_id (
+          full_name,
+          avatar_url
+        ),
+        categories (
+          name,
+          slug
+        )
+      `)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+    
+    return { data, error }
+  },
+
   // Buscar curso por slug
   getBySlug: async (slug) => {
     const { data, error } = await supabase

@@ -12,6 +12,7 @@ import { generateSlug } from '../../lib/utils'
 import { Plus, Trash2, GripVertical, ArrowLeft } from 'lucide-react'
 import { DragDropProvider } from '../../components/admin/DragDropProvider'
 import { DraggableItem } from '../../components/admin/DraggableItem'
+import { toast } from 'sonner'
 
 export const CourseForm = () => {
   const navigate = useNavigate()
@@ -251,9 +252,11 @@ export const CourseForm = () => {
 
       if (result.error) throw result.error
 
+      toast.success(isEdit ? 'Curso atualizado com sucesso!' : 'Curso criado com sucesso!')
       navigate('/admin/courses')
     } catch (error) {
       console.error('Error saving course:', error)
+      toast.error('Erro ao salvar curso')
     } finally {
       setLoading(false)
     }

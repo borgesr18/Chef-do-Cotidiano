@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { recipes, categories, supabase } from '../../lib/supabase'
 import { generateSlug } from '../../lib/utils'
 import { Plus, Trash2, Upload, ArrowLeft } from 'lucide-react'
+import { toast } from 'sonner'
 
 export const RecipeForm = () => {
   const navigate = useNavigate()
@@ -157,8 +158,10 @@ export const RecipeForm = () => {
         .getPublicUrl(filePath)
 
       setFormData(prev => ({ ...prev, featured_image: publicUrl }))
+      toast.success('Imagem enviada com sucesso!')
     } catch (error) {
       console.error('Error uploading image:', error)
+      toast.error('Erro ao enviar imagem')
     } finally {
       setLoading(false)
     }
@@ -187,9 +190,11 @@ export const RecipeForm = () => {
 
       if (result.error) throw result.error
 
+      toast.success(`Receita ${isEdit ? 'atualizada' : 'criada'} com sucesso!`)
       navigate('/admin/recipes')
     } catch (error) {
       console.error('Error saving recipe:', error)
+      toast.error('Erro ao salvar receita')
     } finally {
       setLoading(false)
     }

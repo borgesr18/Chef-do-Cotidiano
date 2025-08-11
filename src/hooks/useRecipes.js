@@ -272,6 +272,93 @@ export const useRecipe = (slug) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  const mockRecipes = [
+    {
+      id: 1,
+      title: "Bife Ancho Grelhado",
+      description: "Corte nobre grelhado na perfeição com temperos especiais",
+      featured_image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop",
+      total_time: 25,
+      difficulty: "Médio",
+      avg_rating: 4.8,
+      author_name: "Chef Rodrigo",
+      category_name: "Carnes",
+      is_featured: true,
+      status: "published",
+      slug: "bife-ancho-grelhado"
+    },
+    {
+      id: 2,
+      title: "Picanha na Brasa",
+      description: "A rainha do churrasco brasileiro preparada com maestria",
+      featured_image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop",
+      total_time: 35,
+      difficulty: "Médio",
+      avg_rating: 4.9,
+      author_name: "Chef Rodrigo",
+      category_name: "Carnes",
+      is_featured: true,
+      status: "published",
+      slug: "picanha-na-brasa"
+    },
+    {
+      id: 3,
+      title: "Costela Assada",
+      description: "Costela suculenta assada lentamente com temperos especiais",
+      featured_image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop",
+      total_time: 180,
+      difficulty: "Difícil",
+      avg_rating: 4.7,
+      author_name: "Chef Rodrigo",
+      category_name: "Carnes",
+      is_featured: false,
+      status: "published",
+      slug: "costela-assada"
+    },
+    {
+      id: 4,
+      title: "Spaghetti Carbonara",
+      description: "Clássico italiano com ovos, queijo e pancetta",
+      featured_image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop",
+      total_time: 20,
+      difficulty: "Fácil",
+      avg_rating: 4.6,
+      author_name: "Chef Rodrigo",
+      category_name: "Massas",
+      is_featured: true,
+      status: "published",
+      slug: "spaghetti-carbonara"
+    },
+    {
+      id: 5,
+      title: "Lasanha Bolonhesa",
+      description: "Camadas de massa, molho bolonhesa e queijo derretido",
+      featured_image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400&h=300&fit=crop",
+      total_time: 90,
+      difficulty: "Médio",
+      avg_rating: 4.8,
+      author_name: "Chef Rodrigo",
+      category_name: "Massas",
+      is_featured: false,
+      status: "published",
+      slug: "lasanha-bolonhesa"
+    },
+    {
+      id: 6,
+      title: "Salmão Grelhado",
+      description: "Salmão fresco grelhado com ervas e limão",
+      featured_image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=300&fit=crop",
+      total_time: 15,
+      difficulty: "Fácil",
+      avg_rating: 4.7,
+      author_name: "Chef Rodrigo",
+      category_name: "Frutos do Mar",
+      is_featured: true,
+      status: "published",
+      slug: "salmao-grelhado"
+    }
+  ]
+
   useEffect(() => {
     if (!slug) return
 

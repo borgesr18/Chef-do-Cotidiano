@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
+import { toast } from 'sonner'
 import { 
   Settings, 
   Palette, 
@@ -101,8 +102,10 @@ export const SettingsAdmin = () => {
       }
 
       console.log(`${section} settings saved successfully`)
+      toast.success(`Configurações de ${section} salvas com sucesso!`)
     } catch (error) {
       console.error('Error saving settings:', error)
+      toast.error(`Erro ao salvar configurações de ${section}`)
     }
   }
 

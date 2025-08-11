@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { blogPosts, categories, supabase } from '../../lib/supabase'
 import { generateSlug } from '../../lib/utils'
 import { Plus, Trash2, ArrowLeft, X } from 'lucide-react'
+import { toast } from 'sonner'
 
 export const BlogForm = () => {
   const navigate = useNavigate()
@@ -171,9 +172,11 @@ export const BlogForm = () => {
 
       if (result.error) throw result.error
 
+      toast.success(`Post ${isEdit ? 'atualizado' : 'criado'} com sucesso!`)
       navigate('/admin/blog')
     } catch (error) {
       console.error('Error saving post:', error)
+      toast.error('Erro ao salvar post')
     } finally {
       setLoading(false)
     }
