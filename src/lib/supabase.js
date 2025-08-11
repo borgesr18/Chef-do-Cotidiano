@@ -218,6 +218,21 @@ export const recipes = {
     return { data, error }
   },
 
+  // Buscar receita por ID
+  getById: async (id) => {
+    const { data, error } = await supabase
+      .from('recipes')
+      .select(`
+        *,
+        profiles:author_id(full_name, avatar_url),
+        categories(name, slug)
+      `)
+      .eq('id', id)
+      .single()
+    
+    return { data, error }
+  },
+
   // Atualizar receita
   update: async (id, recipeData) => {
     const { data, error } = await supabase
@@ -380,7 +395,7 @@ export const profiles = {
 }
 
 // Funções para gerenciar favoritos
-export const favorites = {
+export const userFavorites = {
   // Adicionar receita aos favoritos
   add: async (recipeId) => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -551,6 +566,21 @@ export const courses = {
       .from('courses')
       .insert([courseData])
       .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Buscar curso por ID
+  getById: async (id) => {
+    const { data, error } = await supabase
+      .from('courses')
+      .select(`
+        *,
+        profiles:instructor_id(full_name, avatar_url),
+        categories(name, slug)
+      `)
+      .eq('id', id)
       .single()
     
     return { data, error }
@@ -797,6 +827,21 @@ export const blogPosts = {
     return { data, error }
   },
 
+  // Buscar post por ID
+  getById: async (id) => {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select(`
+        *,
+        profiles:author_id(full_name, avatar_url),
+        categories(name, slug)
+      `)
+      .eq('id', id)
+      .single()
+    
+    return { data, error }
+  },
+
   // Atualizar post
   update: async (id, postData) => {
     const { data, error } = await supabase
@@ -996,6 +1041,49 @@ export const ingredients = {
     return { error }
   }
 }
+
+export const settings = {
+  // Buscar todas as configurações
+  getAll: async () => {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('*')
+    
+    return { data, error }
+  },
+
+  // Buscar configuração por chave
+  get: async (key) => {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('*')
+      .eq('key', key)
+      .single()
+    
+    return { data, error }
+  },
+
+  set: async (key, value, type = 'string') => {
+    const { data, error } = await supabase
+      .from('settings')
+      .upsert([{ key, value, type }])
+      .select()
+      .single()
+    
+    return { data, error }
+  },
+
+  // Deletar configuração
+  delete: async (key) => {
+    const { data, error } = await supabase
+      .from('settings')
+      .delete()
+      .eq('key', key)
+    
+    return { data, error }
+  }
+}
+
 
 export default supabase
 

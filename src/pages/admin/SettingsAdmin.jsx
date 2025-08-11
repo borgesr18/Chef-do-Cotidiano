@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { settings as settingsAPI } from '../../lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react'
 
 export const SettingsAdmin = () => {
+  const [loading, setLoading] = useState(true)
   const [settings, setSettings] = useState({
     siteName: 'Chef do Cotidiano',
     siteDescription: 'Receitas deliciosas para o seu dia a dia',
@@ -41,9 +43,64 @@ export const SettingsAdmin = () => {
     mercadoPagoAccessToken: ''
   })
 
+  useEffect(() => {
+    loadSettings()
+  }, [])
+
+  const loadSettings = async () => {
+    try {
+      setLoading(true)
+      const { data, error } = await settingsAPI.getAll()
+      if (error) throw error
+
+      if (data) {
+        const loadedSettings = {}
+        data.forEach(setting => {
+          loadedSettings[setting.key] = setting.type === 'boolean' 
+            ? setting.value === 'true' 
+            : setting.value
+        })
+        setSettings(prev => ({ ...prev, ...loadedSettings }))
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleSave = async (section) => {
     try {
       console.log(`Saving ${section} settings:`, settings)
+      
+      const settingsToSave = Object.entries(settings).filter(([key]) => {
+        if (section === 'general') {
+          return ['siteName', 'siteDescription', 'siteUrl', 'logoUrl'].includes(key)
+        }
+        if (section === 'appearance') {
+          return ['primaryColor', 'secondaryColor'].includes(key)
+        }
+        if (section === 'features') {
+          return ['enableRegistration', 'enableComments', 'enableNewsletter'].includes(key)
+        }
+        if (section === 'email') {
+          return ['smtpHost', 'smtpPort', 'smtpUser', 'smtpPassword'].includes(key)
+        }
+        if (section === 'analytics') {
+          return ['googleAnalyticsId', 'facebookPixelId'].includes(key)
+        }
+        if (section === 'payments') {
+          return ['stripePublicKey', 'stripeSecretKey', 'mercadoPagoPublicKey', 'mercadoPagoAccessToken'].includes(key)
+        }
+        return false
+      })
+
+      for (const [key, value] of settingsToSave) {
+        const type = typeof value === 'boolean' ? 'boolean' : 'string'
+        await settingsAPI.set(key, value.toString(), type)
+      }
+
+      console.log(`${section} settings saved successfully`)
     } catch (error) {
       console.error('Error saving settings:', error)
     }
