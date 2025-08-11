@@ -43,8 +43,8 @@ function App() {
             <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/recipes" element={<RecipesPage />} />
+                  <Route path="/recipes/category/:category" element={<CategoryPage />} />
                   <Route path="/recipes/:slug" element={<RecipeDetailPage />} />
-                  <Route path="/recipes/:category" element={<CategoryPage />} />
                   <Route path="/courses" element={<CoursesPage />} />
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/about" element={<div className="container mx-auto px-4 py-16 text-center"><h1 className="text-3xl font-bold mb-4">Sobre</h1><p className="text-muted-foreground">Em breve...</p></div>} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { favorites } from '../lib/supabase'
+import { userFavorites as favorites } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 
 export const useFavorites = () => {
