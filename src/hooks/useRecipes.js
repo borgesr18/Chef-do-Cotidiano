@@ -160,6 +160,7 @@ export const useRecipes = (options = {}) => {
       setData(filteredMockRecipes)
       setHasMore(false)
       setError(err)
+      setLoading(false)
     } finally {
       setLoading(false)
     }
