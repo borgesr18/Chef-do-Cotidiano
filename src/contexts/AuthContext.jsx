@@ -91,7 +91,8 @@ export const AuthProvider = ({ children }) => {
             {
               id: userId,
               full_name: user?.user_metadata?.full_name || '',
-              avatar_url: user?.user_metadata?.avatar_url || ''
+              avatar_url: user?.user_metadata?.avatar_url || '',
+              role: 'user'
             }
           ])
           .select()
@@ -107,6 +108,20 @@ export const AuthProvider = ({ children }) => {
 
         setProfile(newProfile)
         return
+      }
+
+      // Garante que role exista no perfil
+      if (!data.role) {
+        const { data: updated, error: updateError } = await supabase
+          .from('profiles')
+          .update({ role: 'user' })
+          .eq('id', userId)
+          .select()
+          .single()
+        if (!updateError && updated) {
+          setProfile(updated)
+          return
+        }
       }
 
       console.log('Profile loaded successfully:', data)
@@ -127,12 +142,17 @@ export const AuthProvider = ({ children }) => {
       })
       
       if (!error && data.user) {
-        setTimeout(() => {
-          const userProfile = profile || data.user.user_metadata
-          if (userProfile?.role === 'admin' || userProfile?.role === 'super_admin') {
-            navigate('/admin')
-          }
-        }, 1000)
+        // Aguarda carregar o perfil e redireciona se for admin
+        await loadUserProfile(data.user.id)
+        const currentProfile = profile || (await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single()
+        ).data
+        if (currentProfile?.role === 'admin' || currentProfile?.role === 'super_admin') {
+          navigate('/admin', { replace: true })
+        }
       }
       
       return { data, error }
