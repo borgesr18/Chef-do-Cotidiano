@@ -13,7 +13,7 @@ import { UserProfile } from '../auth/UserProfile'
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isAdmin } = useAuth()
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -40,7 +40,14 @@ export const Header = () => {
 
             <div className="hidden md:flex items-center space-x-4">
               {isAuthenticated ? (
-                <UserProfile />
+                <>
+                  {isAdmin() && (
+                    <Link to="/admin">
+                      <Button size="sm" variant="secondary">Admin</Button>
+                    </Link>
+                  )}
+                  <UserProfile />
+                </>
               ) : (
                 <>
                   <Button variant="ghost" size="sm" onClick={() => setShowLoginModal(true)}>
@@ -73,7 +80,14 @@ export const Header = () => {
                 <Link to="/about" className="text-foreground hover:text-primary transition-colors">Sobre</Link>
                 <div className="flex flex-col space-y-2 pt-4 border-t">
                   {isAuthenticated ? (
-                    <UserProfile />
+                    <>
+                      {isAdmin() && (
+                        <Link to="/admin">
+                          <Button size="sm" variant="secondary" className="w-full">Painel Admin</Button>
+                        </Link>
+                      )}
+                      <UserProfile />
+                    </>
                   ) : (
                     <>
                       <Button variant="ghost" size="sm" onClick={() => setShowLoginModal(true)}>
