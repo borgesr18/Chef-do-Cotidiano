@@ -10,7 +10,18 @@ export const ProtectedRoute = ({ children, requiredRole = 'user' }) => {
     console.log('ProtectedRoute: Still loading auth state...')
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+        <div role="status" aria-label="Carregando" className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  // Quando já há usuário autenticado mas o perfil ainda não foi carregado,
+  // mantém o spinner para evitar redirecionamento prematuro
+  if (user && !profile) {
+    console.log('ProtectedRoute: User authenticated but profile not loaded yet, showing spinner')
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div role="status" aria-label="Carregando" className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     )
   }
