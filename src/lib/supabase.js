@@ -152,7 +152,7 @@ export const recipes = {
       `)
       .eq('slug', slug)
       .eq('status', 'published')
-      .single()
+      .maybeSingle()
     
     return { data, error }
   },
