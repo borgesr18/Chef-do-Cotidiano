@@ -127,7 +127,7 @@ export const CoursesPage = () => {
       <SEO 
         title="Cursos Online - Chef do Cotidiano"
         description="Aprenda a cozinhar com nossos cursos online. Técnicas profissionais, receitas exclusivas e acompanhamento personalizado."
-        image="/og-courses.jpg"
+        image="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop"
       />
 
       <section className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-16">

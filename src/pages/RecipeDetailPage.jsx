@@ -223,7 +223,7 @@ export const RecipeDetailPage = () => {
       <SEO 
         title={`${recipe?.title || 'Receita'} - Chef do Cotidiano`}
         description={recipe?.description || 'Receita deliciosa do Chef do Cotidiano'}
-        image={recipe?.featured_image || '/og-recipe.jpg'}
+        image={recipe?.featured_image || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop'}
         type="article"
         article={recipe ? {
           publishedTime: recipe.created_at,

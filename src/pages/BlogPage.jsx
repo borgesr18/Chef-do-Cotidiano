@@ -105,7 +105,7 @@ export const BlogPage = () => {
       <SEO 
         title="Blog - Chef do Cotidiano"
         description="Dicas, receitas, histórias e tudo sobre culinária no blog do Chef do Cotidiano. Aprenda com nossos artigos especializados."
-        image="/og-blog.jpg"
+        image="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop"
       />
 
       <section className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-16">

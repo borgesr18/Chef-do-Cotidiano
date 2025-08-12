@@ -11,7 +11,7 @@ export const SEO = ({
   const siteTitle = 'Chef do Cotidiano'
   const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle
   const defaultDescription = 'Receitas deliciosas e práticas para o seu dia a dia. Aprenda a cozinhar com o Chef do Cotidiano.'
-  const defaultImage = '/og-image.jpg'
+  const defaultImage = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop'
   const siteUrl = 'https://chefdocotidiano.com'
 
   const seoTitle = fullTitle

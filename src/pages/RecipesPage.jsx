@@ -150,11 +150,11 @@ export const RecipesPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
-        title="Receitas - Chef do Cotidiano"
-        description="Explore nossa coleção completa de receitas deliciosas. Encontre pratos principais, sobremesas, lanches e muito mais."
-        image="/og-recipes.jpg"
-      />
+            <SEO 
+         title="Receitas - Chef do Cotidiano"
+         description="Explore nossa coleção completa de receitas deliciosas. Encontre pratos principais, sobremesas, lanches e muito mais."
+         image="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop"
+       />
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">

@@ -126,7 +126,7 @@ export const CategoryPage = () => {
       <SEO 
         title={`Receitas de ${currentCategory.name} - Chef do Cotidiano`}
         description={`Explore nossa coleção de receitas de ${currentCategory.name}. Pratos deliciosos e práticos para o seu dia a dia.`}
-        image="/og-category.jpg"
+        image="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop"
       />
       <div className="bg-muted/30 py-16">
         <div className="container mx-auto px-4">
