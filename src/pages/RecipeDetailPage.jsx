@@ -6,6 +6,7 @@ import { Clock, Users, Star, Heart, Share2, ArrowLeft } from 'lucide-react'
 import { useRecipe } from '../hooks/useRecipes'
 import { generateSlug } from '../lib/utils'
 import { SEO } from '../components/SEO'
+import { generateRecipeStructuredData } from '../utils/seo'
 
 export const RecipeDetailPage = () => {
   const { slug } = useParams()
