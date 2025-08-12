@@ -123,7 +123,7 @@ export const HomePage = () => {
       <SEO 
         title="Chef do Cotidiano - Receitas Masculinas e Práticas"
         description="Receitas deliciosas e práticas para o seu dia a dia. Aprenda a cozinhar com o Chef do Cotidiano. Cursos online, receitas exclusivas e dicas profissionais."
-        image="/og-home.jpg"
+        image="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop"
       />
       <section id="home" className="relative py-20 lg:py-32">
         <div className="container mx-auto px-4">
