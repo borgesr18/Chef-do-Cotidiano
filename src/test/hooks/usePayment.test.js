@@ -1,52 +1,55 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
-import { usePayment } from '../../hooks/usePayment'
+import { renderHook } from '@testing-library/react'
 
-const mockSupabase = {
-  auth: {
-    getUser: vi.fn()
-  },
-  from: vi.fn(() => ({
-    insert: vi.fn(() => ({
-      select: vi.fn(() => ({
-        single: vi.fn()
-      }))
-    })),
-    update: vi.fn(() => ({
-      eq: vi.fn(() => ({
+vi.mock('../../lib/supabase', () => {
+  const mockSupabase = {
+    auth: {
+      getUser: vi.fn()
+    },
+    from: vi.fn(() => ({
+      insert: vi.fn(() => ({
         select: vi.fn(() => ({
           single: vi.fn()
         }))
-      }))
-    })),
-    select: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        order: vi.fn()
+      })),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn()
+          }))
+        }))
+      })),
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          order: vi.fn()
+        }))
       }))
     }))
-  }))
-}
+  }
+  return { supabase: mockSupabase }
+})
 
-vi.mock('../../lib/supabase', () => ({
-  supabase: mockSupabase
-}))
+import { usePayment } from '../../hooks/usePayment'
 
 describe('usePayment', () => {
-  beforeEach(() => {
+  let supabase
+
+  beforeEach(async () => {
     vi.clearAllMocks()
+    ;({ supabase } = await import('../../lib/supabase'))
   })
 
   it('creates enrollment successfully', async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
+    supabase.auth.getUser.mockResolvedValue({
       data: { user: { id: 'user-123' } }
     })
-    
+
     const mockInsert = vi.fn().mockResolvedValue({
       data: { id: 'enrollment-123' },
       error: null
     })
-    
-    mockSupabase.from.mockReturnValue({
+
+    supabase.from.mockReturnValue({
       insert: () => ({
         select: () => ({
           single: mockInsert
@@ -67,7 +70,7 @@ describe('usePayment', () => {
   })
 
   it('handles enrollment error', async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
+    supabase.auth.getUser.mockResolvedValue({
       data: { user: null }
     })
 

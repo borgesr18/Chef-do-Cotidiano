@@ -242,6 +242,8 @@ export const useRecipes = (options = {}) => {
   }, [category, featured, autoFetch])
 
   return {
+    // manter API atual e expor alias 'data' para compatibilidade com testes
+    data,
     recipes: data,
     loading,
     error,
