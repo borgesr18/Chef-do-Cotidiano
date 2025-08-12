@@ -19,8 +19,10 @@ export const SEO = ({
   const seoImage = image || defaultImage
   const seoUrl = url || siteUrl
 
+  console.log('SEO render', { type, articleExists: !!article, published: article?.publishedTime })
+
   return (
-    <Helmet>
+    <Helmet defer={false}>
       <title>{seoTitle}</title>
       <meta name="description" content={seoDescription} />
       
@@ -36,13 +38,19 @@ export const SEO = ({
       <meta name="twitter:description" content={seoDescription} />
       <meta name="twitter:image" content={seoImage} />
       
-      {article && (
+      {type === 'article' && (
         <>
-          <meta property="article:published_time" content={article.publishedTime} />
-          <meta property="article:modified_time" content={article.modifiedTime} />
-          <meta property="article:author" content={article.author} />
-          {article.tags && article.tags.map(tag => (
-            <meta key={tag} property="article:tag" content={tag} />
+          {article?.publishedTime && (
+            <meta property="article:published_time" content={article.publishedTime} />
+          )}
+          {article?.modifiedTime && (
+            <meta property="article:modified_time" content={article.modifiedTime} />
+          )}
+          {article?.author && (
+            <meta property="article:author" content={article.author} />
+          )}
+          {Array.isArray(article?.tags) && article.tags.map(tag => (
+            <meta key={`article-tag-${tag}`} property="article:tag" content={tag} />
           ))}
         </>
       )}
