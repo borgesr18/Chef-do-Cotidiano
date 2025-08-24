@@ -20,6 +20,7 @@ const MyEbooksPage = lazy(() => import('./pages/MyEbooksPage'))
 
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout').then(module => ({ default: module.AdminLayout })))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard').then(module => ({ default: module.AdminDashboard })))
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin').then(module => ({ default: module.AdminLogin })))
 const RecipesAdmin = lazy(() => import('./pages/admin/RecipesAdmin').then(module => ({ default: module.RecipesAdmin })))
 const RecipeForm = lazy(() => import('./pages/admin/RecipeForm').then(module => ({ default: module.RecipeForm })))
 const CategoriesAdmin = lazy(() => import('./pages/admin/CategoriesAdmin').then(module => ({ default: module.CategoriesAdmin })))
@@ -62,6 +63,7 @@ function App() {
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/about" element={<div className="container mx-auto px-4 py-16 text-center"><h1 className="text-3xl font-bold mb-4">Sobre</h1><p className="text-muted-foreground">Em breve...</p></div>} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
                 
                 <Route path="/admin/*" element={
                   <ProtectedRoute requiredRole="admin">
