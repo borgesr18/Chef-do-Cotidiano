@@ -126,18 +126,23 @@ export const HomePage = () => {
         description="Receitas deliciosas e práticas para o seu dia a dia. Aprenda a cozinhar com o Chef do Cotidiano. Cursos online, receitas exclusivas e dicas profissionais."
         image="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=630&fit=crop"
       />
-      <section id="home" className="relative py-20 lg:py-32">
+      <section id="home" className="relative py-20 lg:py-32 overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-gradient-to-b from-orange-50 via-transparent to-transparent dark:from-orange-950/30"></div>
+          <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl"></div>
+          <div className="absolute -bottom-16 -left-16 h-72 w-72 rounded-full bg-primary/20 blur-3xl"></div>
+        </div>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
-              Culinária <span className="text-primary">Masculina</span> Descomplicada
+            <h1 className="text-4xl lg:text-6xl font-bold tracking-tight text-foreground mb-6">
+              Culinária <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">Masculina</span> Descomplicada
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
               Aprenda a cozinhar pratos deliciosos com receitas descomplicadas 
               para homens que querem impressionar na cozinha.
             </p>
             
-            <div className="max-w-md mx-auto mb-8">
+            <div className="max-w-md mx-auto mb-10">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
@@ -145,19 +150,19 @@ export const HomePage = () => {
                   placeholder="Buscar receitas..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-3 text-lg"
+                  className="pl-10 pr-4 py-3 text-lg shadow-sm focus:shadow-md transition-shadow"
                 />
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg px-8" asChild>
+              <Button size="lg" className="text-lg px-8 hover:shadow-lg hover:-translate-y-0.5 transition will-change-transform" asChild>
                 <Link to="/recipes">
                   <Play className="mr-2 h-5 w-5" />
                   Ver Receitas
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8" asChild>
+              <Button variant="outline" size="lg" className="text-lg px-8 hover:shadow-lg hover:-translate-y-0.5 transition" asChild>
                 <Link to="/courses">
                   <BookOpen className="mr-2 h-5 w-5" />
                   Cursos Online
@@ -243,15 +248,15 @@ export const HomePage = () => {
                 const recipeSlug = recipe.slug || generateSlug(recipe.title)
                 return (
                   <Link key={recipe.id} to={`/recipes/${recipeSlug}`}>
-                    <Card className="overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer">
+                    <Card className="overflow-hidden hover:shadow-xl transition-all group cursor-pointer hover:-translate-y-1">
                       <div className="relative">
                         <LazyImage 
                           src={recipe.featured_image || recipe.image} 
                           alt={recipe.title}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute top-4 right-4">
-                          <Button size="sm" variant="secondary" className="rounded-full" onClick={(e) => e.preventDefault()}>
+                          <Button size="sm" variant="secondary" className="rounded-full hover:shadow-md" onClick={(e) => e.preventDefault()}>
                             <Heart className="h-4 w-4" />
                           </Button>
                         </div>
@@ -291,7 +296,7 @@ export const HomePage = () => {
                           <span className="text-sm text-muted-foreground">
                             por {recipe.author_name || recipe.author || 'Chef Rodrigo'}
                           </span>
-                          <Button size="sm" variant="ghost" onClick={(e) => e.preventDefault()}>
+                          <Button size="sm" variant="ghost" className="hover:bg-accent hover:text-accent-foreground" onClick={(e) => e.preventDefault()}>
                             <Share2 className="h-4 w-4" />
                           </Button>
                         </div>
