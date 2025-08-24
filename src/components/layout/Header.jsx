@@ -19,13 +19,13 @@ export const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 shadow-[0_1px_0_0_rgba(255,255,255,0.04)]">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <ChefHat className="h-8 w-8 text-primary" />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-foreground">Chef do Cotidiano</span>
+                <span className="text-xl font-bold tracking-tight text-foreground">Chef do Cotidiano</span>
                 <span className="text-xs text-muted-foreground">AI</span>
               </div>
             </Link>
