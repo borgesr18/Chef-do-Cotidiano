@@ -10,6 +10,8 @@ import { ebooks } from '../lib/supabase'
 import { useCategories } from '../hooks/useCategories'
 import { useEbookPurchase } from '../hooks/useEbookPurchase'
 import { SEO } from '../components/SEO'
+import { useAuth } from '../contexts/AuthContext'
+import { LoginModal } from '../components/auth/LoginModal'
 import { LazyImage } from '../components/LazyImage'
 import { toast } from 'sonner'
 
@@ -19,7 +21,10 @@ export const EbooksPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const { categories } = useCategories()
-  const { createPurchase } = useEbookPurchase()
+  const { createPurchase, hasPurchased } = useEbookPurchase()
+  const { isAuthenticated } = useAuth()
+  const [showLogin, setShowLogin] = useState(false)
+  const [ownedMap, setOwnedMap] = useState({})
 
   const mockEbooks = [
     {
@@ -72,9 +77,14 @@ export const EbooksPage = () => {
 
   const handlePurchase = async (ebookId, price) => {
     try {
+      if (!isAuthenticated) {
+        setShowLogin(true)
+        return
+      }
       const result = await createPurchase(ebookId, { method: 'stripe', amount: price, transactionId: `temp_${Date.now()}` })
       if (result.data) {
         toast.success('Compra realizada com sucesso!')
+        setOwnedMap((prev) => ({ ...prev, [ebookId]: true }))
       } else {
         toast.error('Erro ao processar compra')
       }
@@ -82,6 +92,19 @@ export const EbooksPage = () => {
       toast.error('Erro ao processar compra')
     }
   }
+
+  useEffect(() => {
+    const checkOwnership = async () => {
+      if (!isAuthenticated || items.length === 0) return
+      const entries = await Promise.all(items.map(async (item) => {
+        const res = await hasPurchased(item.id)
+        return [item.id, !!res?.data]
+      }))
+      setOwnedMap(Object.fromEntries(entries))
+    }
+    checkOwnership()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, items])
 
   const filtered = items.filter((item) => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -197,7 +220,15 @@ export const EbooksPage = () => {
                           <Button className="flex-1" asChild>
                             <Link to={`/ebooks/${item.id}`}>Detalhes</Link>
                           </Button>
-                          <Button variant="outline" onClick={() => handlePurchase(item.id, item.price)}>Comprar</Button>
+                          {ownedMap[item.id] ? (
+                            item.file_url ? (
+                              <a className="inline-flex items-center px-4 py-2 border rounded-md" href={item.file_url} target="_blank" rel="noreferrer">Baixar</a>
+                            ) : (
+                              <Button variant="outline" disabled>Já comprado</Button>
+                            )
+                          ) : (
+                            <Button variant="outline" onClick={() => handlePurchase(item.id, item.price)}>Comprar</Button>
+                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -216,6 +247,7 @@ export const EbooksPage = () => {
           )}
         </div>
       </section>
+      <LoginModal isOpen={showLogin} onClose={() => setShowLogin(false)} />
     </div>
   )
 }

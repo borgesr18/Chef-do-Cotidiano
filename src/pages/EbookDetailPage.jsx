@@ -8,12 +8,17 @@ import { useEbookPurchase } from '../hooks/useEbookPurchase'
 import { SEO } from '../components/SEO'
 import { LazyImage } from '../components/LazyImage'
 import { toast } from 'sonner'
+import { useAuth } from '../contexts/AuthContext'
+import { LoginModal } from '../components/auth/LoginModal'
 
 export const EbookDetailPage = () => {
   const { id } = useParams()
   const [ebook, setEbook] = useState(null)
   const [loading, setLoading] = useState(true)
-  const { createPurchase } = useEbookPurchase()
+  const { createPurchase, hasPurchased } = useEbookPurchase()
+  const { isAuthenticated } = useAuth()
+  const [showLogin, setShowLogin] = useState(false)
+  const [owned, setOwned] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -21,6 +26,9 @@ export const EbookDetailPage = () => {
         setLoading(true)
         const { data } = await ebooks.getById(id)
         setEbook(data)
+        // Verificar se o usuário já comprou este e-book
+        const purchased = await hasPurchased(id)
+        if (purchased?.data) setOwned(true)
       } catch (e) {
         setEbook(null)
       } finally {
@@ -31,8 +39,15 @@ export const EbookDetailPage = () => {
   }, [id])
 
   const handlePurchase = async () => {
+    if (!isAuthenticated) {
+      setShowLogin(true)
+      return
+    }
     const result = await createPurchase(id, { method: 'stripe', amount: ebook?.price || 0, transactionId: `temp_${Date.now()}` })
-    if (result.data) toast.success('Compra realizada com sucesso!')
+    if (result.data) {
+      toast.success('Compra realizada com sucesso!')
+      setOwned(true)
+    }
     else toast.error('Erro ao processar compra')
   }
 
@@ -73,7 +88,11 @@ export const EbookDetailPage = () => {
                 <CardContent>
                   <p className="text-muted-foreground mb-6">{ebook.description}</p>
                   <div className="flex gap-3">
-                    <Button onClick={handlePurchase}>Comprar agora</Button>
+                    {owned && ebook.file_url ? (
+                      <a className="inline-flex items-center px-4 py-2 border rounded-md" href={ebook.file_url} target="_blank" rel="noreferrer">Baixar e-book</a>
+                    ) : (
+                      <Button onClick={handlePurchase}>Comprar agora</Button>
+                    )}
                     {ebook.file_url && (
                       <a className="inline-flex items-center px-4 py-2 border rounded-md" href={ebook.file_url} target="_blank" rel="noreferrer">Visualizar amostra</a>
                     )}
@@ -84,6 +103,7 @@ export const EbookDetailPage = () => {
           </div>
         </div>
       </section>
+      <LoginModal isOpen={showLogin} onClose={() => setShowLogin(false)} />
     </div>
   )
 }

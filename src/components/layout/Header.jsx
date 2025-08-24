@@ -42,6 +42,7 @@ export const Header = () => {
             <div className="hidden md:flex items-center space-x-4">
               {isAuthenticated ? (
                 <>
+                  <Link to="/my-ebooks" className="text-foreground hover:text-primary transition-colors">Meus E-books</Link>
                   {isAdmin() && (
                     <Link to="/admin">
                       <Button size="sm" variant="secondary">Admin</Button>
@@ -83,6 +84,7 @@ export const Header = () => {
                 <div className="flex flex-col space-y-2 pt-4 border-t">
                   {isAuthenticated ? (
                     <>
+                      <Link to="/my-ebooks" className="text-foreground hover:text-primary transition-colors">Meus E-books</Link>
                       {isAdmin() && (
                         <Link to="/admin">
                           <Button size="sm" variant="secondary" className="w-full">Painel Admin</Button>
