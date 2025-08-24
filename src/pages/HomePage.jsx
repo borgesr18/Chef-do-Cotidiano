@@ -20,6 +20,7 @@ import { useRecipes } from '../hooks/useRecipes'
 import { useCategories } from '../hooks/useCategories'
 import { generateSlug } from '../lib/utils'
 import { SEO } from '../components/SEO'
+import { LazyImage } from '../components/LazyImage'
 
 export const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -244,7 +245,7 @@ export const HomePage = () => {
                   <Link key={recipe.id} to={`/recipes/${recipeSlug}`}>
                     <Card className="overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer">
                       <div className="relative">
-                        <img 
+                        <LazyImage 
                           src={recipe.featured_image || recipe.image} 
                           alt={recipe.title}
                           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
@@ -300,14 +301,6 @@ export const HomePage = () => {
                 )
               })
             )}
-          </div>
-
-          <div className="text-center mt-12">
-            <Button size="lg" variant="outline" asChild>
-              <Link to="/recipes">
-                Ver Todas as Receitas
-              </Link>
-            </Button>
           </div>
         </div>
       </section>
@@ -373,7 +366,7 @@ export const HomePage = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {courses.map((course, index) => (
               <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <img src={course.image} alt={course.title} className="w-full h-32 object-cover" />
+                <LazyImage src={course.image} alt={course.title} className="w-full h-32 object-cover" />
                 <CardContent className="p-4">
                   <h3 className="font-semibold mb-2">{course.title}</h3>
                   <div className="flex justify-between items-center">
@@ -419,7 +412,7 @@ export const HomePage = () => {
                 </Button>
               </div>
               <div className="relative">
-                <img 
+                <LazyImage 
                   src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=500&h=600&fit=crop" 
                   alt="Chef Rodrigo Borges"
                   className="rounded-lg shadow-xl"

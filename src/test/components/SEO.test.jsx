@@ -64,3 +64,25 @@ describe('SEO', () => {
     expect(metaDescription?.getAttribute('content')).toContain('Receitas deliciosas')
   })
 })
+
+it('define title e metatags corretamente', () => {
+	const helmetContext = {}
+	render(
+		<HelmetProvider context={helmetContext}>
+			<SEO 
+				title="Página de Teste"
+				description="Descrição de teste"
+				image="https://example.com/og.jpg"
+				url="https://example.com/teste"
+			/>
+		</HelmetProvider>
+	)
+
+	expect(document.title).toContain('Página de Teste')
+	const metaDesc = document.querySelector('meta[name="description"]')
+	expect(metaDesc).toBeTruthy()
+	expect(metaDesc.getAttribute('content')).toBe('Descrição de teste')
+	const ogTitle = document.querySelector('meta[property="og:title"]')
+	expect(ogTitle).toBeTruthy()
+	expect(ogTitle.getAttribute('content')).toContain('Página de Teste')
+})
