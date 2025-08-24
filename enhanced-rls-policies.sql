@@ -10,6 +10,9 @@ ALTER TABLE course_enrollments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recipe_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_favorites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS ebooks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS ebook_purchases ENABLE ROW LEVEL SECURITY;
 
 CREATE TABLE IF NOT EXISTS settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -19,8 +22,6 @@ CREATE TABLE IF NOT EXISTS settings (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
-
-ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Usuários podem criar próprio perfil" ON profiles;
 DROP POLICY IF EXISTS "Usuários podem ver perfis públicos" ON profiles;
@@ -301,3 +302,19 @@ INSERT INTO settings (key, value, type) VALUES
 ON CONFLICT (key) DO NOTHING;
 
 SELECT 'Enhanced RLS policies applied successfully!' as message;
+
+CREATE POLICY IF NOT EXISTS "Everyone can view published ebooks" ON ebooks
+  FOR SELECT USING (status = 'published');
+
+CREATE POLICY IF NOT EXISTS "Authors can manage own ebooks" ON ebooks
+  FOR ALL USING (
+    auth.uid() = author_id OR EXISTS (
+      SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role IN ('admin', 'super_admin')
+    )
+  );
+
+CREATE POLICY IF NOT EXISTS "Users can view own ebook purchases" ON ebook_purchases
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY IF NOT EXISTS "Users can create ebook purchases" ON ebook_purchases
+  FOR INSERT WITH CHECK (auth.uid() = user_id);

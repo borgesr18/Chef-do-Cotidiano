@@ -11,7 +11,8 @@ import {
   Settings,
   Menu,
   X,
-  LogOut
+  LogOut,
+  Book
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -20,6 +21,7 @@ const sidebarItems = [
   { icon: ChefHat, label: 'Receitas', path: '/admin/recipes' },
   { icon: FolderOpen, label: 'Categorias', path: '/admin/categories' },
   { icon: BookOpen, label: 'Cursos', path: '/admin/courses' },
+  { icon: Book, label: 'E-books', path: '/admin/ebooks' },
   { icon: Users, label: 'Usuários', path: '/admin/users' },
   { icon: FileText, label: 'Blog', path: '/admin/blog' },
   { icon: Settings, label: 'Configurações', path: '/admin/settings' }

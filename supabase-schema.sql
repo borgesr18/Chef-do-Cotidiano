@@ -42,6 +42,14 @@ CREATE TYPE analytics_event AS ENUM (
 -- Ações de auditoria
 CREATE TYPE audit_action AS ENUM ('INSERT', 'UPDATE', 'DELETE');
 
+-- Status de e-books
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ebook_status') THEN
+    CREATE TYPE ebook_status AS ENUM ('draft', 'published', 'archived');
+  END IF;
+END$$;
+
 -- =====================================================
 -- TABELAS PRINCIPAIS
 -- =====================================================
@@ -324,6 +332,40 @@ CREATE TABLE audit_logs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- E-books
+CREATE TABLE IF NOT EXISTS ebooks (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  slug VARCHAR(200) UNIQUE NOT NULL,
+  description TEXT,
+  cover_image TEXT,
+  file_url TEXT,
+  price DECIMAL(10,2) DEFAULT 0,
+  pages INTEGER,
+  status ebook_status DEFAULT 'draft',
+  author_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+  is_featured BOOLEAN DEFAULT false,
+  seo_title VARCHAR(60),
+  seo_description VARCHAR(160),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  published_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Compras de e-books
+CREATE TABLE IF NOT EXISTS ebook_purchases (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  ebook_id UUID REFERENCES ebooks(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  amount DECIMAL(10,2) NOT NULL DEFAULT 0,
+  payment_method TEXT,
+  transaction_id TEXT,
+  status TEXT DEFAULT 'paid',
+  purchased_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(ebook_id, user_id)
+);
+
 -- =====================================================
 -- ÍNDICES
 -- =====================================================
@@ -346,6 +388,16 @@ CREATE INDEX idx_recipe_instructions_recipe ON recipe_instructions(recipe_id);
 CREATE INDEX idx_recipe_comments_recipe ON recipe_comments(recipe_id);
 CREATE INDEX idx_user_favorites_user ON user_favorites(user_id);
 CREATE INDEX idx_recipe_analytics_recipe ON recipe_analytics(recipe_id);
+
+-- Índices para e-books
+CREATE INDEX IF NOT EXISTS idx_ebooks_status ON ebooks(status);
+CREATE INDEX IF NOT EXISTS idx_ebooks_category ON ebooks(category_id);
+CREATE INDEX IF NOT EXISTS idx_ebooks_slug ON ebooks(slug);
+CREATE INDEX IF NOT EXISTS idx_ebook_purchases_user ON ebook_purchases(user_id);
+CREATE INDEX IF NOT EXISTS idx_ebook_purchases_ebook ON ebook_purchases(ebook_id);
+
+-- Busca full-text para e-books
+CREATE INDEX IF NOT EXISTS idx_ebooks_search ON ebooks USING gin(to_tsvector('portuguese', title || ' ' || coalesce(description, '')));
 
 -- =====================================================
 -- VIEWS
@@ -438,6 +490,17 @@ CREATE TRIGGER update_courses_updated_at BEFORE UPDATE ON courses
 CREATE TRIGGER update_blog_posts_updated_at BEFORE UPDATE ON blog_posts
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+-- Triggers para e-books
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'update_ebooks_updated_at'
+  ) THEN
+    CREATE TRIGGER update_ebooks_updated_at BEFORE UPDATE ON ebooks
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END$$;
+
 -- =====================================================
 -- ROW LEVEL SECURITY (RLS)
 -- =====================================================
@@ -509,6 +572,28 @@ CREATE POLICY "Usuários podem ver próprias notificações" ON notifications
 
 CREATE POLICY "Usuários podem atualizar próprias notificações" ON notifications
   FOR UPDATE USING (auth.uid() = user_id);
+
+-- Políticas para e-books
+CREATE POLICY "Todos podem ver e-books publicados" ON ebooks
+  FOR SELECT USING (status = 'published');
+
+CREATE POLICY "Autores podem ver seus próprios e-books" ON ebooks
+  FOR SELECT USING (auth.uid() = author_id);
+
+CREATE POLICY "Autores podem atualizar seus e-books" ON ebooks
+  FOR UPDATE USING (auth.uid() = author_id);
+
+CREATE POLICY "Chefs e admins podem criar e-books" ON ebooks
+  FOR INSERT WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM profiles 
+      WHERE id = auth.uid() 
+      AND role IN ('chef', 'admin', 'super_admin')
+    )
+  );
+
+CREATE POLICY "Usuários podem comprar e-books" ON ebook_purchases
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- =====================================================
 -- DADOS INICIAIS

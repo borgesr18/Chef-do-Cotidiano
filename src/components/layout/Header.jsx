@@ -34,6 +34,7 @@ export const Header = () => {
               <Link to="/" className="text-foreground hover:text-primary transition-colors">Início</Link>
               <Link to="/recipes" className="text-foreground hover:text-primary transition-colors">Receitas</Link>
               <Link to="/courses" className="text-foreground hover:text-primary transition-colors">Cursos</Link>
+              <Link to="/ebooks" className="text-foreground hover:text-primary transition-colors">E-books</Link>
               <Link to="/blog" className="text-foreground hover:text-primary transition-colors">Blog</Link>
               <Link to="/about" className="text-foreground hover:text-primary transition-colors">Sobre</Link>
             </nav>
@@ -76,6 +77,7 @@ export const Header = () => {
                 <Link to="/" className="text-foreground hover:text-primary transition-colors">Início</Link>
                 <Link to="/recipes" className="text-foreground hover:text-primary transition-colors">Receitas</Link>
                 <Link to="/courses" className="text-foreground hover:text-primary transition-colors">Cursos</Link>
+                <Link to="/ebooks" className="text-foreground hover:text-primary transition-colors">E-books</Link>
                 <Link to="/blog" className="text-foreground hover:text-primary transition-colors">Blog</Link>
                 <Link to="/about" className="text-foreground hover:text-primary transition-colors">Sobre</Link>
                 <div className="flex flex-col space-y-2 pt-4 border-t">

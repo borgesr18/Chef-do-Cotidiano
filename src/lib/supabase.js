@@ -1123,6 +1123,139 @@ export const settings = {
   }
 }
 
+// E-books
+export const ebooks = {
+  getAll: async (limit = 20, offset = 0) => {
+    const { data, error } = await supabase
+      .from('ebooks')
+      .select(`
+        *,
+        profiles:author_id (
+          full_name,
+          avatar_url
+        ),
+        categories (
+          name,
+          slug
+        )
+      `)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+    return { data, error }
+  },
+  getPublished: async (limit = 20, offset = 0) => {
+    const { data, error } = await supabase
+      .from('ebooks')
+      .select(`
+        *,
+        profiles:author_id (
+          full_name,
+          avatar_url
+        ),
+        categories (
+          name,
+          slug
+        )
+      `)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+    return { data, error }
+  },
+  getBySlug: async (slug) => {
+    const { data, error } = await supabase
+      .from('ebooks')
+      .select(`
+        *,
+        profiles:author_id (
+          full_name,
+          avatar_url,
+          bio
+        ),
+        categories (
+          name,
+          slug
+        )
+      `)
+      .eq('slug', slug)
+      .eq('status', 'published')
+      .maybeSingle()
+    return { data, error }
+  },
+  getById: async (id) => {
+    const { data, error } = await supabase
+      .from('ebooks')
+      .select(`
+        *,
+        profiles:author_id(full_name, avatar_url),
+        categories(name, slug)
+      `)
+      .eq('id', id)
+      .single()
+    return { data, error }
+  },
+  create: async (ebookData) => {
+    const { data, error } = await supabase
+      .from('ebooks')
+      .insert([ebookData])
+      .select()
+      .single()
+    return { data, error }
+  },
+  update: async (id, ebookData) => {
+    const { data, error } = await supabase
+      .from('ebooks')
+      .update(ebookData)
+      .eq('id', id)
+      .select()
+      .single()
+    return { data, error }
+  },
+  delete: async (id) => {
+    const { error } = await supabase
+      .from('ebooks')
+      .delete()
+      .eq('id', id)
+    return { error }
+  }
+}
+
+export const ebookPurchases = {
+  purchase: async (ebookId, { amount, method = 'stripe', transactionId = null } = {}) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { data: null, error: 'Usuário não autenticado' }
+    const { data, error } = await supabase
+      .from('ebook_purchases')
+      .insert([{ ebook_id: ebookId, user_id: user.id, amount: amount || 0, payment_method: method, transaction_id: transactionId, status: 'paid' }])
+      .select()
+      .single()
+    return { data, error }
+  },
+  getByUser: async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { data: [], error: 'Usuário não autenticado' }
+    const { data, error } = await supabase
+      .from('ebook_purchases')
+      .select(`
+        *,
+        ebooks(title, slug, cover_image, price)
+      `)
+      .eq('user_id', user.id)
+      .order('purchased_at', { ascending: false })
+    return { data, error }
+  },
+  hasPurchased: async (ebookId) => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { data: false, error: null }
+    const { data, error } = await supabase
+      .from('ebook_purchases')
+      .select('id')
+      .eq('ebook_id', ebookId)
+      .eq('user_id', user.id)
+      .maybeSingle()
+    return { data: !!data, error }
+  }
+}
 
 export default supabase
 
