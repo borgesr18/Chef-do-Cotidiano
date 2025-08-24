@@ -16,6 +16,7 @@ import {
 import { useRecipes } from '../hooks/useRecipes'
 import { useCategories } from '../hooks/useCategories'
 import { SEO } from '../components/SEO'
+import { LazyImage } from '../components/LazyImage'
 
 export const CategoryPage = () => {
   const { category: categorySlug } = useParams()
@@ -231,7 +232,7 @@ export const CategoryPage = () => {
               {filteredRecipes.map((recipe) => (
                 <Card key={recipe.id} className="overflow-hidden hover:shadow-xl transition-shadow group">
                   <div className="relative">
-                    <img 
+                    <LazyImage 
                       src={recipe.featured_image || recipe.image} 
                       alt={recipe.title}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"

@@ -18,6 +18,7 @@ import { useRecipes } from '../hooks/useRecipes'
 import { useCategories } from '../hooks/useCategories'
 import { generateSlug } from '../lib/utils'
 import { SEO } from '../components/SEO'
+import { LazyImage } from '../components/LazyImage'
 
 export const RecipesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -306,7 +307,7 @@ export const RecipesPage = () => {
                       <Link key={recipe.id} to={`/recipes/${recipeSlug}`}>
                         <Card className="overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer">
                           <div className="relative">
-                            <img 
+                            <LazyImage 
                               src={recipe.featured_image || recipe.image} 
                               alt={recipe.title}
                               className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"

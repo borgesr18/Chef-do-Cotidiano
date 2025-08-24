@@ -7,6 +7,7 @@ import { useRecipe } from '../hooks/useRecipes'
 import { generateSlug } from '../lib/utils'
 import { SEO } from '../components/SEO'
 import { generateRecipeStructuredData } from '../utils/seo'
+import { LazyImage } from '../components/LazyImage'
 
 export const RecipeDetailPage = () => {
   const { slug } = useParams()
@@ -258,7 +259,7 @@ export const RecipeDetailPage = () => {
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <img
+            <LazyImage
               src={displayRecipe.featured_image || displayRecipe.image}
               alt={displayRecipe.title}
               className="w-full h-64 lg:h-96 object-cover rounded-lg mb-6"

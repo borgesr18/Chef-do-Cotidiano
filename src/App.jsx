@@ -26,6 +26,7 @@ const BlogAdmin = lazy(() => import('./pages/admin/BlogAdmin').then(module => ({
 const BlogForm = lazy(() => import('./pages/admin/BlogForm').then(module => ({ default: module.BlogForm })))
 const UsersAdmin = lazy(() => import('./pages/admin/UsersAdmin').then(module => ({ default: module.UsersAdmin })))
 const SettingsAdmin = lazy(() => import('./pages/admin/SettingsAdmin').then(module => ({ default: module.SettingsAdmin })))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -41,41 +42,42 @@ function App() {
         <main className="flex-1">
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/recipes" element={<RecipesPage />} />
-                  <Route path="/recipes/category/:category" element={<CategoryPage />} />
-                  <Route path="/recipes/:slug" element={<RecipeDetailPage />} />
-                  <Route path="/courses" element={<CoursesPage />} />
-                  <Route path="/blog" element={<BlogPage />} />
-                  <Route path="/about" element={<div className="container mx-auto px-4 py-16 text-center"><h1 className="text-3xl font-bold mb-4">Sobre</h1><p className="text-muted-foreground">Em breve...</p></div>} />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  
-                  <Route path="/admin/*" element={
-                    <ProtectedRoute requiredRole="admin">
-                      <AdminLayout />
-                    </ProtectedRoute>
-                  }>
-                    <Route index element={<AdminDashboard />} />
-                    <Route path="recipes" element={<RecipesAdmin />} />
-                    <Route path="recipes/new" element={<RecipeForm />} />
-                    <Route path="recipes/:id/edit" element={<RecipeForm />} />
-                    <Route path="categories" element={<CategoriesAdmin />} />
-                    <Route path="courses" element={<CoursesAdmin />} />
-                    <Route path="courses/new" element={<CourseForm />} />
-                    <Route path="courses/:id/edit" element={<CourseForm />} />
-                    <Route path="blog" element={<BlogAdmin />} />
-                    <Route path="blog/new" element={<BlogForm />} />
-                    <Route path="blog/:id/edit" element={<BlogForm />} />
-                    <Route path="users" element={<UsersAdmin />} />
-                    <Route path="settings" element={<SettingsAdmin />} />
-                  </Route>
-            </Routes>
-          </Suspense>
-        </main>
-        <Footer />
-        <Toaster />
-      </div>
-    </HelmetProvider>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/recipes" element={<RecipesPage />} />
+                <Route path="/recipes/category/:category" element={<CategoryPage />} />
+                <Route path="/recipes/:slug" element={<RecipeDetailPage />} />
+                <Route path="/courses" element={<CoursesPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/about" element={<div className="container mx-auto px-4 py-16 text-center"><h1 className="text-3xl font-bold mb-4">Sobre</h1><p className="text-muted-foreground">Em breve...</p></div>} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                
+                <Route path="/admin/*" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminLayout />
+                  </ProtectedRoute>
+                }>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="recipes" element={<RecipesAdmin />} />
+                  <Route path="recipes/new" element={<RecipeForm />} />
+                  <Route path="recipes/:id/edit" element={<RecipeForm />} />
+                  <Route path="categories" element={<CategoriesAdmin />} />
+                  <Route path="courses" element={<CoursesAdmin />} />
+                  <Route path="courses/new" element={<CourseForm />} />
+                  <Route path="courses/:id/edit" element={<CourseForm />} />
+                  <Route path="blog" element={<BlogAdmin />} />
+                  <Route path="blog/new" element={<BlogForm />} />
+                  <Route path="blog/:id/edit" element={<BlogForm />} />
+                  <Route path="users" element={<UsersAdmin />} />
+                  <Route path="settings" element={<SettingsAdmin />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </main>
+          <Footer />
+          <Toaster />
+        </div>
+      </HelmetProvider>
   )
 }
 
