@@ -14,6 +14,9 @@ const RecipeDetailPage = lazy(() => import('./pages/RecipeDetailPage'))
 const CoursesPage = lazy(() => import('./pages/CoursesPage'))
 const BlogPage = lazy(() => import('./pages/BlogPage'))
 const AuthCallback = lazy(() => import('./pages/AuthCallback').then(module => ({ default: module.AuthCallback })))
+const EbooksPage = lazy(() => import('./pages/EbooksPage').then(module => ({ default: module.EbooksPage })))
+const EbookDetailPage = lazy(() => import('./pages/EbookDetailPage').then(module => ({ default: module.EbookDetailPage })))
+const MyEbooksPage = lazy(() => import('./pages/MyEbooksPage'))
 
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout').then(module => ({ default: module.AdminLayout })))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard').then(module => ({ default: module.AdminDashboard })))
@@ -26,6 +29,8 @@ const BlogAdmin = lazy(() => import('./pages/admin/BlogAdmin').then(module => ({
 const BlogForm = lazy(() => import('./pages/admin/BlogForm').then(module => ({ default: module.BlogForm })))
 const UsersAdmin = lazy(() => import('./pages/admin/UsersAdmin').then(module => ({ default: module.UsersAdmin })))
 const SettingsAdmin = lazy(() => import('./pages/admin/SettingsAdmin').then(module => ({ default: module.SettingsAdmin })))
+const EbooksAdmin = lazy(() => import('./pages/admin/EbooksAdmin').then(module => ({ default: module.EbooksAdmin })))
+const EbookForm = lazy(() => import('./pages/admin/EbookForm').then(module => ({ default: module.EbookForm })))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 const LoadingSpinner = () => (
@@ -47,6 +52,13 @@ function App() {
                 <Route path="/recipes/category/:category" element={<CategoryPage />} />
                 <Route path="/recipes/:slug" element={<RecipeDetailPage />} />
                 <Route path="/courses" element={<CoursesPage />} />
+                <Route path="/ebooks" element={<EbooksPage />} />
+                <Route path="/ebooks/:id" element={<EbookDetailPage />} />
+                <Route path="/my-ebooks" element={
+                  <ProtectedRoute requiredRole="user">
+                    <MyEbooksPage />
+                  </ProtectedRoute>
+                } />
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/about" element={<div className="container mx-auto px-4 py-16 text-center"><h1 className="text-3xl font-bold mb-4">Sobre</h1><p className="text-muted-foreground">Em breve...</p></div>} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
@@ -64,6 +76,9 @@ function App() {
                   <Route path="courses" element={<CoursesAdmin />} />
                   <Route path="courses/new" element={<CourseForm />} />
                   <Route path="courses/:id/edit" element={<CourseForm />} />
+                  <Route path="ebooks" element={<EbooksAdmin />} />
+                  <Route path="ebooks/new" element={<EbookForm />} />
+                  <Route path="ebooks/:id/edit" element={<EbookForm />} />
                   <Route path="blog" element={<BlogAdmin />} />
                   <Route path="blog/new" element={<BlogForm />} />
                   <Route path="blog/:id/edit" element={<BlogForm />} />
