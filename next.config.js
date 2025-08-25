@@ -2,21 +2,26 @@
 const nextConfig = {
   // Configurações de performance
   experimental: {
-    // Usar Turbopack para desenvolvimento mais rápido
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
     // Otimizar carregamento de páginas
     optimizePackageImports: [
       '@tanstack/react-query',
       'lucide-react',
       'date-fns',
     ],
+    // Melhorar performance de CSS
+    optimizeCss: true,
+    // Otimizar fonts
+    optimizeServerReact: true,
+  },
+
+  // Configurações do Turbopack
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
   },
 
   // Configurações de imagem otimizada
@@ -169,6 +174,15 @@ const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   compress: true,
+  swcMinify: true,
+  
+  // Configurações de bundle
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+      preventFullImport: true,
+    },
+  },
   
   // Configurações de desenvolvimento
   ...(process.env.NODE_ENV === 'development' && {
