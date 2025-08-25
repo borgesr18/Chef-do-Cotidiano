@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { withRateLimit, rateLimitConfigs } from '@/lib/rate-limit';
-import { paginationSchema, validateData } from '@/lib/validations';
+import { validateData } from '@/lib/validations';
 
 // Schema para parâmetros de estatísticas específicos
 const statsQuerySchema = z.object({
@@ -12,8 +12,12 @@ const statsQuerySchema = z.object({
   }).default('week'),
   action: z.enum(['view', 'like', 'favorite', 'share', 'download'], {
     errorMap: () => ({ message: 'Ação deve ser: view, like, favorite, share ou download' })
-  }).optional()
-}).merge(paginationSchema);
+  }).optional(),
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  sort_by: z.string().optional(),
+  order: z.enum(['asc', 'desc']).default('desc')
+});
 
 // Inicializar cliente Supabase
 const supabase = createClient(

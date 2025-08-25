@@ -1,0 +1,23 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/interactions/route": "app/api/interactions/route.js",
+  "/api/push/send/route": "app/api/push/send/route.js",
+  "/api/push/subscribe/route": "app/api/push/subscribe/route.js",
+  "/api/push/unsubscribe/route": "app/api/push/unsubscribe/route.js",
+  "/api/recipes/stats/route": "app/api/recipes/stats/route.js",
+  "/blog/[slug]/page": "app/blog/[slug]/page.js",
+  "/blog/page": "app/blog/page.js",
+  "/contato/page": "app/contato/page.js",
+  "/ebook/[slug]/page": "app/ebook/[slug]/page.js",
+  "/ebooks/page": "app/ebooks/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/lead/route": "app/lead/route.js",
+  "/obrigado-lead/page": "app/obrigado-lead/page.js",
+  "/obrigado/page": "app/obrigado/page.js",
+  "/page": "app/page.js",
+  "/politica-privacidade/page": "app/politica-privacidade/page.js",
+  "/robots.txt/route": "app/robots.txt/route.js",
+  "/sitemap.xml/route": "app/sitemap.xml/route.js",
+  "/sobre/page": "app/sobre/page.js",
+  "/termos/page": "app/termos/page.js"
+}

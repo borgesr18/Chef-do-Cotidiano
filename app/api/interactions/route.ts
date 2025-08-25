@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { headers } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 import { withRateLimit, rateLimitConfigs } from '@/lib/rate-limit';
-import { interactionSchema, searchSchema, validateData } from '@/lib/validations';
+import { validateData } from '@/lib/validations';
 
 // Configurar cliente Supabase
 const supabase = createClient(
@@ -52,6 +52,11 @@ async function postHandler(request: NextRequest) {
     const body = await request.json();
     
     // Validar dados de entrada
+    const interactionSchema = z.object({
+      recipe_id: z.string().uuid('ID da receita inválido'),
+      action: z.enum(['view', 'like', 'favorite', 'share', 'download']),
+      metadata: z.record(z.any()).optional()
+    });
     const validation = validateData(interactionSchema, body);
     if (!validation.success) {
       return NextResponse.json(
