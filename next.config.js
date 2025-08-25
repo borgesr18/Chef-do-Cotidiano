@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Configurações de performance
+  pageExtensions: ['ts', 'tsx'],
   experimental: {
     // Otimizar carregamento de páginas
     optimizePackageImports: [

@@ -2,7 +2,7 @@
 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { queryClient } from '@/lib/cache';
+import { queryClient, persistCache } from '@/lib/cache';
 import { useEffect } from 'react';
 
 interface CacheProviderProps {

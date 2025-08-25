@@ -56,8 +56,8 @@ export function useRecommendations() {
   const user = null; // Usuário não autenticado para esta versão
   const queryClient = useQueryClient();
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'anon-placeholder'
   );
   const [sessionId] = useState(() => {
     if (typeof window !== 'undefined') {

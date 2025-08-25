@@ -237,3 +237,45 @@ export const usePersistentCache = () => {
   
   return { saveToStorage, loadFromStorage, clearStorage };
 };
+
+// Persistência simples do cache de queries em localStorage
+export const persistCache = {
+  save: () => {
+    if (typeof window === 'undefined') return;
+    try {
+      const queries = queryClient.getQueryCache().getAll();
+      const safe = queries
+        .filter((q) => {
+          const topKey = q.queryKey[0] as string | undefined;
+          return Boolean(q.state.data) && typeof topKey === 'string' &&
+            !topKey.includes('user') &&
+            ['recipes', 'categories', 'search'].includes(topKey);
+        })
+        .map((q) => ({ queryKey: q.queryKey, data: q.state.data, dataUpdatedAt: q.state.dataUpdatedAt }));
+      localStorage.setItem('chef-cache', JSON.stringify(safe));
+    } catch (err) {
+      console.warn('Erro ao salvar cache:', err);
+    }
+  },
+  restore: () => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = localStorage.getItem('chef-cache');
+      if (!raw) return;
+      const items: Array<{ queryKey: readonly unknown[]; data: unknown; dataUpdatedAt: number }> = JSON.parse(raw);
+      const maxAgeMs = 60 * 60 * 1000; // 1h
+      items.forEach((item) => {
+        if (Date.now() - item.dataUpdatedAt < maxAgeMs) {
+          queryClient.setQueryData(item.queryKey, item.data);
+        }
+      });
+    } catch (err) {
+      console.warn('Erro ao restaurar cache:', err);
+      localStorage.removeItem('chef-cache');
+    }
+  },
+  clear: () => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem('chef-cache');
+  },
+};

@@ -69,7 +69,7 @@ export const recipeValidations = {
     prep_time: z.number().positive('Tempo de preparo deve ser positivo').max(1440, 'Tempo de preparo muito longo'),
     cook_time: z.number().positive('Tempo de cozimento deve ser positivo').max(1440, 'Tempo de cozimento muito longo').optional(),
     servings: z.number().positive('Número de porções deve ser positivo').max(50, 'Muitas porções'),
-    difficulty: z.enum(['easy', 'medium', 'hard'], { errorMap: () => ({ message: 'Dificuldade inválida' }) }),
+    difficulty: z.enum(['easy', 'medium', 'hard'], { message: 'Dificuldade inválida' }),
     category_id: uuidSchema,
     tags: z.array(z.string()).optional(),
     image_url: z.string().url('URL da imagem inválida').optional(),
@@ -207,7 +207,7 @@ export function createValidationMiddleware<T>(schema: z.ZodSchema<T>) {
     const result = validateData(schema, data);
     
     if (!result.success) {
-      const errors = result.errors.errors.map(err => ({
+      const errors = result.errors.issues.map(err => ({
         field: err.path.join('.'),
         message: err.message
       }));
@@ -261,7 +261,7 @@ export const pushPayloadSchema = z.object({
   icon: z.string().url().optional(),
   badge: z.string().url().optional(),
   tag: z.string().optional(),
-  data: z.record(z.any()).optional(),
+  data: z.record(z.string(), z.any()).optional(),
   actions: z.array(z.object({
     action: z.string().min(1),
     title: z.string().min(1),

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Heart, Clock, Users, TrendingUp, Sparkles, Eye } from 'lucide-react';
 import { useRecommendations, useTrendingRecipes, useSimilarRecipes, useTrackInteraction } from '../hooks/useRecommendations';
-import LazyImage from './LazyImage';
+import { LazyImage } from './LazyImage';
 // Definição local da interface Recipe
 interface Recipe {
   id: string;
