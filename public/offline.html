@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Chef do Cotidiano</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+    
+    .icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+    
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-size: 1rem;
+      min-width: 200px;
+    }
+    
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-2px);
+    }
+    
+    .btn-primary {
+      background: white;
+      color: #f97316;
+      border-color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #f3f4f6;
+      transform: translateY(-2px);
+    }
+    
+    .status {
+      margin-top: 30px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .status.online {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    
+    .status.offline {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    
+    .features {
+      margin-top: 40px;
+      text-align: left;
+    }
+    
+    .features h3 {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    
+    .feature-list {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+    }
+    
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .icon {
+        width: 80px;
+        height: 80px;
+        font-size: 32px;
+      }
+      
+      .btn {
+        min-width: 160px;
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">
+      🍳
+    </div>
+    
+    <h1>Você está offline</h1>
+    <p>Não foi possível conectar à internet. Algumas funcionalidades podem estar limitadas, mas você ainda pode acessar conteúdo em cache.</p>
+    
+    <div class="actions">
+      <button class="btn btn-primary" onclick="tryReconnect()">Tentar Reconectar</button>
+      <a href="/" class="btn">Ir para Início</a>
+    </div>
+    
+    <div class="status" id="connectionStatus">
+      <span id="statusText">Verificando conexão...</span>
+    </div>
+    
+    <div class="features">
+      <h3>Disponível offline:</h3>
+      <ul class="feature-list">
+        <li class="feature-item">
+          <div class="feature-icon">📖</div>
+          <span>Receitas visualizadas recentemente</span>
+        </li>
+        <li class="feature-item">
+          <div class="feature-icon">❤️</div>
+          <span>Receitas salvas nos favoritos</span>
+        </li>
+        <li class="feature-item">
+          <div class="feature-icon">🔍</div>
+          <span>Busca em conteúdo em cache</span>
+        </li>
+        <li class="feature-item">
+          <div class="feature-icon">📱</div>
+          <span>Interface completa do aplicativo</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    // Verificar status da conexão
+    function updateConnectionStatus() {
+      const statusElement = document.getElementById('connectionStatus');
+      const statusText = document.getElementById('statusText');
+      
+      if (navigator.onLine) {
+        statusElement.className = 'status online';
+        statusText.textContent = '✅ Conexão restaurada! Você pode navegar normalmente.';
+      } else {
+        statusElement.className = 'status offline';
+        statusText.textContent = '❌ Sem conexão com a internet.';
+      }
+    }
+    
+    // Tentar reconectar
+    function tryReconnect() {
+      const btn = event.target;
+      btn.textContent = 'Verificando...';
+      btn.disabled = true;
+      
+      // Simular verificação de conexão
+      setTimeout(() => {
+        updateConnectionStatus();
+        
+        if (navigator.onLine) {
+          // Tentar recarregar a página
+          window.location.reload();
+        } else {
+          btn.textContent = 'Tentar Reconectar';
+          btn.disabled = false;
+        }
+      }, 2000);
+    }
+    
+    // Monitorar mudanças na conexão
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+    
+    // Verificar status inicial
+    updateConnectionStatus();
+    
+    // Auto-verificação periódica
+    setInterval(() => {
+      if (navigator.onLine) {
+        // Tentar fazer uma requisição simples para verificar conectividade real
+        fetch('/manifest.json', { 
+          method: 'HEAD',
+          cache: 'no-cache'
+        })
+        .then(() => {
+          // Se a requisição for bem-sucedida, recarregar a página
+          window.location.reload();
+        })
+        .catch(() => {
+          // Ainda offline, mesmo que navigator.onLine seja true
+          console.log('Still offline despite navigator.onLine being true');
+        });
+      }
+    }, 10000); // Verificar a cada 10 segundos
+  </script>
+</body>
+</html>

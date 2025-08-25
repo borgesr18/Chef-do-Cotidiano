@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="#f97316"/>
+  
+  <!-- Chef hat -->
+  <path d="M256 80c-44.18 0-80 35.82-80 80 0 8.84 1.43 17.35 4.07 25.26C168.43 193.57 160 208.25 160 224c0 35.35 28.65 64 64 64h64c35.35 0 64-28.65 64-64 0-15.75-8.43-30.43-20.07-38.74C334.57 177.35 336 168.84 336 160c0-44.18-35.82-80-80-80z" fill="white"/>
+  
+  <!-- Chef hat band -->
+  <rect x="160" y="272" width="192" height="16" rx="8" fill="white"/>
+  
+  <!-- Cooking pot -->
+  <ellipse cx="256" cy="320" rx="80" ry="16" fill="#374151"/>
+  <rect x="176" y="320" width="160" height="80" rx="16" fill="#6b7280"/>
+  <ellipse cx="256" cy="320" rx="80" ry="16" fill="#9ca3af"/>
+  
+  <!-- Pot handles -->
+  <rect x="144" y="340" width="16" height="40" rx="8" fill="#374151"/>
+  <rect x="352" y="340" width="16" height="40" rx="8" fill="#374151"/>
+  
+  <!-- Steam -->
+  <path d="M220 300c0-8 4-12 8-12s8 4 8 12-4 12-8 12-8-4-8-12z" fill="white" opacity="0.7"/>
+  <path d="M240 290c0-8 4-12 8-12s8 4 8 12-4 12-8 12-8-4-8-12z" fill="white" opacity="0.7"/>
+  <path d="M260 300c0-8 4-12 8-12s8 4 8 12-4 12-8 12-8-4-8-12z" fill="white" opacity="0.7"/>
+  <path d="M280 290c0-8 4-12 8-12s8 4 8 12-4 12-8 12-8-4-8-12z" fill="white" opacity="0.7"/>
+  
+  <!-- Utensils -->
+  <g transform="translate(320, 200)">
+    <!-- Spoon -->
+    <ellipse cx="8" cy="8" rx="6" ry="8" fill="#fbbf24"/>
+    <rect x="6" y="16" width="4" height="40" rx="2" fill="#fbbf24"/>
+  </g>
+  
+  <g transform="translate(160, 200)">
+    <!-- Fork -->
+    <rect x="6" y="0" width="2" height="20" rx="1" fill="#fbbf24"/>
+    <rect x="10" y="0" width="2" height="20" rx="1" fill="#fbbf24"/>
+    <rect x="14" y="0" width="2" height="20" rx="1" fill="#fbbf24"/>
+    <rect x="6" y="20" width="10" height="36" rx="2" fill="#fbbf24"/>
+  </g>
+  
+  <!-- Decorative elements -->
+  <circle cx="200" cy="120" r="4" fill="white" opacity="0.3"/>
+  <circle cx="312" cy="140" r="3" fill="white" opacity="0.3"/>
+  <circle cx="180" cy="160" r="2" fill="white" opacity="0.3"/>
+  <circle cx="332" cy="120" r="3" fill="white" opacity="0.3"/>
+</svg>

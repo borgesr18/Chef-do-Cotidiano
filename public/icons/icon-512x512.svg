@@ -1,0 +1,49 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="#f97316"/>
+  
+  <!-- Chef hat -->
+  <path d="M256 100c-22 0-40 8-54 22-8-5-18-8-30-8-32 0-58 26-58 58 0 5 1 10 3 15-16 11-26 29-26 50 0 35 29 64 64 64h202c35 0 64-29 64-64 0-21-10-39-26-50 2-5 3-10 3-15 0-32-26-58-58-58-12 0-22 3-30 8-14-14-32-22-54-22z" fill="white"/>
+  
+  <!-- Chef hat details -->
+  <ellipse cx="256" cy="240" rx="101" ry="20" fill="#f97316" opacity="0.3"/>
+  <ellipse cx="256" cy="230" rx="93" ry="15" fill="#f97316" opacity="0.2"/>
+  <ellipse cx="256" cy="220" rx="85" ry="10" fill="#f97316" opacity="0.1"/>
+  
+  <!-- Cooking utensils -->
+  <g transform="translate(150, 290)">
+    <!-- Spoon -->
+    <path d="M20 0c-11 0-20 11-20 22s9 22 20 22c3 0 6-1 8-2v66c0 6 5 11 11 11s11-5 11-11V42c2 1 5 2 8 2 11 0 20-11 20-22S58 0 47 0H20z" fill="white"/>
+  </g>
+  
+  <g transform="translate(280, 290)">
+    <!-- Fork -->
+    <rect x="26" y="0" width="6" height="42" fill="white"/>
+    <rect x="36" y="0" width="6" height="42" fill="white"/>
+    <rect x="46" y="0" width="6" height="42" fill="white"/>
+    <rect x="20" y="42" width="38" height="64" rx="6" fill="white"/>
+  </g>
+  
+  <!-- Knife -->
+  <g transform="translate(200, 320)">
+    <rect x="30" y="0" width="4" height="50" fill="white"/>
+    <path d="M28 50h8c2 0 4 2 4 4v20c0 2-2 4-4 4h-8c-2 0-4-2-4-4V54c0-2 2-4 4-4z" fill="white"/>
+  </g>
+  
+  <!-- Decorative elements -->
+  <circle cx="180" cy="340" r="8" fill="white" opacity="0.7"/>
+  <circle cx="332" cy="360" r="6" fill="white" opacity="0.7"/>
+  <circle cx="220" cy="380" r="5" fill="white" opacity="0.5"/>
+  <circle cx="292" cy="400" r="4" fill="white" opacity="0.5"/>
+  <circle cx="160" cy="400" r="3" fill="white" opacity="0.3"/>
+  <circle cx="350" cy="320" r="3" fill="white" opacity="0.3"/>
+  
+  <!-- Steam effects -->
+  <g opacity="0.4">
+    <path d="M200 150c0-5 2-8 5-8s5 3 5 8-2 8-5 8-5-3-5-8z" fill="white"/>
+    <path d="M220 140c0-7 3-12 7-12s7 5 7 12-3 12-7 12-7-5-7-12z" fill="white"/>
+    <path d="M240 155c0-4 2-7 4-7s4 3 4 7-2 7-4 7-4-3-4-7z" fill="white"/>
+    <path d="M280 145c0-6 2-10 5-10s5 4 5 10-2 10-5 10-5-4-5-10z" fill="white"/>
+    <path d="M300 160c0-4 2-6 4-6s4 2 4 6-2 6-4 6-4-2-4-6z" fill="white"/>
+  </g>
+</svg>
