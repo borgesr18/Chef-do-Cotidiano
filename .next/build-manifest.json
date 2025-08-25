@@ -1,0 +1,265 @@
+{
+  "pages": {
+    "/AuthCallback": [
+      "static/chunks/4e553fbdc08ae44b.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/turbopack-b5cca34537b6aece.js"
+    ],
+    "/BlogPage": [
+      "static/chunks/b5524b2d8e6af645.js",
+      "static/chunks/b4abc76e02b73613.js",
+      "static/chunks/7f9f3e730761c160.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/1991993cabcc847f.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/turbopack-03ec80ef1474a3d5.js"
+    ],
+    "/CategoryPage": [
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/bc23ada3293f2129.js",
+      "static/chunks/d27e634a981b2c9b.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/turbopack-ced377fb0c3a80c4.js"
+    ],
+    "/CoursesPage": [
+      "static/chunks/b5524b2d8e6af645.js",
+      "static/chunks/0bcf7ff5ab37b519.js",
+      "static/chunks/7f9f3e730761c160.js",
+      "static/chunks/e538a4fb62e624d9.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/1991993cabcc847f.js",
+      "static/chunks/turbopack-450e5df05c164d6a.js"
+    ],
+    "/EbookDetailPage": [
+      "static/chunks/5f461789fb58c5b1.js",
+      "static/chunks/eb2d8ac1752c795f.js",
+      "static/chunks/855c6c9dccd222e8.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/32a1dc00bd9b6427.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/turbopack-674a93e4ad4aea30.js"
+    ],
+    "/EbooksPage": [
+      "static/chunks/5f461789fb58c5b1.js",
+      "static/chunks/b5524b2d8e6af645.js",
+      "static/chunks/7f9f3e730761c160.js",
+      "static/chunks/c536229630f67315.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/1991993cabcc847f.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/turbopack-d97cae0945f269a8.js"
+    ],
+    "/HomePage": [
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/bc23ada3293f2129.js",
+      "static/chunks/11f4df998d713aae.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/turbopack-3bb79d798d28c6df.js"
+    ],
+    "/MyEbooksPage": [
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/d314a61cd0eb4862.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/turbopack-aa37542c6467502d.js"
+    ],
+    "/NotFound": [
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/de95fb258ed06fb3.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/turbopack-ec75f4f309fd130a.js"
+    ],
+    "/RecipeDetailPage": [
+      "static/chunks/add126403c4c1a6e.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/bc23ada3293f2129.js",
+      "static/chunks/0c763e80332f64d7.js",
+      "static/chunks/turbopack-614bc0efa3d23ab8.js"
+    ],
+    "/RecipesPage": [
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/bc23ada3293f2129.js",
+      "static/chunks/4fcb5cebd3d4e3e4.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/turbopack-4602ccee61f8dc3e.js"
+    ],
+    "/_app": [
+      "static/chunks/94c86ce2ae8dafd8.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/turbopack-a511e21e2bd2dd0f.js"
+    ],
+    "/_error": [
+      "static/chunks/b11c7d6a94692418.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/turbopack-fdb480339ab48c90.js"
+    ],
+    "/admin/AdminDashboard": [
+      "static/chunks/ea93523e9af0a401.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/turbopack-9904e516050a939b.js"
+    ],
+    "/admin/AdminLogin": [
+      "static/chunks/50c9f68f16a639b8.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/turbopack-b83147da7b8fd052.js"
+    ],
+    "/admin/BlogAdmin": [
+      "static/chunks/57fea8e973db1988.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/855c6c9dccd222e8.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/32a1dc00bd9b6427.js",
+      "static/chunks/turbopack-c718bc071237682b.js"
+    ],
+    "/admin/BlogForm": [
+      "static/chunks/2d522cb323aae645.js",
+      "static/chunks/5f461789fb58c5b1.js",
+      "static/chunks/7f9f3e730761c160.js",
+      "static/chunks/b5524b2d8e6af645.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/1991993cabcc847f.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/turbopack-8ff9b5f3d4dbba02.js"
+    ],
+    "/admin/CategoriesAdmin": [
+      "static/chunks/5f461789fb58c5b1.js",
+      "static/chunks/32a1dc00bd9b6427.js",
+      "static/chunks/2fceb434acc064ba.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/26c9ab71ec54cae7.js",
+      "static/chunks/turbopack-62431abf30537139.js"
+    ],
+    "/admin/CourseForm": [
+      "static/chunks/5f461789fb58c5b1.js",
+      "static/chunks/b5524b2d8e6af645.js",
+      "static/chunks/7f9f3e730761c160.js",
+      "static/chunks/d83b04baf8e2d3ff.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/1991993cabcc847f.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/turbopack-4349477226f4b790.js"
+    ],
+    "/admin/CoursesAdmin": [
+      "static/chunks/9d3d1dff052d52ad.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/855c6c9dccd222e8.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/32a1dc00bd9b6427.js",
+      "static/chunks/turbopack-d088b99c6e5a1575.js"
+    ],
+    "/admin/EbookForm": [
+      "static/chunks/729f8fe22b00ccbe.js",
+      "static/chunks/b5524b2d8e6af645.js",
+      "static/chunks/7f9f3e730761c160.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/1991993cabcc847f.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/turbopack-2c490eee52a518df.js"
+    ],
+    "/admin/EbooksAdmin": [
+      "static/chunks/3d4dbc98619db7d9.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/turbopack-aa7d4aa2e3fe5b03.js"
+    ],
+    "/admin/RecipeForm": [
+      "static/chunks/96e3892b39bcf0e2.js",
+      "static/chunks/5f461789fb58c5b1.js",
+      "static/chunks/7f9f3e730761c160.js",
+      "static/chunks/b5524b2d8e6af645.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/1991993cabcc847f.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/turbopack-8558043c062e186a.js"
+    ],
+    "/admin/RecipesAdmin": [
+      "static/chunks/88ae597753b1d86a.js",
+      "static/chunks/a96fee7f1e2bf12c.js",
+      "static/chunks/855c6c9dccd222e8.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/32a1dc00bd9b6427.js",
+      "static/chunks/turbopack-b09f61429b1c7352.js"
+    ],
+    "/admin/SettingsAdmin": [
+      "static/chunks/5f461789fb58c5b1.js",
+      "static/chunks/2fceb434acc064ba.js",
+      "static/chunks/d0c80c87c5298515.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/turbopack-4dbf4d1d8a0f1ba3.js"
+    ],
+    "/admin/UsersAdmin": [
+      "static/chunks/b5524b2d8e6af645.js",
+      "static/chunks/b81cae362450514d.js",
+      "static/chunks/7f9f3e730761c160.js",
+      "static/chunks/1f8186376c95f5eb.js",
+      "static/chunks/1991993cabcc847f.js",
+      "static/chunks/396f452d56cb3cc7.js",
+      "static/chunks/3a7d3570ca8d304c.js",
+      "static/chunks/turbopack-c11777e93489ae2e.js"
+    ]
+  },
+  "devFiles": [],
+  "ampDevFiles": [],
+  "polyfillFiles": [
+    "static/chunks/a6dad97d9634a72d.js"
+  ],
+  "lowPriorityFiles": [
+    "static/1D6bVXEf5Wy30Id1hmjfd/_ssgManifest.js",
+    "static/1D6bVXEf5Wy30Id1hmjfd/_buildManifest.js"
+  ],
+  "rootMainFiles": [
+    "static/chunks/4002ac4fcf7de2a2.js",
+    "static/chunks/1736a864897318d7.js",
+    "static/chunks/3dd24785baaa1210.js",
+    "static/chunks/796a0795983043e2.js",
+    "static/chunks/turbopack-5803fe661f3442c6.js"
+  ],
+  "ampFirstPages": []
+}

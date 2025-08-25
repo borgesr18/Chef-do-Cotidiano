@@ -245,3 +245,26 @@ export const sqlSafeString = z.string().refine(
   (str) => !/[';"\\]/.test(str),
   'Caracteres especiais não são permitidos'
 );
+
+// Adicionados para APIs de push/push-subscription
+export const pushSubscriptionSchema = z.object({
+  endpoint: z.string().url('Endpoint inválido'),
+  keys: z.object({
+    p256dh: z.string().min(1),
+    auth: z.string().min(1)
+  })
+});
+
+export const pushPayloadSchema = z.object({
+  title: z.string().min(1),
+  body: z.string().min(1),
+  icon: z.string().url().optional(),
+  badge: z.string().url().optional(),
+  tag: z.string().optional(),
+  data: z.record(z.any()).optional(),
+  actions: z.array(z.object({
+    action: z.string().min(1),
+    title: z.string().min(1),
+    icon: z.string().url().optional()
+  })).optional()
+});

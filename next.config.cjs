@@ -176,15 +176,10 @@ const nextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   compress: true,
-  swcMinify: true,
+  
   
   // Configurações de bundle
-  modularizeImports: {
-    'lucide-react': {
-      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
-      preventFullImport: true,
-    },
-  },
+  
   
   // Configurações de desenvolvimento
   ...(process.env.NODE_ENV === 'development' && {

@@ -1,0 +1,10 @@
+__turbopack_load_page_chunks__("/admin/CoursesAdmin", [
+  "static/chunks/9d3d1dff052d52ad.js",
+  "static/chunks/a96fee7f1e2bf12c.js",
+  "static/chunks/855c6c9dccd222e8.js",
+  "static/chunks/1f8186376c95f5eb.js",
+  "static/chunks/396f452d56cb3cc7.js",
+  "static/chunks/b81cae362450514d.js",
+  "static/chunks/32a1dc00bd9b6427.js",
+  "static/chunks/turbopack-d088b99c6e5a1575.js"
+])
