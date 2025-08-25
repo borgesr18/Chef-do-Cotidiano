@@ -1,7 +1,0 @@
-__turbopack_load_page_chunks__("/AuthCallback", [
-  "static/chunks/4e553fbdc08ae44b.js",
-  "static/chunks/a96fee7f1e2bf12c.js",
-  "static/chunks/1f8186376c95f5eb.js",
-  "static/chunks/396f452d56cb3cc7.js",
-  "static/chunks/turbopack-b5cca34537b6aece.js"
-])

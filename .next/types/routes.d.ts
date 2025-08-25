@@ -3,7 +3,7 @@
 
 type AppRoutes = "/" | "/blog" | "/blog/[slug]" | "/contato" | "/ebook/[slug]" | "/ebooks" | "/obrigado" | "/obrigado-lead" | "/politica-privacidade" | "/sobre" | "/termos"
 type AppRouteHandlerRoutes = "/api/interactions" | "/api/push/send" | "/api/push/subscribe" | "/api/push/unsubscribe" | "/api/recipes/stats" | "/lead"
-type PageRoutes = "/AuthCallback" | "/BlogPage" | "/CategoryPage" | "/CoursesPage" | "/EbookDetailPage" | "/EbooksPage" | "/HomePage" | "/MyEbooksPage" | "/NotFound" | "/RecipeDetailPage" | "/RecipesPage" | "/admin/AdminDashboard" | "/admin/AdminLogin" | "/admin/BlogAdmin" | "/admin/BlogForm" | "/admin/CategoriesAdmin" | "/admin/CourseForm" | "/admin/CoursesAdmin" | "/admin/EbookForm" | "/admin/EbooksAdmin" | "/admin/RecipeForm" | "/admin/RecipesAdmin" | "/admin/SettingsAdmin" | "/admin/UsersAdmin"
+type PageRoutes = never
 type LayoutRoutes = "/"
 type RedirectRoutes = never
 type RewriteRoutes = "/sw.js"
@@ -12,44 +12,20 @@ type Routes = AppRoutes | PageRoutes | LayoutRoutes | RedirectRoutes | RewriteRo
 
 interface ParamMap {
   "/": {}
-  "/admin/AdminDashboard": {}
-  "/admin/AdminLogin": {}
-  "/admin/BlogAdmin": {}
-  "/admin/BlogForm": {}
-  "/admin/CategoriesAdmin": {}
-  "/admin/CourseForm": {}
-  "/admin/CoursesAdmin": {}
-  "/admin/EbookForm": {}
-  "/admin/EbooksAdmin": {}
-  "/admin/RecipeForm": {}
-  "/admin/RecipesAdmin": {}
-  "/admin/SettingsAdmin": {}
-  "/admin/UsersAdmin": {}
   "/api/interactions": {}
   "/api/push/send": {}
   "/api/push/subscribe": {}
   "/api/push/unsubscribe": {}
   "/api/recipes/stats": {}
-  "/AuthCallback": {}
   "/blog": {}
   "/blog/[slug]": { "slug": string; }
-  "/BlogPage": {}
-  "/CategoryPage": {}
   "/contato": {}
-  "/CoursesPage": {}
   "/ebook/[slug]": { "slug": string; }
-  "/EbookDetailPage": {}
   "/ebooks": {}
-  "/EbooksPage": {}
-  "/HomePage": {}
   "/lead": {}
-  "/MyEbooksPage": {}
-  "/NotFound": {}
   "/obrigado": {}
   "/obrigado-lead": {}
   "/politica-privacidade": {}
-  "/RecipeDetailPage": {}
-  "/RecipesPage": {}
   "/sobre": {}
   "/sw.js": {}
   "/termos": {}

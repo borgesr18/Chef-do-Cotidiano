@@ -9,7 +9,7 @@ export const recipeSchema = z.object({
   prep_time: z.number().min(1, 'Tempo de preparo deve ser positivo').max(1440, 'Tempo de preparo muito longo'),
   cook_time: z.number().min(0, 'Tempo de cozimento não pode ser negativo').max(1440, 'Tempo de cozimento muito longo'),
   servings: z.number().min(1, 'Porções deve ser pelo menos 1').max(50, 'Muitas porções'),
-  difficulty: z.enum(['facil', 'medio', 'dificil'], { errorMap: () => ({ message: 'Dificuldade deve ser fácil, médio ou difícil' }) }),
+  difficulty: z.enum(['facil', 'medio', 'dificil'], { message: 'Dificuldade deve ser fácil, médio ou difícil' }),
   category_id: z.string().uuid('ID da categoria inválido'),
   image_url: z.string().url('URL da imagem inválida').optional(),
   tags: z.array(z.string()).optional(),
@@ -52,10 +52,8 @@ export const commentSchema = z.object({
 // Schema para validação de interações
 export const interactionSchema = z.object({
   recipe_id: z.string().uuid('ID da receita inválido'),
-  action: z.enum(['view', 'like', 'favorite', 'share', 'download'], {
-    errorMap: () => ({ message: 'Ação inválida' })
-  }),
-  metadata: z.record(z.any()).optional(),
+  action: z.enum(['view', 'like', 'favorite', 'share', 'download'], { message: 'Ação inválida' }),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 // Schema para validação de push subscriptions
@@ -74,7 +72,7 @@ export const pushPayloadSchema = z.object({
   icon: z.string().url('URL do ícone inválida').optional(),
   badge: z.string().url('URL do badge inválida').optional(),
   tag: z.string().optional(),
-  data: z.record(z.any()).optional(),
+  data: z.record(z.string(), z.any()).optional(),
   actions: z.array(z.object({
     action: z.string().min(1, 'Ação é obrigatória'),
     title: z.string().min(1, 'Título da ação é obrigatório'),
@@ -107,7 +105,7 @@ export const paginationSchema = z.object({
 // Schema para validação de upload de arquivos
 export const fileUploadSchema = z.object({
   file: z.instanceof(File, { message: 'Arquivo é obrigatório' }),
-  type: z.enum(['image', 'document'], { errorMap: () => ({ message: 'Tipo de arquivo inválido' }) }),
+  type: z.enum(['image', 'document'], { message: 'Tipo de arquivo inválido' }),
   max_size: z.number().default(5 * 1024 * 1024), // 5MB default
 });
 
@@ -145,7 +143,7 @@ export function validateData<T>(schema: z.ZodSchema<T>, data: unknown): { succes
     return { success: true, data: validatedData };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map(err => `${err.path.join('.')}: ${err.message}`);
+      const errors = error.issues.map(err => `${err.path.join('.')}: ${err.message}`);
       return { success: false, errors };
     }
     return { success: false, errors: ['Erro de validação desconhecido'] };
@@ -159,7 +157,7 @@ export async function validateDataAsync<T>(schema: z.ZodSchema<T>, data: unknown
     return { success: true, data: validatedData };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map(err => `${err.path.join('.')}: ${err.message}`);
+      const errors = error.issues.map(err => `${err.path.join('.')}: ${err.message}`);
       return { success: false, errors };
     }
     return { success: false, errors: ['Erro de validação desconhecido'] };
