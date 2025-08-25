@@ -44,7 +44,12 @@ export async function middleware(request: NextRequest) {
   let response = NextResponse.next();
   
   try {
-    // 1. Validações de segurança básicas
+    // Permitir preflight CORS sem bloqueios
+    if (request.method === 'OPTIONS') {
+      return handleOptionsRequest(request);
+    }
+
+    // 1. Validações de segurança básicas (apenas para APIs)
     const securityCheck = securityMiddleware(request);
     if (securityCheck) {
       return securityCheck;
@@ -56,7 +61,7 @@ export async function middleware(request: NextRequest) {
       return rateLimitResult;
     }
 
-    // 3. Autenticação para rotas protegidas
+    // 3. Autenticação para rotas protegidas (aplica apenas em APIs nesta fase)
     const authCheck = await checkAuthentication(request, pathname);
     if (authCheck) {
       return authCheck;
@@ -285,16 +290,8 @@ function generateRequestId(): string {
 
 // Configuração do matcher para definir em quais rotas o middleware deve rodar
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public|sw.js|manifest.json|icons).*)',
-  ],
+  // Restringe o middleware às rotas de API para evitar interferir nas páginas
+  matcher: ['/api/:path*'],
 };
 
 // Função para lidar com requisições OPTIONS (CORS preflight)
