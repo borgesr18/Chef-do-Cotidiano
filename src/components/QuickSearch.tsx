@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { Search, TrendingUp, Clock, X } from 'lucide-react';
 import { useAutocomplete, useSearchHistory } from '../hooks/useAdvancedSearch';
 // import { useDebounce } from '@/hooks/useDebounce';
@@ -248,7 +249,7 @@ export function InlineSearch({ onResultClick, className = '' }: {
   className?: string;
 }) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, _setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
   // // const debouncedQuery = useDebounce(query, 300);
@@ -292,9 +293,11 @@ export function InlineSearch({ onResultClick, className = '' }: {
                     onClick={() => onResultClick?.(result)}
                     className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow text-left"
                   >
-                    <img
+                    <Image
                       src={result.image_url}
                       alt={result.title}
+                      width={48}
+                      height={48}
                       className="w-12 h-12 rounded-lg object-cover"
                     />
                     <div className="flex-1 min-w-0">

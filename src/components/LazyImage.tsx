@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useLazyImage } from '../hooks/useLazyLoading';
 import { cn } from '../lib/utils';
 
@@ -32,7 +33,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   
-  const { ref, src: lazySrc, isLoaded, error, isVisible } = useLazyImage(src, {
+  const { ref, src: lazySrc, isLoaded, isVisible } = useLazyImage(src, {
     threshold: 0.1,
     rootMargin: '50px',
     triggerOnce: true,
@@ -72,14 +73,13 @@ export const LazyImage: React.FC<LazyImageProps> = ({
 
       {/* Imagem principal */}
       {(shouldLoad || priority) && (
-        <img
-          src={imageSrc}
+        <Image
+          src={imageSrc || fallback}
           alt={alt}
           width={width}
           height={height}
           sizes={sizes}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
+          priority={priority}
           className={cn(
             'w-full h-full object-cover transition-opacity duration-300',
             isLoaded ? 'opacity-100' : 'opacity-0'
@@ -91,7 +91,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
 
       {/* Fallback quando erro */}
       {imageError && (
-        <img
+        <Image
           src={fallback}
           alt={`${alt} (fallback)`}
           width={width}

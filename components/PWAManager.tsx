@@ -252,7 +252,7 @@ export default function PWAManager({ children }: PWAManagerProps) {
         isInstalled
       };
     }
-  }, [isOnline, isInstalled]);
+  }, [isOnline, isInstalled, clearCache, getCacheStatus, requestNotificationPermission, prefetchRecipes]);
 
   return (
     <>
