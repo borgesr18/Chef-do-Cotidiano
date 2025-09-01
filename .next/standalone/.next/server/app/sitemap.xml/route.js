@@ -1,8 +1,8 @@
 var R=require("../../chunks/[turbopack]_runtime.js")("server/app/sitemap.xml/route.js")
-R.c("server/chunks/[root-of-the-server]__cd92f214._.js")
-R.c("server/chunks/3d567_next_dist_0305c30a._.js")
-R.c("server/chunks/3d567_next_dist_00d3228c._.js")
-R.c("server/chunks/3d567_next_c3e65c6b._.js")
+R.c("server/chunks/[root-of-the-server]__e2563d90._.js")
+R.c("server/chunks/node_modules_next_dist_77fd8386._.js")
+R.c("server/chunks/node_modules_next_dist_03a3c8f9._.js")
+R.c("server/chunks/node_modules_next_8f9d9aca._.js")
 R.m(29262)
-R.m(40183)
-module.exports=R.m(40183).exports
+R.m(37438)
+module.exports=R.m(37438).exports

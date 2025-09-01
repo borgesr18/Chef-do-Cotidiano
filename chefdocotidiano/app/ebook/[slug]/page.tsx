@@ -1,6 +1,7 @@
 import CTAButton from "@/components/CTAButton";
 import FAQ from "@/components/FAQ";
 import Testimonial from "@/components/Testimonial";
+import Image from "next/image";
 import { EBOOKS } from "@/data/ebooks";
 import type { Metadata } from "next";
 
@@ -49,7 +50,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 	return (
 		<div className="mx-auto max-w-6xl px-4 py-10 grid md:grid-cols-2 gap-8">
 			<div>
-				<img src={ebook.capa_url} alt={`Capa do eBook ${ebook.titulo}`} className="w-full h-auto rounded border border-neutral-200" />
+				<Image src={ebook.capa_url} alt={`Capa do eBook ${ebook.titulo}`} width={800} height={1000} className="w-full h-auto rounded border border-neutral-200" />
 				<ul className="mt-4 flex flex-wrap gap-2 text-xs">
 					{ebook.callouts.map((c) => (
 						<li key={c} className="bg-[var(--color-neutral)] px-2 py-1 rounded">{c}</li>

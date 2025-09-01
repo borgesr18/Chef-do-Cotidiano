@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { userFavorites as favorites } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -9,7 +9,7 @@ export const useFavorites = () => {
   const { isAuthenticated } = useAuth()
 
   // Carregar favoritos do usuário
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     if (!isAuthenticated) {
       setUserFavorites([])
       return
@@ -33,7 +33,7 @@ export const useFavorites = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isAuthenticated])
 
   // Verificar se receita está nos favoritos
   const isFavorite = (recipeId) => {
@@ -110,7 +110,7 @@ export const useFavorites = () => {
     } else {
       setUserFavorites([])
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, loadFavorites])
 
   return {
     favorites: userFavorites,

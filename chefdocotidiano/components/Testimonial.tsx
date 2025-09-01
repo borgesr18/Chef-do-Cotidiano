@@ -3,13 +3,14 @@ export type TestimonialItem = {
 	avatar_url?: string;
 	content: string;
 };
+import Image from "next/image";
 
 export default function Testimonial({ item }: { item: TestimonialItem }) {
 	return (
 		<figure className="bg-white border border-neutral-200 rounded-lg p-4 shadow-sm">
 			<div className="flex items-center gap-3">
 				{item.avatar_url ? (
-					<img src={item.avatar_url} alt="Avatar" className="w-10 h-10 rounded-full object-cover" loading="lazy" />
+					<Image src={item.avatar_url} alt="Avatar" width={40} height={40} className="w-10 h-10 rounded-full object-cover" unoptimized />
 				) : (
 					<div className="w-10 h-10 rounded-full bg-[var(--color-neutral)]" aria-hidden />
 				)}

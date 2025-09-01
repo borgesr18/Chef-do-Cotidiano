@@ -1,6 +1,87 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { recipes } from '../lib/supabase'
 import { generateSlug } from '../lib/utils'
+
+const MOCK_RECIPES = [
+  {
+    id: 1,
+    title: "Bife Ancho Grelhado",
+    description: "Corte nobre grelhado na perfeição com temperos especiais",
+    featured_image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop",
+    total_time: 25,
+    difficulty: "Médio",
+    avg_rating: 4.8,
+    author_name: "Chef Rodrigo",
+    category_name: "Carnes",
+    is_featured: true,
+    status: "published"
+  },
+  {
+    id: 2,
+    title: "Picanha na Brasa",
+    description: "A rainha do churrasco brasileiro preparada com maestria",
+    featured_image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop",
+    total_time: 35,
+    difficulty: "Médio",
+    avg_rating: 4.9,
+    author_name: "Chef Rodrigo",
+    category_name: "Carnes",
+    is_featured: true,
+    status: "published"
+  },
+  {
+    id: 3,
+    title: "Costela Assada",
+    description: "Costela suculenta assada lentamente com temperos especiais",
+    featured_image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop",
+    total_time: 180,
+    difficulty: "Difícil",
+    avg_rating: 4.7,
+    author_name: "Chef Rodrigo",
+    category_name: "Carnes",
+    is_featured: false,
+    status: "published"
+  },
+  {
+    id: 4,
+    title: "Spaghetti Carbonara",
+    description: "Clássico italiano com ovos, queijo e pancetta",
+    featured_image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop",
+    total_time: 20,
+    difficulty: "Fácil",
+    avg_rating: 4.6,
+    author_name: "Chef Rodrigo",
+    category_name: "Massas",
+    is_featured: true,
+    status: "published"
+  },
+  {
+    id: 5,
+    title: "Lasanha Bolonhesa",
+    description: "Camadas de massa, molho bolonhesa e queijo derretido",
+    featured_image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400&h=300&fit=crop",
+    total_time: 90,
+    difficulty: "Médio",
+    avg_rating: 4.8,
+    author_name: "Chef Rodrigo",
+    category_name: "Massas",
+    is_featured: false,
+    status: "published"
+  },
+  {
+    id: 6,
+    title: "Salmão Grelhado",
+    description: "Salmão fresco grelhado com ervas e limão",
+    featured_image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=300&fit=crop",
+    total_time: 15,
+    difficulty: "Fácil",
+    avg_rating: 4.7,
+    author_name: "Chef Rodrigo",
+    category_name: "Frutos do Mar",
+    is_featured: true,
+    status: "published"
+  }
+]
 
 export const useRecipes = (options = {}) => {
   const [data, setData] = useState([])
@@ -15,89 +96,8 @@ export const useRecipes = (options = {}) => {
     autoFetch = true
   } = options
 
-  const mockRecipes = [
-    {
-      id: 1,
-      title: "Bife Ancho Grelhado",
-      description: "Corte nobre grelhado na perfeição com temperos especiais",
-      featured_image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop",
-      total_time: 25,
-      difficulty: "Médio",
-      avg_rating: 4.8,
-      author_name: "Chef Rodrigo",
-      category_name: "Carnes",
-      is_featured: true,
-      status: "published"
-    },
-    {
-      id: 2,
-      title: "Picanha na Brasa",
-      description: "A rainha do churrasco brasileiro preparada com maestria",
-      featured_image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop",
-      total_time: 35,
-      difficulty: "Médio",
-      avg_rating: 4.9,
-      author_name: "Chef Rodrigo",
-      category_name: "Carnes",
-      is_featured: true,
-      status: "published"
-    },
-    {
-      id: 3,
-      title: "Costela Assada",
-      description: "Costela suculenta assada lentamente com temperos especiais",
-      featured_image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop",
-      total_time: 180,
-      difficulty: "Difícil",
-      avg_rating: 4.7,
-      author_name: "Chef Rodrigo",
-      category_name: "Carnes",
-      is_featured: false,
-      status: "published"
-    },
-    {
-      id: 4,
-      title: "Spaghetti Carbonara",
-      description: "Clássico italiano com ovos, queijo e pancetta",
-      featured_image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=400&h=300&fit=crop",
-      total_time: 20,
-      difficulty: "Fácil",
-      avg_rating: 4.6,
-      author_name: "Chef Rodrigo",
-      category_name: "Massas",
-      is_featured: true,
-      status: "published"
-    },
-    {
-      id: 5,
-      title: "Lasanha Bolonhesa",
-      description: "Camadas de massa, molho bolonhesa e queijo derretido",
-      featured_image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400&h=300&fit=crop",
-      total_time: 90,
-      difficulty: "Médio",
-      avg_rating: 4.8,
-      author_name: "Chef Rodrigo",
-      category_name: "Massas",
-      is_featured: false,
-      status: "published"
-    },
-    {
-      id: 6,
-      title: "Salmão Grelhado",
-      description: "Salmão fresco grelhado com ervas e limão",
-      featured_image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=300&fit=crop",
-      total_time: 15,
-      difficulty: "Fácil",
-      avg_rating: 4.7,
-      author_name: "Chef Rodrigo",
-      category_name: "Frutos do Mar",
-      is_featured: true,
-      status: "published"
-    }
-  ]
-
   // Buscar receitas
-  const fetchRecipes = async (offset = 0, reset = false) => {
+  const fetchRecipes = useCallback(async (offset = 0, reset = false) => {
     try {
       console.log('fetchRecipes called with:', { offset, reset, category, featured })
       setLoading(true)
@@ -124,13 +124,13 @@ export const useRecipes = (options = {}) => {
       }
 
       if (result.error) {
-        console.log('API failed, using mock data for recipes', { filteredCount: mockRecipes.length })
-        let filteredMockRecipes = mockRecipes
+        console.log('API failed, using mock data for recipes', { filteredCount: MOCK_RECIPES.length })
+        let filteredMockRecipes = MOCK_RECIPES
         
         if (featured) {
-          filteredMockRecipes = mockRecipes.filter(recipe => recipe.is_featured)
+          filteredMockRecipes = MOCK_RECIPES.filter(recipe => recipe.is_featured)
         } else if (category) {
-          filteredMockRecipes = mockRecipes.filter(recipe => 
+          filteredMockRecipes = MOCK_RECIPES.filter(recipe => 
             recipe.category_name?.toLowerCase() === category?.toLowerCase()
           )
         }
@@ -155,12 +155,12 @@ export const useRecipes = (options = {}) => {
 
     } catch (err) {
       console.log('API failed (catch), using mock data for recipes', { error: err.message })
-      let filteredMockRecipes = mockRecipes
+      let filteredMockRecipes = MOCK_RECIPES
       
       if (featured) {
-        filteredMockRecipes = mockRecipes.filter(recipe => recipe.is_featured)
+        filteredMockRecipes = MOCK_RECIPES.filter(recipe => recipe.is_featured)
       } else if (category) {
-        filteredMockRecipes = mockRecipes.filter(recipe => 
+        filteredMockRecipes = MOCK_RECIPES.filter(recipe => 
           recipe.category_name?.toLowerCase() === category?.toLowerCase()
         )
       }
@@ -174,22 +174,22 @@ export const useRecipes = (options = {}) => {
       console.log('fetchRecipes finally block - setting loading to false')
       setLoading(false)
     }
-  }
+  }, [category, featured, limit])
 
   // Carregar mais receitas (paginação)
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     if (!loading && hasMore) {
       fetchRecipes(data.length, false)
     }
-  }
+  }, [loading, hasMore, fetchRecipes, data.length])
 
   // Recarregar receitas
-  const refresh = () => {
+  const refresh = useCallback(() => {
     fetchRecipes(0, true)
-  }
+  }, [fetchRecipes])
 
   // Buscar receitas com filtros
-  const search = async (query, filters = {}) => {
+  const search = useCallback(async (query, filters = {}) => {
     try {
       setLoading(true)
       setError(null)
@@ -209,7 +209,7 @@ export const useRecipes = (options = {}) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   // Buscar receita por slug
   const getBySlug = async (slug) => {
@@ -239,7 +239,7 @@ export const useRecipes = (options = {}) => {
     if (autoFetch) {
       fetchRecipes(0, true)
     }
-  }, [category, featured, autoFetch])
+  }, [autoFetch, fetchRecipes])
 
   return {
     // manter API atual e expor alias 'data' para compatibilidade com testes

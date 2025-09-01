@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { Search, Filter, X, Clock, Star, Users, ChefHat, Tag, MapPin, SlidersHorizontal } from 'lucide-react';
 import { useAdvancedSearch, useAutocomplete, useSearchHistory, SearchFilters } from '../hooks/useAdvancedSearch';
 import { useDebounce } from '../hooks/useDebounce';
@@ -463,11 +464,12 @@ export function AdvancedSearch({
                   <div key={recipe.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="aspect-video bg-gray-200 relative">
                       {recipe.image_url && (
-                        <img
+                        <Image
                           src={recipe.image_url}
                           alt={recipe.title}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover"
                         />
                       )}
                       <div className="absolute top-2 right-2 bg-white rounded-full px-2 py-1 text-xs font-medium">
