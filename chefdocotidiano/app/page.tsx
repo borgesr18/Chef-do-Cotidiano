@@ -4,6 +4,7 @@ import Testimonial from "@/components/Testimonial";
 import FAQ from "@/components/FAQ";
 import EbookCard from "@/components/EbookCard";
 import { EBOOKS } from "@/data/ebooks";
+import Image from "next/image";
 
 export default function HomePage() {
 	const featured = EBOOKS[0];
@@ -24,7 +25,7 @@ export default function HomePage() {
 					</div>
 				</div>
 				<div className="relative">
-					<img src="/window.svg" alt="Prato apetitoso" className="w-full h-auto" />
+					<Image src="/window.svg" alt="Prato apetitoso" width={800} height={600} className="w-full h-auto" />
 					<div className="absolute -bottom-3 -right-3"><span className="bg-[var(--color-accent)] px-3 py-1 rounded text-sm">Novo</span></div>
 				</div>
 			</section>

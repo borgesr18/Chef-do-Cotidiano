@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export type Ebook = {
 	id: string;
@@ -13,7 +14,7 @@ export default function EbookCard({ ebook }: { ebook: Ebook }) {
 	return (
 		<article className="bg-white rounded-lg border border-neutral-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
 			<Link href={`/ebook/${ebook.slug}`} className="block">
-				<img src={ebook.capa_url} alt={`Capa do eBook ${ebook.titulo}`} className="w-full h-56 object-cover" loading="lazy" />
+				<Image src={ebook.capa_url} alt={`Capa do eBook ${ebook.titulo}`} width={800} height={448} className="w-full h-56 object-cover" />
 				<div className="p-4">
 					<h3 className="font-semibold text-lg line-clamp-2">{ebook.titulo}</h3>
 					{ebook.subtitulo ? (

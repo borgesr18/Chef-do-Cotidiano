@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { recipes } from '../lib/supabase'
 import { generateSlug } from '../lib/utils'
 
@@ -97,7 +97,7 @@ export const useRecipes = (options = {}) => {
   ]
 
   // Buscar receitas
-  const fetchRecipes = async (offset = 0, reset = false) => {
+  const fetchRecipes = useCallback(async (offset = 0, reset = false) => {
     try {
       console.log('fetchRecipes called with:', { offset, reset, category, featured })
       setLoading(true)
@@ -174,22 +174,22 @@ export const useRecipes = (options = {}) => {
       console.log('fetchRecipes finally block - setting loading to false')
       setLoading(false)
     }
-  }
+  }, [category, featured, limit])
 
   // Carregar mais receitas (paginação)
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     if (!loading && hasMore) {
       fetchRecipes(data.length, false)
     }
-  }
+  }, [loading, hasMore, fetchRecipes, data.length])
 
   // Recarregar receitas
-  const refresh = () => {
+  const refresh = useCallback(() => {
     fetchRecipes(0, true)
-  }
+  }, [fetchRecipes])
 
   // Buscar receitas com filtros
-  const search = async (query, filters = {}) => {
+  const search = useCallback(async (query, filters = {}) => {
     try {
       setLoading(true)
       setError(null)
@@ -209,7 +209,7 @@ export const useRecipes = (options = {}) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   // Buscar receita por slug
   const getBySlug = async (slug) => {
@@ -239,7 +239,7 @@ export const useRecipes = (options = {}) => {
     if (autoFetch) {
       fetchRecipes(0, true)
     }
-  }, [category, featured, autoFetch])
+  }, [autoFetch, fetchRecipes])
 
   return {
     // manter API atual e expor alias 'data' para compatibilidade com testes

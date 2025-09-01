@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'sonner';
 
 interface PWAManagerProps {
@@ -21,6 +21,25 @@ export default function PWAManager({ children }: PWAManagerProps) {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
+
+  const handleInstallClick = useCallback(async () => {
+    if (!installPrompt) return;
+
+    try {
+      await installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      
+      if (outcome === 'accepted') {
+        toast.success('App instalado com sucesso!');
+        setIsInstalled(true);
+      }
+      
+      setInstallPrompt(null);
+    } catch (error) {
+      console.error('Erro na instalação:', error);
+      toast.error('Erro ao instalar o app');
+    }
+  }, [installPrompt]);
 
   useEffect(() => {
     // Verificar se já está instalado
@@ -136,26 +155,7 @@ export default function PWAManager({ children }: PWAManagerProps) {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [isInstalled]);
-
-  const handleInstallClick = async () => {
-    if (!installPrompt) return;
-
-    try {
-      await installPrompt.prompt();
-      const { outcome } = await installPrompt.userChoice;
-      
-      if (outcome === 'accepted') {
-        toast.success('App instalado com sucesso!');
-        setIsInstalled(true);
-      }
-      
-      setInstallPrompt(null);
-    } catch (error) {
-      console.error('Erro na instalação:', error);
-      toast.error('Erro ao instalar o app');
-    }
-  };
+  }, [isInstalled, handleInstallClick]);
 
   const requestNotificationPermission = async () => {
     if ('Notification' in window && 'serviceWorker' in navigator) {

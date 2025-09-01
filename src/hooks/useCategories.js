@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { categories } from '../lib/supabase'
 
 export const useCategories = () => {
@@ -16,7 +16,7 @@ export const useCategories = () => {
   ]
 
   // Buscar todas as categorias
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -38,7 +38,7 @@ export const useCategories = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   // Buscar categoria por slug
   const getCategoryBySlug = async (slug) => {
@@ -59,7 +59,7 @@ export const useCategories = () => {
   // Carregar categorias automaticamente
   useEffect(() => {
     fetchCategories()
-  }, [])
+  }, [fetchCategories])
 
   return {
     categories: data,
